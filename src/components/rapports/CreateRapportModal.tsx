@@ -24,7 +24,7 @@ interface CreateRapportModalProps {
 
 export function CreateRapportModal({ player, onClose, onSubmit }: CreateRapportModalProps) {
   const [type, setType] = useState<ReportType>("global");
-  const [source, setSource] = useState<ReportSource>("data");
+
   const [status, setStatus] = useState<ReportStatus>("suivre");
   const [note, setNote] = useState<NoteGrade>("C");
   const [kanban, setKanban] = useState(KANBAN_OPTIONS[0].id);
@@ -32,11 +32,6 @@ export function CreateRapportModal({ player, onClose, onSubmit }: CreateRapportM
   
   const handleTypeChange = (newType: ReportType) => {
     setType(newType);
-    if (newType === "global") {
-      setSource("data");
-    } else {
-      setSource("live");
-    }
   };
   
   // Conditional fields
@@ -62,7 +57,6 @@ export function CreateRapportModal({ player, onClose, onSubmit }: CreateRapportM
       author: curAuthor,
       authorRole: "Scout",
       type,
-      source,
       status,
       note,
       kanban,
@@ -133,42 +127,7 @@ export function CreateRapportModal({ player, onClose, onSubmit }: CreateRapportM
               </div>
             </div>
 
-            {/* Source d'Évaluation (Pills) */}
-            <div>
-              <label className="block text-xs font-medium text-[var(--color-neutral-400)] uppercase tracking-wider mb-2">
-                Source d'Évaluation
-              </label>
-              <div className="flex gap-3">
-                {(type === "global" 
-                  ? [
-                      { id: "data", label: "Data", icon: BarChart2 },
-                      { id: "agent", label: "Réseau", icon: Network },
-                    ]
-                  : [
-                      { id: "live", label: "Stade", icon: MapPin },
-                      { id: "video", label: "Vidéo", icon: MonitorPlay },
-                    ]
-                ).map((opt) => {
-                  const isSelected = source === opt.id;
-                  const Icon = opt.icon;
-                  return (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      onClick={() => setSource(opt.id as ReportSource)}
-                      className={`flex-1 py-2 text-sm font-medium rounded-full border flex items-center justify-center gap-2 transition-all ${
-                        isSelected 
-                          ? 'bg-[#6D071A] border-[#c42b47] text-white shadow-md' 
-                          : 'bg-[var(--color-neutral-800)] border-[var(--color-neutral-700)] text-[var(--color-neutral-400)] hover:text-[var(--color-neutral-300)] hover:bg-[var(--color-neutral-700)]'
-                      }`}
-                    >
-                      <Icon size={16} />
-                      {opt.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+
 
             {/* Match Context (Conditional) */}
             {type === "match" && (
