@@ -1,0 +1,674 @@
+"use client";
+
+import { useState } from "react";
+import { Plus, ChevronDown } from "lucide-react";
+
+// ─── Types ─────────────────────────────────────────────────────────────────────
+
+interface ShortlistPlayer {
+  id: number;
+  initials: string;
+  name: string;
+  position: string;
+  age: number;
+  club: string;
+  league: string;
+  contractEnd: string;
+  marketValue: string;
+  note: number;
+  rating: string;
+  flag: string;
+  status: string;
+}
+
+interface Shortlist {
+  id: string;
+  name: string;
+  icon: string;
+  count: number;
+  players: ShortlistPlayer[];
+}
+
+// ─── Data ──────────────────────────────────────────────────────────────────────
+
+const SHORTLISTS: Shortlist[] = [
+  {
+    id: "md2025",
+    name: "Milieux défensifs 2025",
+    icon: "🛡️",
+    count: 12,
+    players: [
+      { id:1,  initials:"TS", name:"T. Samassékou",  position:"MDF", age:28, club:"Reims",        league:"Ligue 1",        contractEnd:"Jun 2026", marketValue:"8M€",   note:7.8, rating:"B", flag:"🇬🇳", status:"Observation" },
+      { id:2,  initials:"NK", name:"N. Kaboré",      position:"MDF", age:23, club:"Burnley",      league:"Championship",   contractEnd:"Jun 2025", marketValue:"5M€",   note:7.4, rating:"B", flag:"🇧🇫", status:"Identifié"   },
+      { id:3,  initials:"YY", name:"Y. Yildiz",      position:"MC",  age:20, club:"Juventus",     league:"Serie A",        contractEnd:"Jun 2027", marketValue:"12M€",  note:8.1, rating:"A", flag:"🇩🇪", status:"À suivre"    },
+      { id:4,  initials:"AB", name:"A. Bissouma",    position:"MDF", age:28, club:"Tottenham",    league:"Premier League", contractEnd:"Jun 2026", marketValue:"18M€",  note:7.9, rating:"B", flag:"🇲🇱", status:"Identifié"   },
+      { id:5,  initials:"RC", name:"R. Camavinga",   position:"MC",  age:22, club:"Real Madrid",  league:"La Liga",        contractEnd:"Jun 2029", marketValue:"90M€",  note:8.6, rating:"A", flag:"🇫🇷", status:"À suivre"    },
+      { id:6,  initials:"MJ", name:"M. Jakić",       position:"MDF", age:27, club:"Eintracht",    league:"Bundesliga",     contractEnd:"Jun 2026", marketValue:"14M€",  note:7.6, rating:"B", flag:"🇷🇸", status:"Contacté"    },
+      { id:7,  initials:"WZ", name:"W. Zaïre-Emery", position:"MC",  age:18, club:"PSG",          league:"Ligue 1",        contractEnd:"Jun 2028", marketValue:"40M€",  note:8.4, rating:"A", flag:"🇫🇷", status:"À suivre"    },
+      { id:8,  initials:"FN", name:"F. Nmecha",      position:"MC",  age:25, club:"Chelsea",      league:"Premier League", contractEnd:"Jun 2027", marketValue:"22M€",  note:7.7, rating:"B", flag:"🇩🇪", status:"Identifié"   },
+    ],
+  },
+  {
+    id: "prio",
+    name: "Cibles prioritaires",
+    icon: "⭐",
+    count: 5,
+    players: [
+      { id:10, initials:"EM", name:"Enzo Millot",  position:"MC",  age:23, club:"FC Metz",    league:"Ligue 1",       contractEnd:"Jun 2026", marketValue:"12M€",  note:8.3, rating:"A", flag:"🇫🇷", status:"Contacté"    },
+      { id:11, initials:"LN", name:"Lucas Netz",   position:"MC",  age:21, club:"Augsburg",   league:"Bundesliga",    contractEnd:"Jun 2026", marketValue:"7M€",   note:7.9, rating:"B", flag:"🇩🇪", status:"Observation" },
+      { id:12, initials:"GF", name:"G. Ferreira",  position:"AD",  age:22, club:"Vitória SC", league:"Liga Portugal", contractEnd:"Jun 2025", marketValue:"4M€",   note:7.6, rating:"B", flag:"🇵🇹", status:"Contacté"    },
+      { id:13, initials:"RE", name:"R. Esteves",   position:"LG",  age:23, club:"SC Braga",   league:"Liga Portugal", contractEnd:"Jun 2026", marketValue:"6M€",   note:8.2, rating:"A", flag:"🇵🇹", status:"Pré-accord"  },
+      { id:14, initials:"FA", name:"F. Abdou",     position:"MDF", age:25, club:"FC Sète",    league:"Ligue 2",       contractEnd:"Jun 2025", marketValue:"1.5M€", note:8.5, rating:"A", flag:"🇫🇷", status:"Pré-accord"  },
+    ],
+  },
+  {
+    id: "shadow",
+    name: "Shadow Squad FC Metz",
+    icon: "⚽",
+    count: 11,
+    players: [
+      { id:20, initials:"AM", name:"A. Mandanda",   position:"GK",  age:39, club:"FC Metz",    league:"Ligue 1",       contractEnd:"Jun 2026", marketValue:"2M€",   note:7.2, rating:"B", flag:"🇫🇷", status:"Priorité"    },
+      { id:21, initials:"KD", name:"K. Diallo",     position:"LD",  age:25, club:"AS Monaco",  league:"Ligue 1",       contractEnd:"Jun 2026", marketValue:"8M€",   note:6.8, rating:"C", flag:"🇬🇳", status:"Observation" },
+      { id:22, initials:"JN", name:"J. Niasse",     position:"DC",  age:27, club:"FC Metz",    league:"Ligue 1",       contractEnd:"Jun 2027", marketValue:"3M€",   note:7.0, rating:"B", flag:"🇸🇳", status:"Priorité"    },
+      { id:23, initials:"TH", name:"T. Hountondji", position:"DC",  age:29, club:"FC Metz",    league:"Ligue 1",       contractEnd:"Jun 2026", marketValue:"4M€",   note:7.1, rating:"B", flag:"🇧🇯", status:"Priorité"    },
+      { id:24, initials:"RE", name:"R. Esteves",    position:"LG",  age:23, club:"SC Braga",   league:"Liga Portugal", contractEnd:"Jun 2026", marketValue:"6M€",   note:8.2, rating:"A", flag:"🇵🇹", status:"Pré-accord"  },
+      { id:25, initials:"EM", name:"Enzo Millot",   position:"MC",  age:23, club:"FC Metz",    league:"Ligue 1",       contractEnd:"Jun 2026", marketValue:"12M€",  note:8.3, rating:"A", flag:"🇫🇷", status:"Contacté"    },
+      { id:26, initials:"TS", name:"T. Samassékou", position:"MDF", age:28, club:"Reims",      league:"Ligue 1",       contractEnd:"Jun 2026", marketValue:"8M€",   note:7.8, rating:"B", flag:"🇬🇳", status:"Observation" },
+      { id:27, initials:"GF", name:"G. Ferreira",   position:"AD",  age:22, club:"Vitória SC", league:"Liga Portugal", contractEnd:"Jun 2025", marketValue:"4M€",   note:7.6, rating:"B", flag:"🇵🇹", status:"Contacté"    },
+      { id:28, initials:"FA", name:"F. Abdou",      position:"AT",  age:25, club:"FC Sète",    league:"Ligue 2",       contractEnd:"Jun 2025", marketValue:"1.5M€", note:8.5, rating:"A", flag:"🇫🇷", status:"Pré-accord"  },
+    ],
+  },
+];
+
+// ─── Helpers ───────────────────────────────────────────────────────────────────
+
+const STATUS_STYLE: Record<string, { bg: string; border: string; color: string }> = {
+  "Identifié":   { bg:"rgba(59,130,246,0.12)",  border:"rgba(59,130,246,0.35)",  color:"#93C5FD" },
+  "Observation": { bg:"rgba(168,85,247,0.12)",  border:"rgba(168,85,247,0.35)",  color:"#C4B5FD" },
+  "Contacté":    { bg:"rgba(245,158,11,0.12)",  border:"rgba(245,158,11,0.35)",  color:"#FCD34D" },
+  "Pré-accord":  { bg:"rgba(16,185,129,0.12)",  border:"rgba(16,185,129,0.35)",  color:"#6EE7B7" },
+  "À suivre":    { bg:"rgba(107,114,128,0.12)", border:"rgba(107,114,128,0.35)", color:"#9CA3AF" },
+  "Priorité":    { bg:"rgba(196,43,71,0.12)",   border:"rgba(196,43,71,0.35)",   color:"#F87171" },
+  "Écarté":      { bg:"rgba(75,85,99,0.10)",    border:"rgba(75,85,99,0.3)",     color:"#6B7280"  },
+};
+
+const RATING_COLOR: Record<string, string> = {
+  A: "#10B981", B: "#F59E0B", C: "#F97316", D: "#EF4444", E: "#6B7280",
+};
+
+function noteColor(note: number): string {
+  if (note >= 8.5) return "#10B981";
+  if (note >= 7.5) return "#F59E0B";
+  if (note >= 7.0) return "#F97316";
+  return "#EF4444";
+}
+
+// ─── Badges ────────────────────────────────────────────────────────────────────
+
+function PosBadge({ pos }: { pos: string }) {
+  return (
+    <span
+      style={{
+        display: "inline-flex", alignItems: "center", fontSize: 11, fontWeight: 600,
+        padding: "2px 7px", borderRadius: 4,
+        backgroundColor: "rgba(196,43,71,0.12)", border: "1px solid rgba(196,43,71,0.35)",
+        color: "var(--color-primary-300)", whiteSpace: "nowrap",
+      }}
+    >
+      {pos}
+    </span>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const cfg = STATUS_STYLE[status] ?? STATUS_STYLE["Identifié"];
+  return (
+    <span
+      style={{
+        display: "inline-flex", alignItems: "center", fontSize: 11, fontWeight: 500,
+        padding: "2px 8px", borderRadius: 4, backgroundColor: cfg.bg,
+        border: `1px solid ${cfg.border}`, color: cfg.color, whiteSpace: "nowrap",
+      }}
+    >
+      {status}
+    </span>
+  );
+}
+
+function RatingBadge({ rating }: { rating: string }) {
+  const color = RATING_COLOR[rating] ?? "#9CA3AF";
+  return (
+    <div
+      style={{
+        width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center",
+        justifyContent: "center", fontSize: 12, fontWeight: 700, margin: "0 auto",
+        backgroundColor: color + "1A", border: `1.5px solid ${color}55`, color,
+      }}
+    >
+      {rating}
+    </div>
+  );
+}
+
+// ─── Liste view ────────────────────────────────────────────────────────────────
+
+function ShortlistTable({ players }: { players: ShortlistPlayer[] }) {
+  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 780 }}>
+        <thead>
+          <tr style={{ backgroundColor: "var(--color-neutral-800)", borderBottom: "1px solid var(--color-neutral-700)" }}>
+            {["#", "Joueur", "Poste", "Club / Championnat", "Valeur", "Contrat", "Note", "Statut"].map((h, i) => (
+              <th key={h} style={{ padding: "10px 12px", fontSize: 11, fontWeight: 600, color: "var(--color-neutral-500)", textAlign: i === 0 || i === 2 || i === 6 || i === 7 ? "center" : "left", whiteSpace: "nowrap", userSelect: "none" }}>
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {players.map((p, idx) => {
+            const isHov = hoveredRow === p.id;
+            const contractWarning = parseInt(p.contractEnd.split(" ").pop() ?? "2099", 10) <= 2025;
+            return (
+              <tr
+                key={p.id}
+                onMouseEnter={() => setHoveredRow(p.id)}
+                onMouseLeave={() => setHoveredRow(null)}
+                style={{
+                  height: 48, cursor: "pointer",
+                  backgroundColor: isHov ? "rgba(196,43,71,0.05)" : idx % 2 === 1 ? "rgba(255,255,255,0.02)" : "transparent",
+                  borderBottom: "1px solid var(--color-neutral-700)", transition: "background-color 80ms ease-out",
+                }}
+              >
+                <td style={{ padding: "0 12px", textAlign: "center", width: 36 }}>
+                  <span style={{ fontSize: 11, color: "var(--color-neutral-600)", fontVariantNumeric: "tabular-nums" }}>{idx + 1}</span>
+                </td>
+                <td style={{ padding: "0 12px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 600, flexShrink: 0, backgroundColor: "var(--color-primary-900)", color: "var(--color-primary-300)" }}>
+                      {p.initials}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: "var(--color-neutral-100)" }}>{p.flag} {p.name}</div>
+                      <div style={{ fontSize: 11, color: "var(--color-neutral-500)" }}>{p.age} ans</div>
+                    </div>
+                  </div>
+                </td>
+                <td style={{ padding: "0 12px", textAlign: "center" }}><PosBadge pos={p.position} /></td>
+                <td style={{ padding: "0 12px" }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: "var(--color-neutral-200)" }}>{p.club}</div>
+                  <div style={{ fontSize: 11, color: "var(--color-neutral-500)" }}>{p.league}</div>
+                </td>
+                <td style={{ padding: "0 12px" }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-neutral-200)", fontVariantNumeric: "tabular-nums" }}>{p.marketValue}</span>
+                </td>
+                <td style={{ padding: "0 12px" }}>
+                  <span style={{ fontSize: 12, fontVariantNumeric: "tabular-nums", color: contractWarning ? "#F59E0B" : "var(--color-neutral-400)" }}>{p.contractEnd}</span>
+                </td>
+                <td style={{ padding: "0 12px", textAlign: "center" }}><RatingBadge rating={p.rating} /></td>
+                <td style={{ padding: "0 12px", textAlign: "center" }}><StatusBadge status={p.status} /></td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ─── Terrain constants ─────────────────────────────────────────────────────────
+
+const PW = 310;
+const PH = 470;
+const R  = 12;    // player circle radius
+const SH = 28;    // horizontal step between players in same group
+
+type FormationKey = "4-3-3" | "4-2-3-1" | "4-4-2" | "3-5-2";
+const FORMATIONS: FormationKey[] = ["4-3-3", "4-2-3-1", "4-4-2", "3-5-2"];
+
+interface PosCoord { x: number; y: number; label: string }
+
+// Per formation: normalized position abbreviation → pitch coordinates + display label
+const FORMATION_COORDS: Record<FormationKey, Record<string, PosCoord>> = {
+  "4-3-3": {
+    GK:  { x:0.50, y:0.87, label:"GB"  },
+    LG:  { x:0.13, y:0.73, label:"LG"  },
+    DG:  { x:0.13, y:0.73, label:"LG"  },
+    DC:  { x:0.50, y:0.75, label:"DC"  },
+    LD:  { x:0.87, y:0.73, label:"LD"  },
+    DD:  { x:0.87, y:0.73, label:"LD"  },
+    MDF: { x:0.50, y:0.55, label:"MDF" },
+    MDC: { x:0.50, y:0.55, label:"MDF" },
+    MC:  { x:0.50, y:0.48, label:"MC"  },
+    MOC: { x:0.50, y:0.40, label:"MO"  },
+    MO:  { x:0.50, y:0.40, label:"MO"  },
+    AG:  { x:0.16, y:0.25, label:"AG"  },
+    AD:  { x:0.84, y:0.25, label:"AD"  },
+    AT:  { x:0.50, y:0.17, label:"AT"  },
+    BU:  { x:0.50, y:0.17, label:"AT"  },
+  },
+  "4-2-3-1": {
+    GK:  { x:0.50, y:0.87, label:"GB"  },
+    LG:  { x:0.13, y:0.73, label:"LG"  },
+    DG:  { x:0.13, y:0.73, label:"LG"  },
+    DC:  { x:0.50, y:0.75, label:"DC"  },
+    LD:  { x:0.87, y:0.73, label:"LD"  },
+    DD:  { x:0.87, y:0.73, label:"LD"  },
+    MDF: { x:0.50, y:0.62, label:"MDF" },
+    MDC: { x:0.50, y:0.62, label:"MDF" },
+    MC:  { x:0.50, y:0.44, label:"MO"  },
+    MOC: { x:0.50, y:0.44, label:"MO"  },
+    MO:  { x:0.50, y:0.44, label:"MO"  },
+    AG:  { x:0.22, y:0.32, label:"AI"  },
+    AD:  { x:0.78, y:0.32, label:"AI"  },
+    AT:  { x:0.50, y:0.17, label:"AT"  },
+    BU:  { x:0.50, y:0.17, label:"AT"  },
+  },
+  "4-4-2": {
+    GK:  { x:0.50, y:0.87, label:"GB"  },
+    LG:  { x:0.13, y:0.73, label:"LG"  },
+    DG:  { x:0.13, y:0.73, label:"LG"  },
+    DC:  { x:0.50, y:0.75, label:"DC"  },
+    LD:  { x:0.87, y:0.73, label:"LD"  },
+    DD:  { x:0.87, y:0.73, label:"LD"  },
+    MDF: { x:0.50, y:0.52, label:"MC"  },
+    MDC: { x:0.50, y:0.52, label:"MC"  },
+    MC:  { x:0.50, y:0.52, label:"MC"  },
+    MOC: { x:0.50, y:0.46, label:"MO"  },
+    MO:  { x:0.50, y:0.46, label:"MO"  },
+    AG:  { x:0.13, y:0.52, label:"MG"  },
+    AD:  { x:0.87, y:0.52, label:"MD"  },
+    AT:  { x:0.50, y:0.20, label:"AT"  },
+    BU:  { x:0.50, y:0.20, label:"AT"  },
+  },
+  "3-5-2": {
+    GK:  { x:0.50, y:0.87, label:"GB"  },
+    LG:  { x:0.11, y:0.56, label:"PG"  },
+    DG:  { x:0.11, y:0.56, label:"PG"  },
+    DC:  { x:0.50, y:0.76, label:"DC"  },
+    LD:  { x:0.89, y:0.56, label:"PD"  },
+    DD:  { x:0.89, y:0.56, label:"PD"  },
+    MDF: { x:0.50, y:0.52, label:"MDF" },
+    MDC: { x:0.50, y:0.52, label:"MDF" },
+    MC:  { x:0.50, y:0.46, label:"MC"  },
+    MOC: { x:0.50, y:0.39, label:"MO"  },
+    MO:  { x:0.50, y:0.39, label:"MO"  },
+    AG:  { x:0.30, y:0.22, label:"AT"  },
+    AD:  { x:0.70, y:0.22, label:"AT"  },
+    AT:  { x:0.50, y:0.17, label:"AT"  },
+    BU:  { x:0.50, y:0.17, label:"AT"  },
+  },
+};
+
+function normalizePos(pos: string) { return pos.split("/")[0].trim(); }
+
+// ─── Terrain view ──────────────────────────────────────────────────────────────
+
+function TerrainView({ players, formation }: { players: ShortlistPlayer[]; formation: FormationKey }) {
+  const [hoveredId,  setHoveredId]  = useState<number | null>(null);
+  const [tooltipXY,  setTooltipXY]  = useState({ x: 0, y: 0 });
+
+  const coordMap = FORMATION_COORDS[formation];
+
+  // Build groups: merge players that land on the same pitch coordinate
+  const byCoordKey = new Map<string, { coords: PosCoord; players: ShortlistPlayer[] }>();
+  const unknown: ShortlistPlayer[] = [];
+
+  for (const p of players) {
+    const coords = coordMap[normalizePos(p.position)];
+    if (!coords) { unknown.push(p); continue; }
+    const key = `${coords.x.toFixed(3)},${coords.y.toFixed(3)}`;
+    if (!byCoordKey.has(key)) byCoordKey.set(key, { coords, players: [] });
+    byCoordKey.get(key)!.players.push(p);
+  }
+
+  const hovered = hoveredId !== null ? players.find((p) => p.id === hoveredId) ?? null : null;
+
+  return (
+    <div style={{ display: "flex", gap: 16, alignItems: "flex-start", flexWrap: "wrap" }}>
+      {/* Pitch */}
+      <div style={{ position: "relative", flex: "0 0 auto", width: "100%", maxWidth: 400 }}>
+        <svg viewBox={`0 0 ${PW} ${PH}`} width="100%" style={{ display: "block" }}>
+          {/* ── Pitch lines ── */}
+          <rect width={PW} height={PH} fill="#0B200B" rx={5} />
+          <rect x={10} y={10} width={PW-20} height={PH-20} fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth={1} />
+          <line x1={10} y1={PH/2} x2={PW-10} y2={PH/2} stroke="rgba(255,255,255,0.10)" strokeWidth={0.8} />
+          <circle cx={PW/2} cy={PH/2} r={32} fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth={0.8} />
+          <circle cx={PW/2} cy={PH/2} r={2} fill="rgba(255,255,255,0.25)" />
+          <rect x={PW/2-50} y={10} width={100} height={60} fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth={0.8} />
+          <rect x={PW/2-26} y={10} width={52} height={20} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={0.8} />
+          <circle cx={PW/2} cy={50} r={1.5} fill="rgba(255,255,255,0.2)" />
+          <rect x={PW/2-50} y={PH-70} width={100} height={60} fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth={0.8} />
+          <rect x={PW/2-26} y={PH-30} width={52} height={20} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={0.8} />
+          <circle cx={PW/2} cy={PH-50} r={1.5} fill="rgba(255,255,255,0.2)" />
+
+          {/* ── Player groups ── */}
+          {Array.from(byCoordKey.values()).flatMap(({ coords, players: group }) => {
+            const baseCx = coords.x * PW;
+            const cy     = coords.y * PH;
+            const N      = group.length;
+
+            // Position label pill above the group
+            const pillLabel = coords.label;
+            const pillW = pillLabel.length * 6.5 + 12;
+            const pillH = 14;
+            const pillX = baseCx - pillW / 2;
+            const pillY = cy - R - pillH - 5;
+
+            const pillEl = (
+              <g key={`pill-${coords.x}-${coords.y}`} style={{ pointerEvents: "none" }}>
+                <rect
+                  x={pillX} y={pillY} width={pillW} height={pillH} rx={3}
+                  fill="rgba(196,43,71,0.22)" stroke="rgba(196,43,71,0.55)" strokeWidth={0.8}
+                />
+                <text
+                  x={baseCx} y={pillY + 9.5}
+                  textAnchor="middle" fontSize={7.5} fontWeight={700}
+                  fill="#F87191"
+                  style={{ userSelect: "none" }}
+                >
+                  {pillLabel}
+                </text>
+              </g>
+            );
+
+            const playerEls = group.map((player, i) => {
+              // Horizontal spread: evenly centered around baseCx
+              const cx    = baseCx + (i - (N - 1) / 2) * SH;
+              const isHov = hoveredId === player.id;
+              const rc    = RATING_COLOR[player.rating] ?? "#9CA3AF";
+              const nc    = noteColor(player.note);
+
+              return (
+                <g
+                  key={player.id}
+                  style={{ cursor: "pointer" }}
+                  onMouseEnter={(e) => {
+                    setHoveredId(player.id);
+                    const svgEl = (e.currentTarget as SVGGElement).closest("svg");
+                    if (svgEl) {
+                      const rect   = svgEl.getBoundingClientRect();
+                      const scaleX = rect.width / PW;
+                      const scaleY = rect.height / PH;
+                      setTooltipXY({ x: cx * scaleX + rect.left, y: cy * scaleY + rect.top });
+                    }
+                  }}
+                  onMouseLeave={() => setHoveredId(null)}
+                >
+                  {/* Glow on hover */}
+                  {isHov && (
+                    <circle cx={cx} cy={cy} r={R + 4} fill="rgba(196,43,71,0.18)" stroke="rgba(196,43,71,0.45)" strokeWidth={1} />
+                  )}
+
+                  {/* Avatar circle — rating-colored border */}
+                  <circle
+                    cx={cx} cy={cy} r={R}
+                    fill={isHov ? "#D43A55" : "#C42B47"}
+                    stroke={rc}
+                    strokeWidth={isHov ? 2 : 1.8}
+                    style={{ transition: "fill 100ms ease" }}
+                  />
+
+                  {/* Initials */}
+                  <text
+                    x={cx} y={cy + 3.5} textAnchor="middle"
+                    fontSize={8.5} fontWeight={700} fill="white"
+                    style={{ pointerEvents: "none", userSelect: "none" }}
+                  >
+                    {player.initials}
+                  </text>
+
+                  {/* Name below circle */}
+                  <text
+                    x={cx} y={cy + R + 9} textAnchor="middle"
+                    fontSize={7} fill="rgba(255,255,255,0.78)"
+                    style={{ pointerEvents: "none", userSelect: "none" }}
+                  >
+                    {player.name.length > 11 ? player.name.slice(0, 10) + "…" : player.name}
+                  </text>
+
+                  {/* Note badge bottom-right */}
+                  <rect x={cx + R - 5} y={cy + R - 8} width={15} height={9} rx={4.5} fill={nc} opacity={0.92} />
+                  <text
+                    x={cx + R + 2.5} y={cy + R - 1} textAnchor="middle"
+                    fontSize={6} fontWeight={700} fill="white"
+                    style={{ pointerEvents: "none", userSelect: "none" }}
+                  >
+                    {player.note.toFixed(1)}
+                  </text>
+                </g>
+              );
+            });
+
+            return [pillEl, ...playerEls];
+          })}
+        </svg>
+
+        {/* Tooltip */}
+        {hovered && (
+          <div
+            style={{
+              position: "fixed",
+              left: tooltipXY.x + 16,
+              top: tooltipXY.y - 32,
+              zIndex: 200,
+              backgroundColor: "var(--color-neutral-800)",
+              border: "1px solid #C42B47",
+              borderRadius: 8,
+              padding: "10px 14px",
+              pointerEvents: "none",
+              boxShadow: "0 6px 24px rgba(0,0,0,0.6)",
+              minWidth: 170,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <div style={{ width: 30, height: 30, borderRadius: "50%", backgroundColor: "#C42B47", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "white", flexShrink: 0 }}>
+                {hovered.initials}
+              </div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "var(--color-neutral-100)" }}>
+                  {hovered.flag} {hovered.name}
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
+                  <PosBadge pos={hovered.position} />
+                  <span style={{ fontSize: 11, color: "var(--color-neutral-500)" }}>{hovered.age} ans</span>
+                </div>
+              </div>
+            </div>
+            <div style={{ borderTop: "1px solid var(--color-neutral-700)", paddingTop: 6, display: "flex", flexDirection: "column", gap: 3 }}>
+              <div style={{ fontSize: 11, color: "var(--color-neutral-400)" }}>
+                {hovered.club}
+                <span style={{ color: "var(--color-neutral-600)", margin: "0 4px" }}>·</span>
+                {hovered.league}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-neutral-200)", fontVariantNumeric: "tabular-nums" }}>{hovered.marketValue}</span>
+                <span style={{ fontSize: 11, color: parseInt(hovered.contractEnd.split(" ").pop() ?? "2099") <= 2025 ? "#F59E0B" : "var(--color-neutral-500)" }}>
+                  {hovered.contractEnd}
+                </span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: noteColor(hovered.note) }}>{hovered.note.toFixed(1)}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 4, backgroundColor: (RATING_COLOR[hovered.rating] ?? "#9CA3AF") + "22", color: RATING_COLOR[hovered.rating] ?? "#9CA3AF" }}>
+                  {hovered.rating}
+                </span>
+                <StatusBadge status={hovered.status} />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Players not mapped in this formation */}
+      {unknown.length > 0 && (
+        <div style={{ flex: 1, minWidth: 180 }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: "var(--color-neutral-500)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Hors formation
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {unknown.map((p) => (
+              <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderRadius: 6, backgroundColor: "var(--color-neutral-800)", border: "1px solid var(--color-neutral-700)" }}>
+                <div style={{ width: 26, height: 26, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, backgroundColor: "var(--color-primary-900)", color: "var(--color-primary-300)" }}>
+                  {p.initials}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: "var(--color-neutral-200)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.flag} {p.name}</div>
+                  <div style={{ fontSize: 10, color: "var(--color-neutral-500)" }}>{p.position}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main page ─────────────────────────────────────────────────────────────────
+
+export function ShortlistsPage() {
+  const [activeId,       setActiveId]       = useState("md2025");
+  const [viewMode,       setViewMode]       = useState<"liste" | "terrain">("liste");
+  const [formation,      setFormation]      = useState<FormationKey>("4-3-3");
+  const [formationOpen,  setFormationOpen]  = useState(false);
+
+  const active = SHORTLISTS.find((s) => s.id === activeId) ?? SHORTLISTS[0];
+
+  return (
+    <div style={{ display: "flex", height: "100%", overflow: "hidden", backgroundColor: "var(--color-neutral-950)" }}>
+
+      {/* ── Left sidebar ── */}
+      <div style={{ width: 260, flexShrink: 0, display: "flex", flexDirection: "column", backgroundColor: "var(--color-neutral-900)", borderRight: "1px solid var(--color-neutral-700)", overflow: "hidden" }}>
+        <div style={{ padding: "16px 16px 12px", borderBottom: "1px solid var(--color-neutral-700)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-neutral-100)", letterSpacing: "0.02em", textTransform: "uppercase" }}>
+            Mes Shortlists
+          </span>
+          <span style={{ fontSize: 11, fontWeight: 600, padding: "1px 7px", borderRadius: 10, backgroundColor: "var(--color-neutral-700)", color: "var(--color-neutral-400)" }}>
+            {SHORTLISTS.length}
+          </span>
+        </div>
+
+        <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
+          {SHORTLISTS.map((sl) => {
+            const isActive = sl.id === activeId;
+            return (
+              <button
+                key={sl.id}
+                onClick={() => setActiveId(sl.id)}
+                style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", cursor: "pointer", backgroundColor: isActive ? "var(--color-neutral-800)" : "transparent", borderLeft: isActive ? "3px solid #C42B47" : "3px solid transparent", border: "none", textAlign: "left", transition: "background-color 120ms ease" }}
+                onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-800)"; }}
+                onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}
+              >
+                <span style={{ fontSize: 16, flexShrink: 0 }}>{sl.icon}</span>
+                <span style={{ flex: 1, fontSize: 13, fontWeight: isActive ? 600 : 400, color: isActive ? "var(--color-primary-300)" : "var(--color-neutral-300)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {sl.name}
+                </span>
+                <span style={{ fontSize: 11, fontWeight: 600, padding: "1px 7px", borderRadius: 10, backgroundColor: "var(--color-neutral-700)", color: isActive ? "var(--color-neutral-300)" : "var(--color-neutral-500)", flexShrink: 0 }}>
+                  {sl.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ padding: "12px 16px", borderTop: "1px solid var(--color-neutral-700)", flexShrink: 0 }}>
+          <button
+            style={{ width: "100%", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 12, fontWeight: 600, borderRadius: 6, cursor: "pointer", backgroundColor: "transparent", border: "1px solid #C42B47", color: "#C42B47", transition: "background-color 120ms ease" }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "rgba(196,43,71,0.08)")}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")}
+          >
+            <Plus size={13} strokeWidth={2} />
+            Nouvelle liste
+          </button>
+        </div>
+      </div>
+
+      {/* ── Right panel ── */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+
+        {/* Header */}
+        <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--color-neutral-700)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, backgroundColor: "var(--color-neutral-900)", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 20 }}>{active.icon}</span>
+            <div>
+              <h2 style={{ fontSize: 15, fontWeight: 700, color: "var(--color-neutral-100)", margin: 0 }}>{active.name}</h2>
+              <p style={{ fontSize: 11, color: "var(--color-neutral-500)", margin: "2px 0 0" }}>
+                {active.players.length} joueur{active.players.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+
+            {/* Formation selector — only in terrain mode */}
+            {viewMode === "terrain" && (
+              <div style={{ position: "relative" }}>
+                <button
+                  onClick={() => setFormationOpen((o) => !o)}
+                  style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", fontSize: 12, fontWeight: 700, borderRadius: 6, cursor: "pointer", backgroundColor: "var(--color-neutral-800)", border: "1px solid var(--color-neutral-600)", color: "var(--color-neutral-200)", letterSpacing: "0.02em" }}
+                >
+                  {formation}
+                  <ChevronDown size={12} strokeWidth={2.5} style={{ opacity: 0.6, transform: formationOpen ? "rotate(180deg)" : "none", transition: "transform 150ms ease" }} />
+                </button>
+                {formationOpen && (
+                  <div
+                    style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 50, backgroundColor: "var(--color-neutral-800)", border: "1px solid var(--color-neutral-600)", borderRadius: 8, overflow: "hidden", boxShadow: "0 6px 20px rgba(0,0,0,0.45)", minWidth: 110 }}
+                    onMouseLeave={() => setFormationOpen(false)}
+                  >
+                    {FORMATIONS.map((f) => (
+                      <button
+                        key={f}
+                        onClick={() => { setFormation(f); setFormationOpen(false); }}
+                        style={{ width: "100%", padding: "9px 14px", fontSize: 12, fontWeight: f === formation ? 700 : 400, textAlign: "left", cursor: "pointer", backgroundColor: f === formation ? "rgba(196,43,71,0.14)" : "transparent", border: "none", color: f === formation ? "#F87191" : "var(--color-neutral-300)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}
+                        onMouseEnter={(e) => { if (f !== formation) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-700)"; }}
+                        onMouseLeave={(e) => { if (f !== formation) (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}
+                      >
+                        {f}
+                        {f === formation && (
+                          <span style={{ fontSize: 10, color: "#F87191" }}>✓</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Liste / Terrain toggle */}
+            <div style={{ display: "flex", backgroundColor: "var(--color-neutral-800)", border: "1px solid var(--color-neutral-700)", borderRadius: 6, overflow: "hidden" }}>
+              {(["liste", "terrain"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer", border: "none", backgroundColor: viewMode === mode ? "#C42B47" : "transparent", color: viewMode === mode ? "white" : "var(--color-neutral-400)", transition: "background-color 120ms ease, color 120ms ease" }}
+                >
+                  {mode === "liste" ? "Liste" : "Terrain"}
+                </button>
+              ))}
+            </div>
+
+            {/* Add player */}
+            <button
+              style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", fontSize: 12, fontWeight: 600, borderRadius: 6, cursor: "pointer", backgroundColor: "#C42B47", border: "none", color: "white", transition: "background-color 120ms ease" }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#A8233C")}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#C42B47")}
+            >
+              <Plus size={13} strokeWidth={2.5} />
+              Ajouter
+            </button>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div style={{ flex: 1, overflowY: "auto", padding: viewMode === "terrain" ? "20px" : 0 }}>
+          {viewMode === "liste"
+            ? <ShortlistTable players={active.players} />
+            : <TerrainView players={active.players} formation={formation} />
+          }
+        </div>
+      </div>
+    </div>
+  );
+}

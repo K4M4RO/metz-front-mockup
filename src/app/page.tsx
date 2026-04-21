@@ -1,65 +1,108 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useMemo } from "react";
+import { FiltersPanel, DEFAULT_FILTERS, type FilterState } from "@/components/exploration/FiltersPanel";
+import { ActionBar, type ViewMode } from "@/components/exploration/ActionBar";
+import { PlayerTable } from "@/components/exploration/PlayerTable";
+import { PlayerDrawer } from "@/components/exploration/PlayerDrawer";
+import { ScatterView } from "@/components/exploration/ScatterView";
+import { PLAYERS, type Player } from "@/data/players";
+
+function filterPlayers(players: Player[], f: FilterState, pills: string[]): Player[] {
+  return players.filter((p) => {
+    if (f.positions.length > 0 && !f.positions.includes(p.position)) return false;
+    if (p.age < f.ageMin || p.age > f.ageMax) return false;
+    if (p.contractEndYear > f.contractEndMax) return false;
+    if (p.marketValueNum > f.marketValueMax) return false;
+    if (p.xG < f.xGMin) return false;
+    if (p.xA < f.xAMin) return false;
+    if (p.xThreat < f.xThreatMin) return false;
+    if (f.leagues.length > 0 && !f.leagues.includes(p.league)) return false;
+    // Quick pills
+    if (pills.includes("rookies") && p.age > 21) return false;
+    if (pills.includes("libre") && p.marketValueNum > 0.5) return false; // fake "free" = very cheap
+    if (pills.includes("extra") && p.isUE) return false;
+    return true;
+  });
+}
+
+export default function ExplorationPage() {
+  const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
+  const [view, setView] = useState<ViewMode>("liste");
+  const [activePills, setActivePills] = useState<string[]>([]);
+  const [drawerPlayer, setDrawerPlayer] = useState<Player | null>(null);
+
+  function togglePill(id: string) {
+    setActivePills((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
+  }
+
+  const filtered = useMemo(() => filterPlayers(PLAYERS, filters, activePills), [filters, activePills]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="flex h-full overflow-hidden">
+      {/* Filters panel */}
+      <FiltersPanel
+        filters={filters}
+        onChange={setFilters}
+        filteredCount={filtered.length}
+      />
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <ActionBar
+          view={view}
+          onViewChange={setView}
+          totalCount={filtered.length}
+          activePills={activePills}
+          onTogglePill={togglePill}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* Table area */}
+        <div className="flex-1 overflow-hidden relative">
+          {view === "liste" && (
+            <PlayerTable
+              players={filtered}
+              onRowClick={setDrawerPlayer}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          )}
+
+          {view === "scatter" && (
+            <ScatterView
+              players={filtered}
+              onPlayerClick={setDrawerPlayer}
+            />
+          )}
+
+          {view === "grille" && (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <div
+                  className="w-10 h-10 rounded-full mx-auto mb-3 flex items-center justify-center"
+                  style={{ backgroundColor: "var(--color-neutral-800)" }}
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--color-neutral-600)" strokeWidth="1.5">
+                    <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
+                  </svg>
+                </div>
+                <p className="text-sm font-medium" style={{ color: "var(--color-neutral-500)", fontFamily: "var(--font-dm-sans)" }}>
+                  Mode Grille — bientôt disponible
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Player drawer — rendered inside the relative container */}
+          {drawerPlayer && (
+            <PlayerDrawer
+              player={drawerPlayer}
+              onClose={() => setDrawerPlayer(null)}
+            />
+          )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

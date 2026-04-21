@@ -1,26 +1,93 @@
 @import "tailwindcss";
 
+/* ─── Design Tokens ─── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary — Grenat FC Metz */
+  --color-primary-950: #1a0508;
+  --color-primary-900: #2e0a10;
+  --color-primary-800: #5c1420;
+  --color-primary-700: #8b1e30;
+  --color-primary-600: #a8223a;
+  --color-primary-500: #c42b47;
+  --color-primary-400: #d95a72;
+  --color-primary-300: #e88a9b;
+  --color-primary-200: #f2b8c2;
+  --color-primary-100: #fae4e8;
+
+  /* Neutral — Dark base */
+  --color-neutral-950: #09090b;
+  --color-neutral-900: #111113;
+  --color-neutral-800: #1c1c1f;
+  --color-neutral-700: #2a2a2e;
+  --color-neutral-600: #3f3f46;
+  --color-neutral-500: #71717a;
+  --color-neutral-400: #a1a1aa;
+  --color-neutral-300: #d4d4d8;
+  --color-neutral-100: #f4f4f5;
+
+  /* Semantic */
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-info: #3b82f6;
+  --color-danger: #ef4444;
+  --color-danger-soft: #7f1d1d;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-modal: 0 25px 50px rgba(0, 0, 0, 0.7);
+  --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Map tokens into Tailwind utility classes */
+  --color-p-950: var(--color-primary-950);
+  --color-p-900: var(--color-primary-900);
+  --color-p-800: var(--color-primary-800);
+  --color-p-700: var(--color-primary-700);
+  --color-p-600: var(--color-primary-600);
+  --color-p-500: var(--color-primary-500);
+  --color-p-400: var(--color-primary-400);
+  --color-p-300: var(--color-primary-300);
+  --color-p-200: var(--color-primary-200);
+  --color-p-100: var(--color-primary-100);
+
+  --color-n-950: var(--color-neutral-950);
+  --color-n-900: var(--color-neutral-900);
+  --color-n-800: var(--color-neutral-800);
+  --color-n-700: var(--color-neutral-700);
+  --color-n-600: var(--color-neutral-600);
+  --color-n-500: var(--color-neutral-500);
+  --color-n-400: var(--color-neutral-400);
+  --color-n-300: var(--color-neutral-300);
+  --color-n-100: var(--color-neutral-100);
+
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-dm-sans), -apple-system, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  background-color: var(--color-neutral-950);
+  color: var(--color-neutral-300);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-neutral-600) transparent;
+}
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-600);
+  border-radius: 2px;
 }
