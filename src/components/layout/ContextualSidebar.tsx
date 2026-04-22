@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   Compass, Kanban, Bookmark, Sliders, FileText, GitCompare, ChevronRight,
-  LayoutDashboard, Radio, ClipboardList, Video,
+  LayoutDashboard, Radio, ClipboardList, Video, Target,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -46,6 +46,7 @@ const STAFF: ModuleConfig = {
     { id: "dashboard",   icon: LayoutDashboard, label: "Dashboard",           href: "/staff" },
     { id: "pre-match",   icon: ClipboardList,   label: "Pré-Match",           href: "/staff/pre-match" },
     { id: "post-match",  icon: FileText,        label: "Post-Match",          href: "/staff/post-match" },
+    { id: "cpa",         icon: Target,          label: "CPA",                 href: "/staff/cpa" },
     { id: "comparaison", icon: GitCompare,      label: "Comparaison d'équipes", href: "/staff/comparaison" },
     { id: "live",        icon: Radio,           label: "Live Match",          href: "/match-center" },
     { id: "exports",     icon: Video,           label: "Exports Vidéo (XML)", href: "/staff/exports" },

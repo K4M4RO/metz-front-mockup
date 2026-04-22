@@ -7,6 +7,10 @@ import { Radio, FileText, Download, ChevronRight, Calendar, Clock } from "lucide
 
 const pastMatches = [
   {
+    id: "metz-reims", date: "Aujourd'hui", opponent: "Stade de Reims", score: "3 – 2",
+    result: "W", xG: "1.87", xGA: "0.72",
+  },
+  {
     id: 1, date: "12 Avr", opponent: "Troyes AC", score: "2 – 1",
     result: "W", xG: "1.8", xGA: "0.9",
   },
