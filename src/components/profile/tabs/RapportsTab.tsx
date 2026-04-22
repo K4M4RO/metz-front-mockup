@@ -1119,162 +1119,142 @@ function PDFConfigModal({ player, onClose }: PDFModalProps) {
   );
 }
 
+// ── Detailed Report Row ──────────────────────────────────────────────────────
+
+interface DetailedReportRowProps {
+  report: ScoutReport;
+  onView: (report: ScoutReport) => void;
+}
+
+function DetailedReportRow({ report, onView }: DetailedReportRowProps) {
+  const cfg = STATUS_CONFIG[report.status];
+  
+  return (
+    <div 
+      onClick={() => onView(report)}
+      className="group cursor-pointer transition-all border border-neutral-700 hover:border-neutral-500 rounded-xl overflow-hidden bg-neutral-800/50 hover:bg-neutral-800"
+      style={{ display: "grid", gridTemplateColumns: "140px 1fr 180px 100px", alignItems: "center" }}
+    >
+      {/* Date & Type */}
+      <div className="p-4 border-r border-neutral-700/50">
+        <div className="text-xs font-bold text-white mb-1">{report.date}</div>
+        <span style={{
+          fontSize: 9, padding: "2px 7px", borderRadius: 4, fontWeight: 700,
+          backgroundColor: report.type === "match" ? "rgba(59,130,246,0.15)" : "rgba(167,139,250,0.15)",
+          color: report.type === "match" ? "#60A5FA" : "#A78BFA",
+          border: `1px solid ${report.type === "match" ? "rgba(59,130,246,0.3)" : "rgba(167,139,250,0.3)"}`,
+          textTransform: "uppercase", letterSpacing: "0.06em",
+        }}>
+          {report.type === "match" ? "Match" : "Global"}
+        </span>
+      </div>
+
+      {/* Analysis Snippet */}
+      <div className="p-4 px-6 overflow-hidden">
+        <div className="flex items-center gap-3 mb-2">
+          <NoteBadge note={report.note} />
+          <StatusBadge status={report.status} small />
+        </div>
+        <p className="text-xs text-neutral-400 line-clamp-2 leading-relaxed">
+          {report.comment}
+        </p>
+      </div>
+
+      {/* Author */}
+      <div className="p-4 border-l border-neutral-700/50 flex items-center gap-3">
+        <div className="w-8 h-8 rounded-full bg-neutral-700 flex items-center justify-center text-[10px] font-bold text-neutral-300">
+          {report.author.split(" ").map(n => n[0]).join("")}
+        </div>
+        <div>
+          <div className="text-[11px] font-semibold text-neutral-200">{report.author}</div>
+          <div className="text-[9px] text-neutral-500">{report.authorRole}</div>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="p-4 flex justify-end gap-2">
+        <button className="p-2 rounded-lg bg-neutral-900 border border-neutral-700 text-neutral-500 group-hover:text-primary-500 group-hover:border-primary-500/50 transition-all">
+          <ExternalLink size={14} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Main tab ──────────────────────────────────────────────────────────────────
 
 export function RapportsTab() {
-  const [search,       setSearch]       = useState("");
-  const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">("all");
-  const [tooltip,      setTooltip]      = useState<{ report: ScoutReport; x: number; y: number } | null>(null);
   const [createPlayer, setCreatePlayer] = useState<PlayerTarget | null>(null);
   const [detailState,  setDetailState]  = useState<{ report: ScoutReport; player: PlayerTarget } | null>(null);
   const [pdfPlayer,    setPdfPlayer]    = useState<PlayerTarget | null>(null);
   const [submitted,    setSubmitted]    = useState<string | null>(null);
 
-  const handleDotHover = useCallback((e: React.MouseEvent, report: ScoutReport) => {
-    setTooltip({ report, x: e.clientX, y: e.clientY });
-  }, []);
-  const handleDotLeave = useCallback(() => setTooltip(null), []);
-  const handleDotClick = useCallback((report: ScoutReport, player: PlayerTarget) => {
-    setTooltip(null);
-    setDetailState({ report, player });
-  }, []);
-
-  // Filter players
-  const filtered = RAPPORT_PLAYERS.filter((p) => {
-    const matchSearch = search === "" ||
-      `${p.firstName} ${p.name} ${p.club}`.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = statusFilter === "all" ||
-      p.reports.some(r => r.status === statusFilter);
-    return matchSearch && matchStatus;
-  });
-
-  const statusCounts = (Object.keys(STATUS_CONFIG) as ReportStatus[]).reduce((acc, s) => {
-    acc[s] = RAPPORT_PLAYERS.filter(p => p.reports.some(r => r.status === s)).length;
-    return acc;
-  }, {} as Record<ReportStatus, number>);
-
-  const FILTER_OPTIONS: { id: ReportStatus | "all"; label: string; count?: number }[] = [
-    { id: "all",      label: "Tous", count: RAPPORT_PLAYERS.length },
-    { id: "priorite", label: "Priorité",  count: statusCounts.priorite },
-    { id: "pret",     label: "Prêt",      count: statusCounts.pret     },
-    { id: "suivre",   label: "À suivre",  count: statusCounts.suivre   },
-    { id: "ecarte",   label: "Écarté",    count: statusCounts.ecarte   },
-  ];
+  // Focus on Enzo Millot for the profile view
+  const currentPlayer = RAPPORT_PLAYERS.find(p => p.id === "millot-01") || RAPPORT_PLAYERS[0];
+  
+  // Sort reports by date (newest first)
+  const sortedReports = [...currentPlayer.reports].sort((a, b) => 
+    new Date(b.dateIso).getTime() - new Date(a.dateIso).getTime()
+  );
 
   return (
     <div style={{ padding: "24px", minHeight: "100%", backgroundColor: "var(--color-neutral-900)" }}>
 
       {/* Page header */}
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 24 }}>
         <div>
           <h2 style={{
-            fontSize: 20, fontWeight: 800, color: "var(--color-neutral-100)",
+            fontSize: 18, fontWeight: 800, color: "var(--color-neutral-100)",
             fontFamily: "var(--font-dm-sans)", marginBottom: 4,
           }}>
-            Rapports de Scouting
+            Historique des Rapports
           </h2>
           <p style={{ fontSize: 12, color: "var(--color-neutral-500)" }}>
-            {RAPPORT_PLAYERS.length} joueurs suivis · {RAPPORT_PLAYERS.reduce((a, p) => a + p.reports.length, 0)} rapports au total
+            {sortedReports.length} rapports d&apos;observation enregistrés pour ce joueur.
           </p>
         </div>
-        <button
-          onClick={() => setCreatePlayer(RAPPORT_PLAYERS[0])}
-          style={{
-            display: "flex", alignItems: "center", gap: 6,
-            padding: "8px 16px", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer",
-            backgroundColor: "rgba(196,43,71,0.18)", border: "1px solid rgba(196,43,71,0.45)",
-            color: "#F4A0AF",
-          }}
-        >
-          <Plus size={14} strokeWidth={2.5} /> Nouveau Rapport
-        </button>
-      </div>
-
-      {/* Search + filters bar */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
-        {/* Search */}
-        <div style={{ position: "relative", flex: "0 0 260px" }}>
-          <Search size={13} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--color-neutral-600)", pointerEvents: "none" }} />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher un joueur, club…"
+        <div className="flex gap-3">
+          <button
+            onClick={() => setPdfPlayer(currentPlayer)}
             style={{
-              width: "100%", padding: "7px 11px 7px 30px", borderRadius: 8,
-              backgroundColor: "var(--color-neutral-800)",
-              border: "1px solid var(--color-neutral-700)",
-              color: "var(--color-neutral-200)", fontSize: 12, outline: "none",
-              fontFamily: "var(--font-sans)", boxSizing: "border-box",
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "8px 16px", borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: "pointer",
+              backgroundColor: "var(--color-neutral-800)", border: "1px solid var(--color-neutral-700)",
+              color: "var(--color-neutral-300)",
             }}
-          />
-        </div>
-
-        {/* Status filter pills */}
-        <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-          {FILTER_OPTIONS.map(({ id, label, count }) => {
-            const active = statusFilter === id;
-            const cfg = id !== "all" ? STATUS_CONFIG[id] : null;
-            return (
-              <button
-                key={id}
-                onClick={() => setStatusFilter(id)}
-                style={{
-                  padding: "5px 12px", borderRadius: 999, fontSize: 11, cursor: "pointer",
-                  backgroundColor: active ? (cfg ? cfg.bg : "rgba(255,255,255,0.08)") : "var(--color-neutral-800)",
-                  border: `1px solid ${active ? (cfg ? cfg.border : "rgba(255,255,255,0.2)") : "var(--color-neutral-700)"}`,
-                  color: active ? (cfg ? cfg.color : "var(--color-neutral-200)") : "var(--color-neutral-400)",
-                  fontWeight: active ? 600 : 400,
-                  display: "flex", alignItems: "center", gap: 5,
-                  transition: "all 0.12s",
-                }}
-              >
-                {cfg && <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: cfg.color, display: "inline-block" }} />}
-                {label}
-                {count !== undefined && (
-                  <span style={{
-                    minWidth: 16, height: 16, borderRadius: 999, padding: "0 4px",
-                    backgroundColor: active ? "rgba(0,0,0,0.25)" : "rgba(255,255,255,0.06)",
-                    color: active ? (cfg ? cfg.color : "var(--color-neutral-200)") : "var(--color-neutral-600)",
-                    fontSize: 9, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center",
-                  }}>{count}</span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Legend */}
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 9, color: "var(--color-neutral-700)", textTransform: "uppercase", letterSpacing: "0.06em" }}>Progression →</span>
-          {(["ecarte","suivre","pret","priorite"] as ReportStatus[]).map(s => (
-            <div key={s} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <div style={{ width: 9, height: 9, borderRadius: "50%", backgroundColor: STATUS_CONFIG[s].dot, boxShadow: `0 0 5px ${STATUS_CONFIG[s].dot}80` }} />
-              <span style={{ fontSize: 9, color: "var(--color-neutral-600)" }}>{STATUS_CONFIG[s].label}</span>
-            </div>
-          ))}
+          >
+            <Download size={14} /> Exporter Dossier PDF
+          </button>
+          <button
+            onClick={() => setCreatePlayer(currentPlayer)}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "8px 16px", borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: "pointer",
+              backgroundColor: "rgba(196,43,71,0.18)", border: "1px solid rgba(196,43,71,0.45)",
+              color: "#F4A0AF",
+            }}
+          >
+            <Plus size={14} strokeWidth={2.5} /> Nouveau Rapport
+          </button>
         </div>
       </div>
 
-      {/* Player list */}
-      {filtered.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "48px 0", color: "var(--color-neutral-600)", fontSize: 13 }}>
-          Aucun joueur ne correspond à ce filtre.
-        </div>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {filtered.map((player) => (
-            <PlayerRow
-              key={player.id}
-              player={player}
-              onDotHover={handleDotHover}
-              onDotLeave={handleDotLeave}
-              onDotClick={handleDotClick}
-              onAddReport={setCreatePlayer}
-              onExportPDF={setPdfPlayer}
-            />
-          ))}
-        </div>
-      )}
+      {/* Reports List */}
+      <div className="space-y-3">
+        {sortedReports.map((report) => (
+          <DetailedReportRow
+            key={report.id}
+            report={report}
+            onView={(r) => setDetailState({ report: r, player: currentPlayer })}
+          />
+        ))}
+
+        {sortedReports.length === 0 && (
+          <div style={{ textAlign: "center", padding: "48px 0", color: "var(--color-neutral-600)", fontSize: 13 }}>
+            Aucun rapport pour le moment.
+          </div>
+        )}
+      </div>
 
       {/* Submission success toast */}
       {submitted && (
@@ -1287,12 +1267,9 @@ export function RapportsTab() {
           animation: "fadeInUp 0.25s ease-out",
         }}>
           <Check size={15} strokeWidth={2.5} />
-          Rapport publié avec succès — {submitted}
+          Rapport publié avec succès
         </div>
       )}
-
-      {/* Floating tooltip (hover on dots) */}
-      {tooltip && <DotTooltip report={tooltip.report} x={tooltip.x} y={tooltip.y} />}
 
       {/* Create modal */}
       {createPlayer && (
@@ -1301,7 +1278,7 @@ export function RapportsTab() {
           onClose={() => setCreatePlayer(null)}
           onSubmit={(p) => {
             setCreatePlayer(null);
-            setSubmitted(`${p.firstName} ${p.name}`);
+            setSubmitted(p.name);
             setTimeout(() => setSubmitted(null), 3500);
           }}
         />

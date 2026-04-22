@@ -171,21 +171,153 @@ export const PHASE_BREAKDOWN: PhaseData[] = [
   { label: "Set Play",    home: 9,  away: 7  },
 ];
 
-// ── Team Shape (average positions) ───────────────────────────────────────────
+// ── Tactical Shapes (Average Positions) ──────────────────────────────────────
 
-export const TEAM_SHAPE_HOME = [
-  { x: 0.50, y: 0.90, pos: "GB"  },
-  { x: 0.82, y: 0.77, pos: "RB"  },
-  { x: 0.63, y: 0.81, pos: "RCB" },
-  { x: 0.37, y: 0.81, pos: "LCB" },
-  { x: 0.18, y: 0.77, pos: "LB"  },
-  { x: 0.62, y: 0.65, pos: "RDM" },
-  { x: 0.38, y: 0.65, pos: "LDM" },
-  { x: 0.84, y: 0.49, pos: "RW"  },
-  { x: 0.50, y: 0.51, pos: "CAM" },
-  { x: 0.16, y: 0.49, pos: "LW"  },
-  { x: 0.50, y: 0.33, pos: "CF"  },
-];
+export interface TacticalPosition {
+  x: number;
+  y: number;
+  pos: string;
+}
+
+export type TacticalPhase = "all" | "build-up" | "creation" | "recovery" | "low-block";
+export type BallZone = "left" | "center" | "right";
+
+export const TACTICAL_SHAPES: Record<"home" | "away", Record<TacticalPhase, TacticalPosition[]>> = {
+  home: {
+    all: [
+      { x: 0.50, y: 0.90, pos: "GB"  },
+      { x: 0.82, y: 0.77, pos: "RB"  },
+      { x: 0.63, y: 0.81, pos: "RCB" },
+      { x: 0.37, y: 0.81, pos: "LCB" },
+      { x: 0.18, y: 0.77, pos: "LB"  },
+      { x: 0.62, y: 0.65, pos: "RDM" },
+      { x: 0.38, y: 0.65, pos: "LDM" },
+      { x: 0.84, y: 0.49, pos: "RW"  },
+      { x: 0.50, y: 0.51, pos: "CAM" },
+      { x: 0.16, y: 0.49, pos: "LW"  },
+      { x: 0.50, y: 0.33, pos: "CF"  },
+    ],
+    "build-up": [
+      { x: 0.50, y: 0.92, pos: "GB"  },
+      { x: 0.92, y: 0.78, pos: "RB"  },
+      { x: 0.70, y: 0.88, pos: "RCB" },
+      { x: 0.30, y: 0.88, pos: "LCB" },
+      { x: 0.08, y: 0.78, pos: "LB"  },
+      { x: 0.65, y: 0.75, pos: "RDM" },
+      { x: 0.35, y: 0.75, pos: "LDM" },
+      { x: 0.88, y: 0.45, pos: "RW"  },
+      { x: 0.50, y: 0.60, pos: "CAM" },
+      { x: 0.12, y: 0.45, pos: "LW"  },
+      { x: 0.50, y: 0.40, pos: "CF"  },
+    ],
+    creation: [
+      { x: 0.50, y: 0.80, pos: "GB"  },
+      { x: 0.85, y: 0.50, pos: "RB"  },
+      { x: 0.65, y: 0.65, pos: "RCB" },
+      { x: 0.35, y: 0.65, pos: "LCB" },
+      { x: 0.15, y: 0.50, pos: "LB"  },
+      { x: 0.58, y: 0.45, pos: "RDM" },
+      { x: 0.42, y: 0.45, pos: "LDM" },
+      { x: 0.90, y: 0.25, pos: "RW"  },
+      { x: 0.50, y: 0.28, pos: "CAM" },
+      { x: 0.10, y: 0.25, pos: "LW"  },
+      { x: 0.50, y: 0.15, pos: "CF"  },
+    ],
+    recovery: [
+      { x: 0.50, y: 0.88, pos: "GB"  },
+      { x: 0.75, y: 0.65, pos: "RB"  },
+      { x: 0.60, y: 0.70, pos: "RCB" },
+      { x: 0.40, y: 0.70, pos: "LCB" },
+      { x: 0.25, y: 0.65, pos: "LB"  },
+      { x: 0.55, y: 0.55, pos: "RDM" },
+      { x: 0.45, y: 0.55, pos: "LDM" },
+      { x: 0.70, y: 0.40, pos: "RW"  },
+      { x: 0.50, y: 0.45, pos: "CAM" },
+      { x: 0.30, y: 0.40, pos: "LW"  },
+      { x: 0.50, y: 0.35, pos: "CF"  },
+    ],
+    "low-block": [
+      { x: 0.50, y: 0.94, pos: "GB"  },
+      { x: 0.78, y: 0.85, pos: "RB"  },
+      { x: 0.60, y: 0.88, pos: "RCB" },
+      { x: 0.40, y: 0.88, pos: "LCB" },
+      { x: 0.22, y: 0.85, pos: "LB"  },
+      { x: 0.58, y: 0.78, pos: "RDM" },
+      { x: 0.42, y: 0.78, pos: "LDM" },
+      { x: 0.75, y: 0.72, pos: "RW"  },
+      { x: 0.50, y: 0.74, pos: "CAM" },
+      { x: 0.25, y: 0.72, pos: "LW"  },
+      { x: 0.50, y: 0.65, pos: "CF"  },
+    ],
+  },
+  away: {
+    all: [
+      { x: 0.50, y: 0.10, pos: "GB"  },
+      { x: 0.82, y: 0.23, pos: "RB"  },
+      { x: 0.63, y: 0.19, pos: "RCB" },
+      { x: 0.37, y: 0.19, pos: "LCB" },
+      { x: 0.18, y: 0.23, pos: "LB"  },
+      { x: 0.62, y: 0.35, pos: "RDM" },
+      { x: 0.38, y: 0.35, pos: "LDM" },
+      { x: 0.84, y: 0.51, pos: "RW"  },
+      { x: 0.50, y: 0.49, pos: "CAM" },
+      { x: 0.16, y: 0.51, pos: "LW"  },
+      { x: 0.50, y: 0.67, pos: "CF"  },
+    ],
+    "build-up": [
+      { x: 0.50, y: 0.08, pos: "GB"  },
+      { x: 0.92, y: 0.22, pos: "RB"  },
+      { x: 0.70, y: 0.12, pos: "RCB" },
+      { x: 0.30, y: 0.12, pos: "LCB" },
+      { x: 0.08, y: 0.22, pos: "LB"  },
+      { x: 0.65, y: 0.25, pos: "RDM" },
+      { x: 0.35, y: 0.25, pos: "LDM" },
+      { x: 0.88, y: 0.55, pos: "RW"  },
+      { x: 0.50, y: 0.40, pos: "CAM" },
+      { x: 0.12, y: 0.55, pos: "LW"  },
+      { x: 0.50, y: 0.60, pos: "CF"  },
+    ],
+    creation: [
+      { x: 0.50, y: 0.20, pos: "GB"  },
+      { x: 0.85, y: 0.50, pos: "RB"  },
+      { x: 0.65, y: 0.35, pos: "RCB" },
+      { x: 0.35, y: 0.35, pos: "LCB" },
+      { x: 0.15, y: 0.50, pos: "LB"  },
+      { x: 0.58, y: 0.55, pos: "RDM" },
+      { x: 0.42, y: 0.55, pos: "LDM" },
+      { x: 0.90, y: 0.75, pos: "RW"  },
+      { x: 0.50, y: 0.72, pos: "CAM" },
+      { x: 0.10, y: 0.75, pos: "LW"  },
+      { x: 0.50, y: 0.85, pos: "CF"  },
+    ],
+    recovery: [
+      { x: 0.50, y: 0.12, pos: "GB"  },
+      { x: 0.75, y: 0.35, pos: "RB"  },
+      { x: 0.60, y: 0.30, pos: "RCB" },
+      { x: 0.40, y: 0.30, pos: "LCB" },
+      { x: 0.25, y: 0.35, pos: "LB"  },
+      { x: 0.55, y: 0.45, pos: "RDM" },
+      { x: 0.45, y: 0.45, pos: "LDM" },
+      { x: 0.70, y: 0.60, pos: "RW"  },
+      { x: 0.50, y: 0.55, pos: "CAM" },
+      { x: 0.30, y: 0.60, pos: "LW"  },
+      { x: 0.50, y: 0.65, pos: "CF"  },
+    ],
+    "low-block": [
+      { x: 0.50, y: 0.06, pos: "GB"  },
+      { x: 0.78, y: 0.15, pos: "RB"  },
+      { x: 0.60, y: 0.12, pos: "RCB" },
+      { x: 0.40, y: 0.12, pos: "LCB" },
+      { x: 0.22, y: 0.15, pos: "LB"  },
+      { x: 0.58, y: 0.22, pos: "RDM" },
+      { x: 0.42, y: 0.22, pos: "LDM" },
+      { x: 0.75, y: 0.28, pos: "RW"  },
+      { x: 0.50, y: 0.26, pos: "CAM" },
+      { x: 0.25, y: 0.28, pos: "LW"  },
+      { x: 0.50, y: 0.35, pos: "CF"  },
+    ],
+  },
+};
 
 // Possession efficiency donut data
 export const POSSESSION_EFFICIENCY = {

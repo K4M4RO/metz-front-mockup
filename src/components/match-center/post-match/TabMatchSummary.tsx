@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight, Users, Activity } from "lucide-react";
+import { ChevronRight, Users, Activity, Download, Plus, ExternalLink } from "lucide-react";
 import { PitchSVG, relToAbs, PITCH_PAD } from "./PitchSVG";
 import { DonutChart } from "./DonutChart";
 import {
   HOME_TEAM, AWAY_TEAM, GOALS, MATCH_INFO,
-  PHASE_BREAKDOWN, TEAM_SHAPE_HOME, POSSESSION_EFFICIENCY,
-  TeamData, PMPlayer,
+  PHASE_BREAKDOWN, TACTICAL_SHAPES, POSSESSION_EFFICIENCY,
+  TeamData, PMPlayer, TacticalPhase, BallZone
 } from "./data";
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
@@ -338,68 +338,194 @@ function PhaseBreakdown() {
 // ─── Team Shape Block ──────────────────────────────────────────────────────────
 
 function TeamShape() {
+  const [selectedTeam, setSelectedTeam] = useState<"home" | "away">("home");
+  const [selectedPhase, setSelectedPhase] = useState<TacticalPhase>("all");
+  const [ballZone, setBallZone] = useState<BallZone>("center");
+
   const SW = 260;
   const SH = 340;
   const R = 9;
 
+  // Get base positions
+  const baseShape = TACTICAL_SHAPES[selectedTeam][selectedPhase];
+
+  // Apply Ball Zone Offset (Simulated coulissement)
+  const getOffset = (zone: BallZone) => {
+    if (zone === "left") return -0.05;
+    if (zone === "right") return 0.05;
+    return 0;
+  };
+
+  const offset = getOffset(ballZone);
+  const players = baseShape.map(p => ({
+    ...p,
+    // GB doesn't move as much as field players
+    x: p.pos === "GB" ? p.x : Math.max(0.1, Math.min(0.9, p.x + offset))
+  }));
+
   // Bounding box computation for length/width badges
-  const xs = TEAM_SHAPE_HOME.map((p) => PITCH_PAD + p.x * (SW - 2 * PITCH_PAD));
-  const ys = TEAM_SHAPE_HOME.map((p) => PITCH_PAD + p.y * (SH - 2 * PITCH_PAD));
+  const xs = players.map((p) => PITCH_PAD + p.x * (SW - 2 * PITCH_PAD));
+  const ys = players.map((p) => PITCH_PAD + p.y * (SH - 2 * PITCH_PAD));
   const minX = Math.min(...xs);
   const maxX = Math.max(...xs);
   const minY = Math.min(...ys);
   const maxY = Math.max(...ys);
 
+  // Simulated metrics based on dispersion
+  const lengthM = ((maxY - minY) / (SH - 2 * PITCH_PAD) * 105).toFixed(1);
+  const widthM  = ((maxX - minX) / (SW - 2 * PITCH_PAD) * 68).toFixed(1);
+
+  const PHASES: { id: TacticalPhase; label: string }[] = [
+    { id: "all",       label: "Toutes" },
+    { id: "build-up",  label: "Relance" },
+    { id: "creation",  label: "Attaque" },
+    { id: "recovery",  label: "Transition" },
+    { id: "low-block", label: "Bloc Bas" },
+  ];
+
+  const teamColor = selectedTeam === "home" ? "#C42B47" : "#3B5CB8";
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-      <div style={{ display: "flex", gap: 12, marginBottom: 4 }}>
-        <div style={{
-          padding: "4px 10px",
-          background: "rgba(196,43,71,0.10)",
-          border: "1px solid rgba(196,43,71,0.25)",
-          borderRadius: 6, fontSize: 10, fontWeight: 700,
-          color: "var(--color-neutral-300)",
-        }}>
-          Longueur : <span style={{ color: "#C42B47" }}>38.4m</span>
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      
+      {/* Tactical Filter Bar */}
+      <div style={{
+        display: "flex", flexWrap: "wrap", gap: 8, padding: 8,
+        background: "rgba(255,255,255,0.02)", border: "1px solid var(--color-neutral-800)",
+        borderRadius: 12,
+      }}>
+        {/* Team Selector */}
+        <div className="flex gap-1 bg-neutral-950 p-1 rounded-lg border border-neutral-800">
+          {(["home", "away"] as const).map(t => (
+            <button
+              key={t}
+              onClick={() => setSelectedTeam(t)}
+              style={{
+                padding: "4px 10px", fontSize: 10, fontWeight: 700, borderRadius: 6,
+                background: selectedTeam === t ? (t === "home" ? "#C42B47" : "#3B5CB8") : "transparent",
+                color: selectedTeam === t ? "white" : "var(--color-neutral-500)",
+                transition: "all 0.2s",
+              }}
+            >
+              {t === "home" ? "METZ" : "PARIS FC"}
+            </button>
+          ))}
         </div>
-        <div style={{
-          padding: "4px 10px",
-          background: "rgba(196,43,71,0.10)",
-          border: "1px solid rgba(196,43,71,0.25)",
-          borderRadius: 6, fontSize: 10, fontWeight: 700,
-          color: "var(--color-neutral-300)",
-        }}>
-          Largeur : <span style={{ color: "#C42B47" }}>26.1m</span>
+
+        {/* Phase Selector */}
+        <div className="flex gap-1 bg-neutral-950 p-1 rounded-lg border border-neutral-800 flex-1 min-w-[200px]">
+          {PHASES.map(p => (
+            <button
+              key={p.id}
+              onClick={() => setSelectedPhase(p.id)}
+              style={{
+                flex: 1, padding: "4px 6px", fontSize: 9, fontWeight: 700, borderRadius: 6,
+                background: selectedPhase === p.id ? "rgba(255,255,255,0.1)" : "transparent",
+                color: selectedPhase === p.id ? "white" : "var(--color-neutral-500)",
+                transition: "all 0.2s",
+              }}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Ball Zone */}
+        <div className="flex items-center gap-2 bg-neutral-950 p-1 rounded-lg border border-neutral-800">
+           <span className="text-[9px] font-bold text-neutral-600 px-1 uppercase tracking-wider">Ballon :</span>
+           <div className="flex gap-1">
+             {(["left", "center", "right"] as BallZone[]).map(z => (
+               <button
+                 key={z}
+                 onClick={() => setBallZone(z)}
+                 style={{
+                   width: 24, height: 20, fontSize: 9, fontWeight: 800, borderRadius: 4,
+                   background: ballZone === z ? teamColor : "rgba(255,255,255,0.05)",
+                   color: ballZone === z ? "white" : "var(--color-neutral-600)",
+                   border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                 }}
+               >
+                 {z === "left" ? "G" : z === "center" ? "C" : "D"}
+               </button>
+             ))}
+           </div>
         </div>
       </div>
 
-      <PitchSVG width={SW} height={SH}>
-        {/* Bounding box */}
-        <rect
-          x={minX} y={minY}
-          width={maxX - minX} height={maxY - minY}
-          fill="rgba(196,43,71,0.08)"
-          stroke="rgba(196,43,71,0.35)"
-          strokeWidth={1}
-          strokeDasharray="4 3"
-        />
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+        {/* Metrics */}
+        <div style={{ display: "flex", gap: 12 }}>
+          <div style={{
+            padding: "4px 10px",
+            background: `${teamColor}15`,
+            border: `1px solid ${teamColor}33`,
+            borderRadius: 6, fontSize: 10, fontWeight: 700,
+            color: "var(--color-neutral-300)",
+          }}>
+            Longueur : <span style={{ color: teamColor }}>{lengthM}m</span>
+          </div>
+          <div style={{
+            padding: "4px 10px",
+            background: `${teamColor}15`,
+            border: `1px solid ${teamColor}33`,
+            borderRadius: 6, fontSize: 10, fontWeight: 700,
+            color: "var(--color-neutral-300)",
+          }}>
+            Largeur : <span style={{ color: teamColor }}>{widthM}m</span>
+          </div>
+        </div>
 
-        {TEAM_SHAPE_HOME.map((p, i) => {
-          const cx = PITCH_PAD + p.x * (SW - 2 * PITCH_PAD);
-          const cy = PITCH_PAD + p.y * (SH - 2 * PITCH_PAD);
-          return (
-            <g key={i}>
-              <circle cx={cx} cy={cy} r={R}
-                fill="#C42B47" stroke="rgba(255,255,255,0.45)" strokeWidth={1.5} />
-              <text x={cx} y={cy + 3.5} textAnchor="middle"
-                fontSize={6} fontWeight={800} fill="white"
-                style={{ userSelect: "none" }}>
-                {p.pos}
-              </text>
-            </g>
-          );
-        })}
-      </PitchSVG>
+        {/* Pitch */}
+        <div style={{ position: "relative", filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.3))" }}>
+          <PitchSVG width={SW} height={SH}>
+            {/* Bounding box */}
+            <rect
+              x={minX} y={minY}
+              width={maxX - minX} height={maxY - minY}
+              fill={`${teamColor}08`}
+              stroke={`${teamColor}35`}
+              strokeWidth={1}
+              strokeDasharray="4 3"
+              style={{ transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)" }}
+            />
+
+            {players.map((p, i) => {
+              const cx = PITCH_PAD + p.x * (SW - 2 * PITCH_PAD);
+              const cy = PITCH_PAD + p.y * (SH - 2 * PITCH_PAD);
+              return (
+                <g key={`${selectedTeam}-${p.pos}-${i}`} style={{ transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)" }}>
+                  <circle cx={cx} cy={cy} r={R}
+                    fill={teamColor} stroke="rgba(255,255,255,0.45)" strokeWidth={1.5} />
+                  <text x={cx} y={cy + 3.5} textAnchor="middle"
+                    fontSize={6} fontWeight={800} fill="white"
+                    style={{ userSelect: "none", pointerEvents: "none" }}>
+                    {p.pos}
+                  </text>
+                </g>
+              );
+            })}
+          </PitchSVG>
+
+          {/* Phase indicator overlay */}
+          <div style={{
+            position: "absolute", top: 10, right: 10,
+            display: "flex", alignItems: "center", gap: 6,
+            background: "rgba(0,0,0,0.5)", padding: "4px 8px", borderRadius: 4,
+            border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(4px)",
+          }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: teamColor, animation: "pulse 2s infinite" }} />
+            <span style={{ fontSize: 9, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{selectedPhase}</span>
+          </div>
+        </div>
+      </div>
+      
+      <style>{`
+        @keyframes pulse {
+          0% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.5); opacity: 0.5; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
