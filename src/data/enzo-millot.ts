@@ -188,6 +188,8 @@ export interface PositionAppearance {
   x: number;   // 0–1 fraction of pitch width
   y: number;   // 0–1 fraction of pitch height (0=top=opponent goal, 1=bottom=own goal)
   matches: number;
+  minutes: number;
+  starts: number;
   matchList: PositionMatch[];
 }
 
@@ -198,6 +200,8 @@ export const POSITION_APPEARANCES: PositionAppearance[] = [
     x: 0.50,
     y: 0.48,
     matches: 18,
+    starts: 18,
+    minutes: 1450,
     matchList: [
       { home: "FC Metz",      away: "PSG",           result: "D", date: "11 août",  formation: "4-3-3"   },
       { home: "Lyon",         away: "FC Metz",       result: "N", date: "18 août",  formation: "4-3-3"   },
@@ -225,6 +229,8 @@ export const POSITION_APPEARANCES: PositionAppearance[] = [
     x: 0.50,
     y: 0.33,
     matches: 4,
+    starts: 4,
+    minutes: 320,
     matchList: [
       { home: "FC Metz",   away: "Brest",    result: "V", date: "29 sept", formation: "4-2-3-1" },
       { home: "Monaco",    away: "FC Metz",  result: "D", date: "8 déc",   formation: "4-2-3-1" },
@@ -238,9 +244,56 @@ export const POSITION_APPEARANCES: PositionAppearance[] = [
     x: 0.22,
     y: 0.47,
     matches: 2,
+    starts: 0,
+    minutes: 120,
     matchList: [
       { home: "Marseille", away: "FC Metz",  result: "D", date: "26 oct",  formation: "3-4-3" },
       { home: "FC Metz",   away: "Rennes",   result: "N", date: "16 févr", formation: "3-4-3" },
+    ],
+  },
+];
+
+export interface PositionTransition {
+  from: string;
+  to: string;
+  count: number;
+  avgWindow: string;
+  matches: {
+    name: string;
+    minute: number;
+  }[];
+}
+
+export const POSITION_TRANSITIONS: PositionTransition[] = [
+  {
+    from: "MC",
+    to: "MOC",
+    count: 12,
+    avgWindow: "70' - 85'",
+    matches: [
+      { name: "FC Metz vs PSG", minute: 72 },
+      { name: "Lyon vs FC Metz", minute: 65 },
+      { name: "FC Metz vs Monaco", minute: 78 },
+      { name: "Lens vs FC Metz", minute: 82 },
+    ],
+  },
+  {
+    from: "MOC",
+    to: "MC",
+    count: 5,
+    avgWindow: "60' - 75'",
+    matches: [
+      { name: "FC Metz vs Brest", minute: 61 },
+      { name: "Monaco vs FC Metz", minute: 70 },
+    ],
+  },
+  {
+    from: "MC",
+    to: "MG",
+    count: 3,
+    avgWindow: "15' - 30'",
+    matches: [
+      { name: "Marseille vs FC Metz", minute: 24 },
     ],
   },
 ];

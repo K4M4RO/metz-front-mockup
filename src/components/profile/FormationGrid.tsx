@@ -23,117 +23,198 @@ function FullPitch({
   activePos: PositionAppearance | null;
   onSelect: (pos: PositionAppearance | null) => void;
 }) {
+  const [hoveredPos, setHoveredPos] = useState<PositionAppearance | null>(null);
+  
+  const totalMinutes = positions.reduce((sum, p) => sum + p.minutes, 0);
+
   return (
-    <svg
-      width={PW}
-      height={PH}
-      viewBox={`0 0 ${PW} ${PH}`}
-      style={{ display: "block", cursor: "default", flexShrink: 0 }}
-      onClick={() => onSelect(null)}
-    >
-      {/* Pitch background */}
-      <rect width={PW} height={PH} fill="#112211" rx={4} />
+    <div className="relative">
+      <svg
+        width={PW}
+        height={PH}
+        viewBox={`0 0 ${PW} ${PH}`}
+        style={{ display: "block", cursor: "default", flexShrink: 0 }}
+        onClick={() => onSelect(null)}
+      >
+        {/* Pitch background */}
+        <rect width={PW} height={PH} fill="#112211" rx={4} />
 
-      {/* Pitch outline */}
-      <rect
-        x={PAD} y={PAD}
-        width={PW - PAD * 2} height={PH - PAD * 2}
-        fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth={0.8}
-      />
+        {/* Pitch outline */}
+        <rect
+          x={PAD} y={PAD}
+          width={PW - PAD * 2} height={PH - PAD * 2}
+          fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth={0.8}
+        />
 
-      {/* Halfway line */}
-      <line
-        x1={PAD} y1={PH / 2}
-        x2={PW - PAD} y2={PH / 2}
-        stroke="rgba(255,255,255,0.2)" strokeWidth={0.8}
-      />
+        {/* Halfway line */}
+        <line
+          x1={PAD} y1={PH / 2}
+          x2={PW - PAD} y2={PH / 2}
+          stroke="rgba(255,255,255,0.2)" strokeWidth={0.8}
+        />
 
-      {/* Centre circle */}
-      <circle cx={PW / 2} cy={PH / 2} r={22} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={0.8} />
-      <circle cx={PW / 2} cy={PH / 2} r={2} fill="rgba(255,255,255,0.3)" />
+        {/* Centre circle */}
+        <circle cx={PW / 2} cy={PH / 2} r={22} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={0.8} />
+        <circle cx={PW / 2} cy={PH / 2} r={2} fill="rgba(255,255,255,0.3)" />
 
-      {/* Top penalty box */}
-      <rect
-        x={PW * 0.2} y={PAD}
-        width={PW * 0.6} height={PH * 0.22}
-        fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={0.8}
-      />
-      {/* Top 6-yard box */}
-      <rect
-        x={PW * 0.33} y={PAD}
-        width={PW * 0.34} height={PH * 0.085}
-        fill="none" stroke="rgba(255,255,255,0.13)" strokeWidth={0.6}
-      />
+        {/* Top penalty box */}
+        <rect
+          x={PW * 0.2} y={PAD}
+          width={PW * 0.6} height={PH * 0.22}
+          fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={0.8}
+        />
+        {/* Top 6-yard box */}
+        <rect
+          x={PW * 0.33} y={PAD}
+          width={PW * 0.34} height={PH * 0.085}
+          fill="none" stroke="rgba(255,255,255,0.13)" strokeWidth={0.6}
+        />
 
-      {/* Bottom penalty box */}
-      <rect
-        x={PW * 0.2} y={PH - PAD - PH * 0.22}
-        width={PW * 0.6} height={PH * 0.22}
-        fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={0.8}
-      />
-      {/* Bottom 6-yard box */}
-      <rect
-        x={PW * 0.33} y={PH - PAD - PH * 0.085}
-        width={PW * 0.34} height={PH * 0.085}
-        fill="none" stroke="rgba(255,255,255,0.13)" strokeWidth={0.6}
-      />
+        {/* Bottom penalty box */}
+        <rect
+          x={PW * 0.2} y={PH - PAD - PH * 0.22}
+          width={PW * 0.6} height={PH * 0.22}
+          fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth={0.8}
+        />
+        {/* Bottom 6-yard box */}
+        <rect
+          x={PW * 0.33} y={PH - PAD - PH * 0.085}
+          width={PW * 0.34} height={PH * 0.085}
+          fill="none" stroke="rgba(255,255,255,0.13)" strokeWidth={0.6}
+        />
 
-      {/* Position circles */}
-      {positions.map((pos) => {
-        const cx = pos.x * PW;
-        const cy = pos.y * PH;
-        const isActive = activePos?.position === pos.position;
-        const r = pos.matches >= 10 ? 18 : 15;
+        {/* Position circles */}
+        {positions.map((pos) => {
+          const cx = pos.x * PW;
+          const cy = pos.y * PH;
+          const isActive = activePos?.position === pos.position;
+          const isHovered = hoveredPos?.position === pos.position;
+          const r = pos.matches >= 10 ? 18 : 15;
+          const ringR = r + 3;
+          const circumference = 2 * Math.PI * ringR;
+          const minutesPct = (pos.minutes / totalMinutes) * 100;
+          const offset = circumference - (minutesPct / 100) * circumference;
 
-        return (
-          <g
-            key={pos.position}
-            style={{ cursor: "pointer" }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect(isActive ? null : pos);
-            }}
-          >
-            {/* Pulse ring when active */}
-            {isActive && (
+          return (
+            <g
+              key={pos.position}
+              style={{ cursor: "pointer" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect(isActive ? null : pos);
+              }}
+              onMouseEnter={() => setHoveredPos(pos)}
+              onMouseLeave={() => setHoveredPos(null)}
+            >
+              {/* Pulse ring when active */}
+              {isActive && (
+                <circle
+                  cx={cx} cy={cy} r={r + 7}
+                  fill="none" stroke="#C42B47" strokeWidth={1.5} opacity={0.3}
+                />
+              )}
+              
+              {/* Progress Ring (Background) */}
               <circle
-                cx={cx} cy={cy} r={r + 6}
-                fill="none" stroke="#C42B47" strokeWidth={1.5} opacity={0.55}
+                cx={cx} cy={cy} r={ringR}
+                fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={3}
               />
-            )}
-            {/* Background shadow */}
-            <circle cx={cx} cy={cy} r={r + 1} fill="rgba(0,0,0,0.35)" />
-            {/* Main circle */}
-            <circle cx={cx} cy={cy} r={r} fill="#C42B47" />
-            {/* Match count */}
-            <text
-              x={cx} y={cy + 4}
-              textAnchor="middle"
-              style={{
-                fill: "white",
-                fontSize: 13,
-                fontWeight: 800,
-                fontFamily: "var(--font-dm-sans)",
-              }}
-            >
-              {pos.matches}
-            </text>
-            {/* Position label below circle */}
-            <text
-              x={cx} y={cy + r + 11}
-              textAnchor="middle"
-              style={{
-                fill: "rgba(255,255,255,0.65)",
-                fontSize: 8,
-                fontFamily: "var(--font-sans)",
-              }}
-            >
-              {pos.position}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
+              
+              {/* Progress Ring (Fill) */}
+              <circle
+                cx={cx} cy={cy} r={ringR}
+                fill="none" stroke="#C42B47" strokeWidth={3}
+                strokeDasharray={circumference}
+                strokeDashoffset={offset}
+                strokeLinecap="round"
+                transform={`rotate(-90 ${cx} ${cy})`}
+                style={{ transition: "stroke-dashoffset 0.5s ease-out" }}
+              />
+
+              {/* Background shadow */}
+              <circle cx={cx} cy={cy} r={r + 1} fill="rgba(0,0,0,0.35)" />
+              {/* Main circle */}
+              <circle 
+                cx={cx} cy={cy} r={r} 
+                fill={isActive || isHovered ? "#C42B47" : "#1e1e1e"} 
+                stroke={isActive || isHovered ? "white" : "rgba(196,43,71,0.5)"}
+                strokeWidth={1.5}
+                style={{ transition: "all 0.2s ease" }}
+              />
+              
+              {/* Match count */}
+              <text
+                x={cx} y={cy + 4.5}
+                textAnchor="middle"
+                style={{
+                  fill: "white",
+                  fontSize: r > 15 ? 12 : 10,
+                  fontWeight: 800,
+                  fontFamily: "var(--font-dm-sans)",
+                }}
+              >
+                {pos.matches}
+              </text>
+              {/* Position label below circle */}
+              <text
+                x={cx} y={cy + r + 11}
+                textAnchor="middle"
+                style={{
+                  fill: isHovered || isActive ? "white" : "rgba(255,255,255,0.65)",
+                  fontSize: 9,
+                  fontWeight: isHovered || isActive ? 700 : 400,
+                  fontFamily: "var(--font-sans)",
+                }}
+              >
+                {pos.position}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+
+      {/* Hover Tooltip */}
+      {hoveredPos && (
+        <div
+          className="absolute z-50 p-3 rounded-lg shadow-xl border pointer-events-none"
+          style={{
+            backgroundColor: "rgba(10, 10, 10, 0.95)",
+            border: "1px solid var(--color-neutral-700)",
+            top: hoveredPos.y * PH - 80,
+            left: hoveredPos.x * PW + 20,
+            width: 220,
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-2 h-2 rounded-full bg-primary-500" style={{ backgroundColor: "#C42B47" }} />
+            <span className="text-xs font-bold text-white uppercase tracking-wider">Poste {hoveredPos.position}</span>
+          </div>
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center">
+              <span className="text-[10px]" style={{ color: "var(--color-neutral-400)" }}>Titularisations</span>
+              <span className="text-[11px] font-bold text-white">{hoveredPos.starts}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-[10px]" style={{ color: "var(--color-neutral-400)" }}>Minutes jouées</span>
+              <span className="text-[11px] font-bold text-white">{hoveredPos.minutes} min</span>
+            </div>
+            <div className="w-full h-1 bg-neutral-800 rounded-full mt-1.5 overflow-hidden">
+              <div 
+                className="h-full" 
+                style={{ 
+                  backgroundColor: "#C42B47", 
+                  width: `${Math.round((hoveredPos.minutes / totalMinutes) * 100)}%` 
+                }} 
+              />
+            </div>
+            <div className="text-right text-[9px] mt-0.5" style={{ color: "var(--color-primary-300)" }}>
+              {Math.round((hoveredPos.minutes / totalMinutes) * 100)}% du temps total
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
