@@ -341,10 +341,22 @@ function TeamShape() {
   const [selectedTeam, setSelectedTeam] = useState<"home" | "away">("home");
   const [selectedPhase, setSelectedPhase] = useState<TacticalPhase>("all");
   const [ballZone, setBallZone] = useState<BallZone>("center");
+  const [selectedTime, setSelectedTime] = useState<string>("0-90");
 
   const SW = 260;
   const SH = 340;
   const R = 9;
+
+  // Time intervals
+  const TIME_INTERVALS = [
+    { id: "0-90",  label: "Match" },
+    { id: "0-15",  label: "0'-15'" },
+    { id: "15-30", label: "15'-30'" },
+    { id: "30-45", label: "30'-45'" },
+    { id: "45-60", label: "45'-60'" },
+    { id: "60-75", label: "60'-75'" },
+    { id: "75-90", label: "75'-90'" },
+  ];
 
   // Get base positions
   const baseShape = TACTICAL_SHAPES[selectedTeam][selectedPhase];
@@ -356,12 +368,27 @@ function TeamShape() {
     return 0;
   };
 
+  // Simulate Time-based variation (small jitter)
+  const getTimeJitter = (time: string, index: number) => {
+    if (time === "0-90") return { x: 0, y: 0 };
+    // Determinstic jitter based on time-id and index
+    const seed = time.split("-").reduce((a, b) => a + parseInt(b), 0) + index;
+    return {
+      x: (Math.sin(seed) * 0.02),
+      y: (Math.cos(seed) * 0.02)
+    };
+  };
+
   const offset = getOffset(ballZone);
-  const players = baseShape.map(p => ({
-    ...p,
-    // GB doesn't move as much as field players
-    x: p.pos === "GB" ? p.x : Math.max(0.1, Math.min(0.9, p.x + offset))
-  }));
+  const players = baseShape.map((p, i) => {
+    const jitter = getTimeJitter(selectedTime, i);
+    return {
+      ...p,
+      // GB doesn't move as much as field players
+      x: p.pos === "GB" ? p.x : Math.max(0.1, Math.min(0.9, p.x + offset + jitter.x)),
+      y: p.pos === "GB" ? p.y : Math.max(0.1, Math.min(0.9, p.y + jitter.y))
+    };
+  });
 
   // Bounding box computation for length/width badges
   const xs = players.map((p) => PITCH_PAD + p.x * (SW - 2 * PITCH_PAD));
@@ -390,65 +417,90 @@ function TeamShape() {
       
       {/* Tactical Filter Bar */}
       <div style={{
-        display: "flex", flexWrap: "wrap", gap: 8, padding: 8,
+        display: "flex", flexDirection: "column", gap: 8, padding: 12,
         background: "rgba(255,255,255,0.02)", border: "1px solid var(--color-neutral-800)",
-        borderRadius: 12,
+        borderRadius: 16,
       }}>
-        {/* Team Selector */}
-        <div className="flex gap-1 bg-neutral-950 p-1 rounded-lg border border-neutral-800">
-          {(["home", "away"] as const).map(t => (
-            <button
-              key={t}
-              onClick={() => setSelectedTeam(t)}
-              style={{
-                padding: "4px 10px", fontSize: 10, fontWeight: 700, borderRadius: 6,
-                background: selectedTeam === t ? (t === "home" ? "#C42B47" : "#3B5CB8") : "transparent",
-                color: selectedTeam === t ? "white" : "var(--color-neutral-500)",
-                transition: "all 0.2s",
-              }}
-            >
-              {t === "home" ? "METZ" : "PARIS FC"}
-            </button>
-          ))}
+        {/* Row 1: Team & Phase */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {/* Team Selector */}
+          <div className="flex gap-1 bg-neutral-950 p-1 rounded-lg border border-neutral-800">
+            {(["home", "away"] as const).map(t => (
+              <button
+                key={t}
+                onClick={() => setSelectedTeam(t)}
+                style={{
+                  padding: "4px 10px", fontSize: 10, fontWeight: 700, borderRadius: 6,
+                  background: selectedTeam === t ? (t === "home" ? "#C42B47" : "#3B5CB8") : "transparent",
+                  color: selectedTeam === t ? "white" : "var(--color-neutral-500)",
+                  transition: "all 0.2s",
+                }}
+              >
+                {t === "home" ? "METZ" : "PARIS FC"}
+              </button>
+            ))}
+          </div>
+
+          {/* Phase Selector */}
+          <div className="flex gap-1 bg-neutral-950 p-1 rounded-lg border border-neutral-800 flex-1 min-w-[200px]">
+            {PHASES.map(p => (
+              <button
+                key={p.id}
+                onClick={() => setSelectedPhase(p.id)}
+                style={{
+                  flex: 1, padding: "4px 6px", fontSize: 9, fontWeight: 700, borderRadius: 6,
+                  background: selectedPhase === p.id ? "rgba(255,255,255,0.1)" : "transparent",
+                  color: selectedPhase === p.id ? "white" : "var(--color-neutral-500)",
+                  transition: "all 0.2s",
+                }}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Phase Selector */}
-        <div className="flex gap-1 bg-neutral-950 p-1 rounded-lg border border-neutral-800 flex-1 min-w-[200px]">
-          {PHASES.map(p => (
-            <button
-              key={p.id}
-              onClick={() => setSelectedPhase(p.id)}
-              style={{
-                flex: 1, padding: "4px 6px", fontSize: 9, fontWeight: 700, borderRadius: 6,
-                background: selectedPhase === p.id ? "rgba(255,255,255,0.1)" : "transparent",
-                color: selectedPhase === p.id ? "white" : "var(--color-neutral-500)",
-                transition: "all 0.2s",
-              }}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
+        {/* Row 2: Time & Ball */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+          {/* Time Selector */}
+          <div className="flex gap-1 bg-neutral-950 p-1 rounded-lg border border-neutral-800 flex-1">
+            {TIME_INTERVALS.map(t => (
+              <button
+                key={t.id}
+                onClick={() => setSelectedTime(t.id)}
+                style={{
+                  flex: 1, padding: "4px 6px", fontSize: 8.5, fontWeight: 700, borderRadius: 6,
+                  background: selectedTime === t.id ? (selectedTeam === "home" ? "rgba(196,43,71,0.2)" : "rgba(59,92,184,0.2)") : "transparent",
+                  color: selectedTime === t.id ? "white" : "var(--color-neutral-500)",
+                  border: selectedTime === t.id ? `1px solid ${selectedTeam === "home" ? "rgba(196,43,71,0.4)" : "rgba(59,92,184,0.4)"}` : "1px solid transparent",
+                  transition: "all 0.2s",
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
 
-        {/* Ball Zone */}
-        <div className="flex items-center gap-2 bg-neutral-950 p-1 rounded-lg border border-neutral-800">
-           <span className="text-[9px] font-bold text-neutral-600 px-1 uppercase tracking-wider">Ballon :</span>
-           <div className="flex gap-1">
-             {(["left", "center", "right"] as BallZone[]).map(z => (
-               <button
-                 key={z}
-                 onClick={() => setBallZone(z)}
-                 style={{
-                   width: 24, height: 20, fontSize: 9, fontWeight: 800, borderRadius: 4,
-                   background: ballZone === z ? teamColor : "rgba(255,255,255,0.05)",
-                   color: ballZone === z ? "white" : "var(--color-neutral-600)",
-                   border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                 }}
-               >
-                 {z === "left" ? "G" : z === "center" ? "C" : "D"}
-               </button>
-             ))}
-           </div>
+          {/* Ball Zone */}
+          <div className="flex items-center gap-2 bg-neutral-950 p-1 rounded-lg border border-neutral-800">
+             <span className="text-[9px] font-bold text-neutral-600 px-1 uppercase tracking-wider">Ballon :</span>
+             <div className="flex gap-1">
+               {(["left", "center", "right"] as BallZone[]).map(z => (
+                 <button
+                   key={z}
+                   onClick={() => setBallZone(z)}
+                   style={{
+                     width: 24, height: 20, fontSize: 9, fontWeight: 800, borderRadius: 4,
+                     background: ballZone === z ? teamColor : "rgba(255,255,255,0.05)",
+                     color: ballZone === z ? "white" : "var(--color-neutral-600)",
+                     border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                   }}
+                 >
+                   {z === "left" ? "G" : z === "center" ? "C" : "D"}
+                 </button>
+               ))}
+             </div>
+          </div>
         </div>
       </div>
 
