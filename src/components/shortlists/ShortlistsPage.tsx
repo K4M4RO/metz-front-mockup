@@ -312,24 +312,30 @@ function normalizePos(pos: string) { return pos.split("/")[0].trim(); }
 // ─── Terrain view ──────────────────────────────────────────────────────────────
 
 function TerrainView({ players, formation }: { players: ShortlistPlayer[]; formation: FormationKey }) {
+  const [focusedKey, setFocusedKey] = useState<string | null>(null);
   const coordMap = FORMATION_COORDS[formation];
 
   // Build groups: merge players that land on the same pitch coordinate
-  const byCoordKey = new Map<string, { coords: PosCoord; players: ShortlistPlayer[] }>();
+  const byCoordKey = new Map<string, { key: string; coords: PosCoord; players: ShortlistPlayer[] }>();
   const unknown: ShortlistPlayer[] = [];
 
   for (const p of players) {
     const coords = coordMap[normalizePos(p.position)];
     if (!coords) { unknown.push(p); continue; }
     const key = `${coords.x.toFixed(3)},${coords.y.toFixed(3)}`;
-    if (!byCoordKey.has(key)) byCoordKey.set(key, { coords, players: [] });
+    if (!byCoordKey.has(key)) byCoordKey.set(key, { key, coords, players: [] });
     byCoordKey.get(key)!.players.push(p);
   }
 
+  const groups = Array.from(byCoordKey.values());
+
   return (
-    <div style={{ position: "relative", width: "100%", height: "820px", minWidth: "1100px", backgroundColor: "#061506", borderRadius: "16px", overflow: "hidden", border: "1px solid var(--color-neutral-800)", boxShadow: "inset 0 0 100px rgba(0,0,0,0.5)" }}>
+    <div 
+      style={{ position: "relative", width: "100%", height: "1000px", minWidth: "1100px", backgroundColor: "#061506", borderRadius: "16px", overflow: "hidden", border: "1px solid var(--color-neutral-800)", boxShadow: "inset 0 0 100px rgba(0,0,0,0.5)" }}
+      onClick={() => setFocusedKey(null)}
+    >
       {/* Pitch Lines Decoration */}
-      <div style={{ position: "absolute", inset: 0, opacity: 0.15, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", inset: 0, opacity: 0.1, pointerEvents: "none" }}>
         <svg viewBox={`0 0 ${PW} ${PH}`} width="100%" height="100%" preserveAspectRatio="none">
           <rect x={10} y={10} width={PW-20} height={PH-20} fill="none" stroke="white" strokeWidth={1} />
           <line x1={10} y1={PH/2} x2={PW-10} y2={PH/2} stroke="white" strokeWidth={1} />
@@ -339,111 +345,65 @@ function TerrainView({ players, formation }: { players: ShortlistPlayer[]; forma
         </svg>
       </div>
 
-      {/* Position Lists Grid */}
-      {Array.from(byCoordKey.values()).map(({ coords, players: group }, groupIdx) => {
+      {/* Layer 1: Player Lists (Z-indexed by focus) */}
+      {groups.map(({ key, coords, players: group }) => {
         const left = `${coords.x * 100}%`;
-        const top = `${coords.y * 100}%`;
+        let yPos = coords.y;
+        if (yPos > 0.3 && yPos < 0.7) yPos = 0.3 + (yPos - 0.3) * 1.2;
+        const top = `${yPos * 100}%`;
+        const isFocused = focusedKey === key;
 
         return (
           <div
-            key={groupIdx}
+            key={`list-${key}`}
             style={{
               position: "absolute",
               left,
               top,
               transform: "translate(-50%, -50%)",
-              width: "200px",
-              zIndex: 10,
+              width: "210px",
+              zIndex: isFocused ? 100 : 10,
               display: "flex",
               flexDirection: "column",
-              filter: "drop-shadow(0 10px 15px rgba(0,0,0,0.4))"
+              paddingTop: "24px", // Offset for the header that sits on top
+              pointerEvents: isFocused ? "auto" : "none", // Only focused list captures clicks if overlapping
+              opacity: isFocused ? 1 : 0.9,
+              transition: "all 0.2s ease"
             }}
           >
-            {/* Position Header Label */}
             <div style={{
-              backgroundColor: "#C42B47",
-              color: "white",
-              fontSize: "10px",
-              fontWeight: 900,
-              padding: "3px 10px",
-              borderRadius: "4px 4px 0 0",
-              textAlign: "center",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              width: "fit-content",
-              margin: "0 auto",
-              border: "1px solid rgba(255,255,255,0.2)",
-              borderBottom: "none"
-            }}>
-              {coords.label}
-            </div>
-
-            {/* List Container */}
-            <div style={{
-              backgroundColor: "rgba(17, 24, 39, 0.85)",
-              backdropFilter: "blur(8px)",
-              border: "1px solid var(--color-neutral-700)",
-              borderRadius: "8px",
+              backgroundColor: isFocused ? "rgba(10, 15, 25, 0.95)" : "rgba(10, 15, 25, 0.85)",
+              backdropFilter: "blur(12px)",
+              border: isFocused ? "1px solid #C42B47" : "1px solid var(--color-neutral-700)",
+              borderRadius: "10px",
               overflow: "hidden",
               display: "flex",
-              flexDirection: "column"
+              flexDirection: "column",
+              boxShadow: isFocused ? "0 20px 40px rgba(0,0,0,0.8)" : "0 8px 16px rgba(0,0,0,0.4)",
+              pointerEvents: "auto"
             }}>
               {group.map((p, pIdx) => {
                 const rc = RATING_COLOR[p.rating] ?? "#9CA3AF";
                 const nc = noteColor(p.note);
-
                 return (
                   <div
                     key={p.id}
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "10px",
-                      padding: "8px 12px",
+                      gap: "12px",
+                      padding: "10px 14px",
                       borderBottom: pIdx === group.length - 1 ? "none" : "1px solid rgba(255,255,255,0.05)",
-                      transition: "all 0.2s ease"
                     }}
                   >
-                    {/* Player Avatar */}
-                    <div style={{
-                      width: "28px",
-                      height: "28px",
-                      borderRadius: "50%",
-                      backgroundColor: "var(--color-primary-900)",
-                      color: "var(--color-primary-300)",
-                      fontSize: "10px",
-                      fontWeight: 800,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                      border: `1.5px solid ${rc}`
-                    }}>
+                    <div style={{ width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "var(--color-neutral-800)", color: "var(--color-primary-300)", fontSize: "11px", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: `2px solid ${rc}` }}>
                       {p.initials}
                     </div>
-
-                    {/* Name & Age */}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: "11px", fontWeight: 700, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {p.name}
-                      </div>
-                      <div style={{ fontSize: "9px", color: "var(--color-neutral-500)", marginTop: "1px" }}>
-                        {p.age} ans · {p.club}
-                      </div>
+                      <div style={{ fontSize: "12px", fontWeight: 700, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
+                      <div style={{ fontSize: "10px", color: "var(--color-neutral-500)", marginTop: "2px" }}>{p.flag} {p.club}</div>
                     </div>
-
-                    {/* Note Badge */}
-                    <div style={{
-                      fontSize: "11px",
-                      fontWeight: 800,
-                      color: nc,
-                      backgroundColor: `${nc}15`,
-                      padding: "2px 6px",
-                      borderRadius: "4px",
-                      border: `1px solid ${nc}33`
-                    }}>
-                      {p.note.toFixed(1)}
-                    </div>
+                    <div style={{ fontSize: "12px", fontWeight: 900, color: nc, backgroundColor: `${nc}12`, padding: "3px 8px", borderRadius: "6px", border: `1px solid ${nc}25` }}>{p.note.toFixed(1)}</div>
                   </div>
                 );
               })}
@@ -452,13 +412,63 @@ function TerrainView({ players, formation }: { players: ShortlistPlayer[]; forma
         );
       })}
 
-      {/* Unmapped Players (Hidden/Bottom) */}
+      {/* Layer 2: Position Labels (Always on top) */}
+      {groups.map(({ key, coords }) => {
+        const left = `${coords.x * 100}%`;
+        let yPos = coords.y;
+        if (yPos > 0.3 && yPos < 0.7) yPos = 0.3 + (yPos - 0.3) * 1.2;
+        const top = `${yPos * 100}%`;
+        const isFocused = focusedKey === key;
+
+        // Position slightly higher than the list center to act as a tab
+        return (
+          <div
+            key={`header-${key}`}
+            onClick={(e) => {
+                e.stopPropagation();
+                setFocusedKey(isFocused ? null : key);
+            }}
+            style={{
+              position: "absolute",
+              left,
+              top: `calc(${top} - 15px)`, // Manual adjustment to place it above the list content
+              transform: "translate(-50%, -100%)",
+              zIndex: 200, // Always above lists
+              backgroundColor: isFocused ? "#E53E3E" : "#C42B47",
+              color: "white",
+              fontSize: "11px",
+              fontWeight: 900,
+              padding: "5px 14px",
+              borderRadius: "6px 6px 0 0",
+              textAlign: "center",
+              textTransform: "uppercase",
+              letterSpacing: "0.15em",
+              cursor: "pointer",
+              border: isFocused ? "1px solid white" : "1px solid rgba(255,255,255,0.3)",
+              borderBottom: "none",
+              boxShadow: "0 -4px 12px rgba(0,0,0,0.3)",
+              transition: "all 0.2s ease",
+              userSelect: "none"
+            }}
+            onMouseEnter={(e) => {
+                if (!isFocused) e.currentTarget.style.backgroundColor = "#D43A55";
+            }}
+            onMouseLeave={(e) => {
+                if (!isFocused) e.currentTarget.style.backgroundColor = "#C42B47";
+            }}
+          >
+            {coords.label}
+          </div>
+        );
+      })}
+
+      {/* Unmapped Players */}
       {unknown.length > 0 && (
-        <div style={{ position: "absolute", bottom: "24px", left: "24px", zIndex: 5 }}>
-          <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-neutral-500)", marginBottom: "8px", textTransform: "uppercase" }}>Hors Formation ({unknown.length})</div>
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        <div style={{ position: "absolute", bottom: "32px", left: "32px", zIndex: 5 }}>
+          <div style={{ fontSize: "11px", fontWeight: 800, color: "var(--color-neutral-600)", marginBottom: "12px", textTransform: "uppercase" }}>Hors Formation ({unknown.length})</div>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             {unknown.map(p => (
-              <div key={p.id} style={{ padding: "4px 8px", backgroundColor: "var(--color-neutral-900)", border: "1px solid var(--color-neutral-800)", borderRadius: "4px", fontSize: "10px", color: "var(--color-neutral-400)" }}>
+              <div key={p.id} style={{ padding: "6px 12px", backgroundColor: "rgba(17, 24, 39, 0.6)", border: "1px solid var(--color-neutral-800)", borderRadius: "6px", fontSize: "11px", color: "var(--color-neutral-400)" }}>
                 {p.initials} {p.name}
               </div>
             ))}
