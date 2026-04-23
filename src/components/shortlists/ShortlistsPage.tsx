@@ -36,7 +36,7 @@ const SHORTLISTS: Shortlist[] = [
     id: "md2025",
     name: "Milieux défensifs 2025",
     icon: "🛡️",
-    count: 12,
+    count: 14,
     players: [
       { id:1,  initials:"TS", name:"T. Samassékou",  position:"MDF", age:28, club:"Reims",        league:"Ligue 1",        contractEnd:"Jun 2026", marketValue:"8M€",   note:7.8, rating:"B", flag:"🇬🇳", status:"Observation" },
       { id:2,  initials:"NK", name:"N. Kaboré",      position:"MDF", age:23, club:"Burnley",      league:"Championship",   contractEnd:"Jun 2025", marketValue:"5M€",   note:7.4, rating:"B", flag:"🇧🇫", status:"Identifié"   },
@@ -46,6 +46,9 @@ const SHORTLISTS: Shortlist[] = [
       { id:6,  initials:"MJ", name:"M. Jakić",       position:"MDF", age:27, club:"Eintracht",    league:"Bundesliga",     contractEnd:"Jun 2026", marketValue:"14M€",  note:7.6, rating:"B", flag:"🇷🇸", status:"Contacté"    },
       { id:7,  initials:"WZ", name:"W. Zaïre-Emery", position:"MC",  age:18, club:"PSG",          league:"Ligue 1",        contractEnd:"Jun 2028", marketValue:"40M€",  note:8.4, rating:"A", flag:"🇫🇷", status:"À suivre"    },
       { id:8,  initials:"FN", name:"F. Nmecha",      position:"MC",  age:25, club:"Chelsea",      league:"Premier League", contractEnd:"Jun 2027", marketValue:"22M€",  note:7.7, rating:"B", flag:"🇩🇪", status:"Identifié"   },
+      { id:30, initials:"MD", name:"Mo Dahoud",      position:"MDF", age:28, club:"Stuttgart",    league:"Bundesliga",     contractEnd:"Jun 2026", marketValue:"6M€",   note:7.5, rating:"B", flag:"🇩🇪", status:"À suivre"    },
+      { id:31, initials:"AO", name:"Amadou Onana",   position:"MDF", age:23, club:"Aston Villa",  league:"Premier League", contractEnd:"Jun 2028", marketValue:"50M€",  note:8.2, rating:"A", flag:"🇧🇪", status:"À suivre"    },
+      { id:32, initials:"KG", name:"K. Gladbach",    position:"MDF", age:22, club:"Mönchengladbach", league:"Bundesliga", contractEnd:"Jun 2027", marketValue:"9M€",   note:7.3, rating:"B", flag:"🇩🇪", status:"Identifié"   },
     ],
   },
   {
@@ -76,6 +79,8 @@ const SHORTLISTS: Shortlist[] = [
       { id:26, initials:"TS", name:"T. Samassékou", position:"MDF", age:28, club:"Reims",      league:"Ligue 1",       contractEnd:"Jun 2026", marketValue:"8M€",   note:7.8, rating:"B", flag:"🇬🇳", status:"Observation" },
       { id:27, initials:"GF", name:"G. Ferreira",   position:"AD",  age:22, club:"Vitória SC", league:"Liga Portugal", contractEnd:"Jun 2025", marketValue:"4M€",   note:7.6, rating:"B", flag:"🇵🇹", status:"Contacté"    },
       { id:28, initials:"FA", name:"F. Abdou",      position:"AT",  age:25, club:"FC Sète",    league:"Ligue 2",       contractEnd:"Jun 2025", marketValue:"1.5M€", note:8.5, rating:"A", flag:"🇫🇷", status:"Pré-accord"  },
+      { id:40, initials:"GK", name:"G. Kobel",      position:"GK",  age:26, club:"Dortmund",   league:"Bundesliga",    contractEnd:"Jun 2028", marketValue:"40M€",  note:8.1, rating:"A", flag:"🇨🇭", status:"À suivre"    },
+      { id:41, initials:"MM", name:"M. Maignan",    position:"GK",  age:29, club:"AC Milan",   league:"Serie A",       contractEnd:"Jun 2026", marketValue:"45M€",  note:8.4, rating:"A", flag:"🇫🇷", status:"À suivre"    },
     ],
   },
 ];
@@ -307,9 +312,6 @@ function normalizePos(pos: string) { return pos.split("/")[0].trim(); }
 // ─── Terrain view ──────────────────────────────────────────────────────────────
 
 function TerrainView({ players, formation }: { players: ShortlistPlayer[]; formation: FormationKey }) {
-  const [hoveredId,  setHoveredId]  = useState<number | null>(null);
-  const [tooltipXY,  setTooltipXY]  = useState({ x: 0, y: 0 });
-
   const coordMap = FORMATION_COORDS[formation];
 
   // Build groups: merge players that land on the same pitch coordinate
@@ -324,199 +326,140 @@ function TerrainView({ players, formation }: { players: ShortlistPlayer[]; forma
     byCoordKey.get(key)!.players.push(p);
   }
 
-  const hovered = hoveredId !== null ? players.find((p) => p.id === hoveredId) ?? null : null;
-
   return (
-    <div style={{ display: "flex", gap: 16, alignItems: "flex-start", flexWrap: "wrap" }}>
-      {/* Pitch */}
-      <div style={{ position: "relative", flex: "0 0 auto", width: "100%", maxWidth: 400 }}>
-        <svg viewBox={`0 0 ${PW} ${PH}`} width="100%" style={{ display: "block" }}>
-          {/* ── Pitch lines ── */}
-          <rect width={PW} height={PH} fill="#0B200B" rx={5} />
-          <rect x={10} y={10} width={PW-20} height={PH-20} fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth={1} />
-          <line x1={10} y1={PH/2} x2={PW-10} y2={PH/2} stroke="rgba(255,255,255,0.10)" strokeWidth={0.8} />
-          <circle cx={PW/2} cy={PH/2} r={32} fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth={0.8} />
-          <circle cx={PW/2} cy={PH/2} r={2} fill="rgba(255,255,255,0.25)" />
-          <rect x={PW/2-50} y={10} width={100} height={60} fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth={0.8} />
-          <rect x={PW/2-26} y={10} width={52} height={20} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={0.8} />
-          <circle cx={PW/2} cy={50} r={1.5} fill="rgba(255,255,255,0.2)" />
-          <rect x={PW/2-50} y={PH-70} width={100} height={60} fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth={0.8} />
-          <rect x={PW/2-26} y={PH-30} width={52} height={20} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={0.8} />
-          <circle cx={PW/2} cy={PH-50} r={1.5} fill="rgba(255,255,255,0.2)" />
-
-          {/* ── Player groups ── */}
-          {Array.from(byCoordKey.values()).flatMap(({ coords, players: group }) => {
-            const baseCx = coords.x * PW;
-            const cy     = coords.y * PH;
-            const N      = group.length;
-
-            // Position label pill above the group
-            const pillLabel = coords.label;
-            const pillW = pillLabel.length * 6.5 + 12;
-            const pillH = 14;
-            const pillX = baseCx - pillW / 2;
-            const pillY = cy - R - pillH - 5;
-
-            const pillEl = (
-              <g key={`pill-${coords.x}-${coords.y}`} style={{ pointerEvents: "none" }}>
-                <rect
-                  x={pillX} y={pillY} width={pillW} height={pillH} rx={3}
-                  fill="rgba(196,43,71,0.22)" stroke="rgba(196,43,71,0.55)" strokeWidth={0.8}
-                />
-                <text
-                  x={baseCx} y={pillY + 9.5}
-                  textAnchor="middle" fontSize={7.5} fontWeight={700}
-                  fill="#F87191"
-                  style={{ userSelect: "none" }}
-                >
-                  {pillLabel}
-                </text>
-              </g>
-            );
-
-            const playerEls = group.map((player, i) => {
-              // Horizontal spread: evenly centered around baseCx
-              const cx    = baseCx + (i - (N - 1) / 2) * SH;
-              const isHov = hoveredId === player.id;
-              const rc    = RATING_COLOR[player.rating] ?? "#9CA3AF";
-              const nc    = noteColor(player.note);
-
-              return (
-                <g
-                  key={player.id}
-                  style={{ cursor: "pointer" }}
-                  onMouseEnter={(e) => {
-                    setHoveredId(player.id);
-                    const svgEl = (e.currentTarget as SVGGElement).closest("svg");
-                    if (svgEl) {
-                      const rect   = svgEl.getBoundingClientRect();
-                      const scaleX = rect.width / PW;
-                      const scaleY = rect.height / PH;
-                      setTooltipXY({ x: cx * scaleX + rect.left, y: cy * scaleY + rect.top });
-                    }
-                  }}
-                  onMouseLeave={() => setHoveredId(null)}
-                >
-                  {/* Glow on hover */}
-                  {isHov && (
-                    <circle cx={cx} cy={cy} r={R + 4} fill="rgba(196,43,71,0.18)" stroke="rgba(196,43,71,0.45)" strokeWidth={1} />
-                  )}
-
-                  {/* Avatar circle — rating-colored border */}
-                  <circle
-                    cx={cx} cy={cy} r={R}
-                    fill={isHov ? "#D43A55" : "#C42B47"}
-                    stroke={rc}
-                    strokeWidth={isHov ? 2 : 1.8}
-                    style={{ transition: "fill 100ms ease" }}
-                  />
-
-                  {/* Initials */}
-                  <text
-                    x={cx} y={cy + 3.5} textAnchor="middle"
-                    fontSize={8.5} fontWeight={700} fill="white"
-                    style={{ pointerEvents: "none", userSelect: "none" }}
-                  >
-                    {player.initials}
-                  </text>
-
-                  {/* Name below circle */}
-                  <text
-                    x={cx} y={cy + R + 9} textAnchor="middle"
-                    fontSize={7} fill="rgba(255,255,255,0.78)"
-                    style={{ pointerEvents: "none", userSelect: "none" }}
-                  >
-                    {player.name.length > 11 ? player.name.slice(0, 10) + "…" : player.name}
-                  </text>
-
-                  {/* Note badge bottom-right */}
-                  <rect x={cx + R - 5} y={cy + R - 8} width={15} height={9} rx={4.5} fill={nc} opacity={0.92} />
-                  <text
-                    x={cx + R + 2.5} y={cy + R - 1} textAnchor="middle"
-                    fontSize={6} fontWeight={700} fill="white"
-                    style={{ pointerEvents: "none", userSelect: "none" }}
-                  >
-                    {player.note.toFixed(1)}
-                  </text>
-                </g>
-              );
-            });
-
-            return [pillEl, ...playerEls];
-          })}
+    <div style={{ position: "relative", width: "100%", height: "820px", minWidth: "1100px", backgroundColor: "#061506", borderRadius: "16px", overflow: "hidden", border: "1px solid var(--color-neutral-800)", boxShadow: "inset 0 0 100px rgba(0,0,0,0.5)" }}>
+      {/* Pitch Lines Decoration */}
+      <div style={{ position: "absolute", inset: 0, opacity: 0.15, pointerEvents: "none" }}>
+        <svg viewBox={`0 0 ${PW} ${PH}`} width="100%" height="100%" preserveAspectRatio="none">
+          <rect x={10} y={10} width={PW-20} height={PH-20} fill="none" stroke="white" strokeWidth={1} />
+          <line x1={10} y1={PH/2} x2={PW-10} y2={PH/2} stroke="white" strokeWidth={1} />
+          <circle cx={PW/2} cy={PH/2} r={40} fill="none" stroke="white" strokeWidth={1} />
+          <rect x={PW/2-60} y={10} width={120} height={80} fill="none" stroke="white" strokeWidth={1} />
+          <rect x={PW/2-60} y={PH-90} width={120} height={80} fill="none" stroke="white" strokeWidth={1} />
         </svg>
-
-        {/* Tooltip */}
-        {hovered && (
-          <div
-            style={{
-              position: "fixed",
-              left: tooltipXY.x + 16,
-              top: tooltipXY.y - 32,
-              zIndex: 200,
-              backgroundColor: "var(--color-neutral-800)",
-              border: "1px solid #C42B47",
-              borderRadius: 8,
-              padding: "10px 14px",
-              pointerEvents: "none",
-              boxShadow: "0 6px 24px rgba(0,0,0,0.6)",
-              minWidth: 170,
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-              <div style={{ width: 30, height: 30, borderRadius: "50%", backgroundColor: "#C42B47", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "white", flexShrink: 0 }}>
-                {hovered.initials}
-              </div>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "var(--color-neutral-100)" }}>
-                  {hovered.flag} {hovered.name}
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
-                  <PosBadge pos={hovered.position} />
-                  <span style={{ fontSize: 11, color: "var(--color-neutral-500)" }}>{hovered.age} ans</span>
-                </div>
-              </div>
-            </div>
-            <div style={{ borderTop: "1px solid var(--color-neutral-700)", paddingTop: 6, display: "flex", flexDirection: "column", gap: 3 }}>
-              <div style={{ fontSize: 11, color: "var(--color-neutral-400)" }}>
-                {hovered.club}
-                <span style={{ color: "var(--color-neutral-600)", margin: "0 4px" }}>·</span>
-                {hovered.league}
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-neutral-200)", fontVariantNumeric: "tabular-nums" }}>{hovered.marketValue}</span>
-                <span style={{ fontSize: 11, color: parseInt(hovered.contractEnd.split(" ").pop() ?? "2099") <= 2025 ? "#F59E0B" : "var(--color-neutral-500)" }}>
-                  {hovered.contractEnd}
-                </span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: noteColor(hovered.note) }}>{hovered.note.toFixed(1)}</span>
-                <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 4, backgroundColor: (RATING_COLOR[hovered.rating] ?? "#9CA3AF") + "22", color: RATING_COLOR[hovered.rating] ?? "#9CA3AF" }}>
-                  {hovered.rating}
-                </span>
-                <StatusBadge status={hovered.status} />
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Players not mapped in this formation */}
-      {unknown.length > 0 && (
-        <div style={{ flex: 1, minWidth: 180 }}>
-          <div style={{ fontSize: 10, fontWeight: 600, color: "var(--color-neutral-500)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-            Hors formation
+      {/* Position Lists Grid */}
+      {Array.from(byCoordKey.values()).map(({ coords, players: group }, groupIdx) => {
+        const left = `${coords.x * 100}%`;
+        const top = `${coords.y * 100}%`;
+
+        return (
+          <div
+            key={groupIdx}
+            style={{
+              position: "absolute",
+              left,
+              top,
+              transform: "translate(-50%, -50%)",
+              width: "200px",
+              zIndex: 10,
+              display: "flex",
+              flexDirection: "column",
+              filter: "drop-shadow(0 10px 15px rgba(0,0,0,0.4))"
+            }}
+          >
+            {/* Position Header Label */}
+            <div style={{
+              backgroundColor: "#C42B47",
+              color: "white",
+              fontSize: "10px",
+              fontWeight: 900,
+              padding: "3px 10px",
+              borderRadius: "4px 4px 0 0",
+              textAlign: "center",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              width: "fit-content",
+              margin: "0 auto",
+              border: "1px solid rgba(255,255,255,0.2)",
+              borderBottom: "none"
+            }}>
+              {coords.label}
+            </div>
+
+            {/* List Container */}
+            <div style={{
+              backgroundColor: "rgba(17, 24, 39, 0.85)",
+              backdropFilter: "blur(8px)",
+              border: "1px solid var(--color-neutral-700)",
+              borderRadius: "8px",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column"
+            }}>
+              {group.map((p, pIdx) => {
+                const rc = RATING_COLOR[p.rating] ?? "#9CA3AF";
+                const nc = noteColor(p.note);
+
+                return (
+                  <div
+                    key={p.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      padding: "8px 12px",
+                      borderBottom: pIdx === group.length - 1 ? "none" : "1px solid rgba(255,255,255,0.05)",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    {/* Player Avatar */}
+                    <div style={{
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "50%",
+                      backgroundColor: "var(--color-primary-900)",
+                      color: "var(--color-primary-300)",
+                      fontSize: "10px",
+                      fontWeight: 800,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                      border: `1.5px solid ${rc}`
+                    }}>
+                      {p.initials}
+                    </div>
+
+                    {/* Name & Age */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: "11px", fontWeight: 700, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {p.name}
+                      </div>
+                      <div style={{ fontSize: "9px", color: "var(--color-neutral-500)", marginTop: "1px" }}>
+                        {p.age} ans · {p.club}
+                      </div>
+                    </div>
+
+                    {/* Note Badge */}
+                    <div style={{
+                      fontSize: "11px",
+                      fontWeight: 800,
+                      color: nc,
+                      backgroundColor: `${nc}15`,
+                      padding: "2px 6px",
+                      borderRadius: "4px",
+                      border: `1px solid ${nc}33`
+                    }}>
+                      {p.note.toFixed(1)}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {unknown.map((p) => (
-              <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderRadius: 6, backgroundColor: "var(--color-neutral-800)", border: "1px solid var(--color-neutral-700)" }}>
-                <div style={{ width: 26, height: 26, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, backgroundColor: "var(--color-primary-900)", color: "var(--color-primary-300)" }}>
-                  {p.initials}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, fontWeight: 500, color: "var(--color-neutral-200)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.flag} {p.name}</div>
-                  <div style={{ fontSize: 10, color: "var(--color-neutral-500)" }}>{p.position}</div>
-                </div>
+        );
+      })}
+
+      {/* Unmapped Players (Hidden/Bottom) */}
+      {unknown.length > 0 && (
+        <div style={{ position: "absolute", bottom: "24px", left: "24px", zIndex: 5 }}>
+          <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--color-neutral-500)", marginBottom: "8px", textTransform: "uppercase" }}>Hors Formation ({unknown.length})</div>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {unknown.map(p => (
+              <div key={p.id} style={{ padding: "4px 8px", backgroundColor: "var(--color-neutral-900)", border: "1px solid var(--color-neutral-800)", borderRadius: "4px", fontSize: "10px", color: "var(--color-neutral-400)" }}>
+                {p.initials} {p.name}
               </div>
             ))}
           </div>
