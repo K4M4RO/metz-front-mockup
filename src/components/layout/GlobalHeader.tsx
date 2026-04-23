@@ -9,6 +9,7 @@ const NOTIFICATIONS = 3;
 function Breadcrumb() {
   const pathname = usePathname();
   const isProfile = pathname?.includes("/recrutement/joueurs/");
+  const isCampagnes = pathname?.includes("/recrutement/campagnes");
 
   if (isProfile) {
     return (
@@ -17,12 +18,22 @@ function Breadcrumb() {
           Recrutement
         </span>
         <ChevronRight size={12} strokeWidth={1.5} style={{ color: "var(--color-neutral-600)" }} />
+        <span className="text-xs font-medium" style={{ color: "var(--color-neutral-300)" }}>
+          Enzo Millot
+        </span>
+      </nav>
+    );
+  }
+
+  if (isCampagnes) {
+    return (
+      <nav className="flex items-center gap-1.5 flex-shrink-0">
         <span className="text-xs" style={{ color: "var(--color-neutral-500)" }}>
-          Exploration
+          Recrutement
         </span>
         <ChevronRight size={12} strokeWidth={1.5} style={{ color: "var(--color-neutral-600)" }} />
         <span className="text-xs font-medium" style={{ color: "var(--color-neutral-300)" }}>
-          Enzo Millot
+          Campagnes
         </span>
       </nav>
     );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -312,7 +313,15 @@ function Toast({ visible }: { visible: boolean }) {
 
 // ─── Main board ───────────────────────────────────────────────────────────────
 
-export function KanbanBoard() {
+interface KanbanBoardProps {
+  title?: string;
+  subtitle?: string;
+}
+
+export function KanbanBoard({ 
+  title = "Recherche Latéral Droit", 
+  subtitle = "11 joueurs · Créée le 12/01/2025 · Resp: Thomas R." 
+}: KanbanBoardProps) {
   const [columns, setColumns] = useState<Column[]>(INITIAL_COLUMNS);
   const [dragOverColId, setDragOverColId] = useState<string | null>(null);
   const [toastVisible, setToastVisible] = useState(false);
@@ -395,14 +404,45 @@ export function KanbanBoard() {
         justifyContent: "space-between",
         flexShrink: 0,
       }}>
-        {/* Left: title + subtitle */}
-        <div>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#fff", lineHeight: 1.2 }}>
-            Recherche Latéral Droit
-          </h1>
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: "var(--color-neutral-500, #6B7280)" }}>
-            8 joueurs · Créée le 12/01/2025 · Resp: Thomas R.
-          </p>
+        {/* Left: back button + title + subtitle */}
+        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          <Link 
+            href="/recrutement/campagnes"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              backgroundColor: "var(--color-neutral-800)",
+              border: "1px solid var(--color-neutral-700)",
+              color: "var(--color-neutral-400)",
+              textDecoration: "none",
+              transition: "all 0.2s ease"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--color-neutral-700)";
+              e.currentTarget.style.color = "white";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--color-neutral-800)";
+              e.currentTarget.style.color = "var(--color-neutral-400)";
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
+          </Link>
+
+          <div>
+            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#fff", lineHeight: 1.2 }}>
+              {title}
+            </h1>
+            <p style={{ margin: "4px 0 0", fontSize: 13, color: "var(--color-neutral-500, #6B7280)" }}>
+              {subtitle}
+            </p>
+          </div>
         </div>
 
         {/* Right: action buttons */}
