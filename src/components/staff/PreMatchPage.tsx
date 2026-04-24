@@ -1069,7 +1069,7 @@ function TabStrategyCPA({ opponent }: { opponent: string }) {
             <div style={{ background: "rgba(34,197,94,0.05)", borderRadius: 10, padding: 20, border: "1px solid rgba(34,197,94,0.2)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                 <Zap size={14} className="text-[#22C55E]" />
-                <h4 style={{ fontSize: 11, fontWeight: 800, color: "white", uppercase: "true", letterSpacing: "0.05em" }}>NOTRE PLAN (OFFENSE)</h4>
+                <h4 style={{ fontSize: 11, fontWeight: 800, color: "white", textTransform: "uppercase", letterSpacing: "0.05em" }}>NOTRE PLAN (OFFENSE)</h4>
               </div>
               <p style={{ fontSize: 10, color: "var(--color-neutral-400)", marginBottom: 16 }}>Exploiter leurs faiblesses sur {activeSub}.</p>
 
