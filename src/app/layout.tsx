@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, DM_Sans } from "next/font/google";
+import { Inter, DM_Sans, Outfit } from "next/font/google";
 import "./globals.css";
 import { MainSidebar } from "@/components/layout/MainSidebar";
 import { ContextualSidebar } from "@/components/layout/ContextualSidebar";
@@ -17,6 +17,12 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Metz Data Lab",
   description: "Football analytics platform for FC Metz",
@@ -26,7 +32,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${inter.variable} ${dmSans.variable} h-full`}>
+    <html lang="fr" className={`${inter.variable} ${dmSans.variable} ${outfit.variable} h-full`}>
       <body className="h-full flex overflow-hidden">
         {/* Col 1 — Main sidebar 64px */}
         <MainSidebar />

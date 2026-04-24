@@ -91,18 +91,20 @@ function NavLink({
       href={item.href}
       style={{
         display: "flex", alignItems: "center", gap: 9,
-        padding: "7px 10px", borderRadius: 7, textDecoration: "none",
-        fontSize: 12, fontWeight: isActive ? 700 : 500,
-        backgroundColor: isActive ? `${accent}14` : "transparent",
-        color: isActive ? accent : "var(--color-neutral-400)",
-        borderLeft: isActive ? `2px solid ${accent}` : "2px solid transparent",
-        transition: "background-color 120ms, color 120ms",
+        padding: "8px 12px", borderRadius: 6, textDecoration: "none",
+        fontSize: 11, fontWeight: isActive ? 800 : 600,
+        backgroundColor: isActive ? accent : "transparent",
+        color: isActive ? "white" : "var(--color-neutral-400)",
+        textTransform: isActive ? "uppercase" : "none",
+        fontFamily: isActive ? "var(--font-display)" : "inherit",
+        letterSpacing: isActive ? "0.03em" : "normal",
+        transition: "all 150ms ease",
       }}
       onMouseEnter={e => {
         if (!isActive) {
           const el = e.currentTarget as HTMLElement;
-          el.style.backgroundColor = "var(--color-neutral-800)";
-          el.style.color = "var(--color-neutral-200)";
+          el.style.backgroundColor = "rgba(139, 26, 43, 0.08)";
+          el.style.color = "var(--color-primary-500)";
         }
       }}
       onMouseLeave={e => {
@@ -115,8 +117,8 @@ function NavLink({
     >
       <item.icon
         size={14}
-        strokeWidth={isActive ? 2 : 1.5}
-        style={{ color: isActive ? accent : "var(--color-neutral-500)", flexShrink: 0 }}
+        strokeWidth={isActive ? 2.5 : 1.5}
+        style={{ color: isActive ? "white" : "var(--color-neutral-500)", flexShrink: 0 }}
       />
       <span style={{ flex: 1 }}>{item.label}</span>
       {isActive && (
@@ -142,7 +144,7 @@ export function ContextualSidebar() {
 
       {/* Module header */}
       <div style={{ padding: "14px 16px 12px", borderBottom: "1px solid var(--color-neutral-800)" }}>
-        <h2 style={{ fontSize: 14, fontWeight: 800, color: "var(--color-neutral-100)", margin: 0, fontFamily: "var(--font-dm-sans)" }}>
+        <h2 style={{ fontSize: 14, fontWeight: 800, color: "var(--color-neutral-100)", margin: 0, fontFamily: "var(--font-display)", letterSpacing: "0.02em" }}>
           {module.title}
           {module.subtitle && (
             <>
@@ -163,7 +165,7 @@ export function ContextualSidebar() {
               key={item.id}
               item={item}
               isActive={activeId === item.id}
-              accentColor="#C42B47"
+              accentColor="var(--color-primary-500)"
             />
           ))}
         </div>
@@ -173,7 +175,7 @@ export function ContextualSidebar() {
       <div style={{ padding: "10px 14px", borderTop: "1px solid var(--color-neutral-800)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
           <span style={{ width: 8, height: 8, borderRadius: "50%", flexShrink: 0, background: "#C42B47" }} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-neutral-300)", fontFamily: "var(--font-dm-sans)" }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-neutral-300)", fontFamily: "var(--font-display)" }}>
             FC Metz
           </span>
           <span style={{

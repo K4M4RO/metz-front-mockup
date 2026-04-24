@@ -716,11 +716,10 @@ function TacticalHistorySection({ opponent }: { opponent: string }) {
                     <span style={{ fontSize: 11, fontWeight: 700, color: "var(--color-neutral-300)", width: 32, textAlign: "center" }}>{m.score}</span>
                     <Link
                       href={`/staff/post-match?match=${m.id}`}
+                      className="btn-grenat"
                       style={{
                         display: "flex", alignItems: "center", gap: 4, padding: "4px 9px", borderRadius: 5,
-                        fontSize: 10, fontWeight: 700, textDecoration: "none",
-                        background: "rgba(196,43,71,0.1)", color: "#C42B47",
-                        border: "1px solid rgba(196,43,71,0.25)", flexShrink: 0,
+                        fontSize: 9, textDecoration: "none", flexShrink: 0,
                       }}
                     >
                       Post-Match <ChevronRight size={10} />
@@ -1113,7 +1112,7 @@ function ReportView({ match }: { match: typeof UPCOMING_MATCHES[0] }) {
               ))}
             </div>
           </div>
-          <span style={{ marginLeft: "auto", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 5, background: "rgba(196,43,71,0.12)", border: "1px solid rgba(196,43,71,0.3)", color: "#C42B47" }}>
+          <span className="btn-grenat" style={{ marginLeft: "auto", fontSize: 10, padding: "4px 10px", borderRadius: 5 }}>
             {match.competition}
           </span>
         </div>
@@ -1121,12 +1120,15 @@ function ReportView({ match }: { match: typeof UPCOMING_MATCHES[0] }) {
       <div style={{ display: "flex", gap: 2, marginBottom: 16, borderBottom: "1px solid var(--color-neutral-700)", paddingBottom: 1 }}>
         {tabs.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)} style={{
-            padding: "8px 16px", borderRadius: "6px 6px 0 0", fontSize: 12, fontWeight: 700, cursor: "pointer",
-            background: tab === t.id ? "var(--color-neutral-800)" : "transparent",
-            color: tab === t.id ? "#C42B47" : "var(--color-neutral-400)",
-            border: tab === t.id ? "1px solid var(--color-neutral-700)" : "1px solid transparent",
-            borderBottom: tab === t.id ? "1px solid var(--color-neutral-800)" : "1px solid transparent",
+            padding: "8px 16px", borderRadius: "6px 6px 0 0", fontSize: 11, fontWeight: 800, cursor: "pointer",
+            background: tab === t.id ? "var(--color-primary-500)" : "transparent",
+            color: tab === t.id ? "white" : "var(--color-neutral-400)",
+            border: tab === t.id ? "1px solid var(--color-primary-500)" : "1px solid transparent",
+            borderBottom: tab === t.id ? "1px solid var(--color-primary-500)" : "1px solid transparent",
             marginBottom: tab === t.id ? -1 : 0,
+            textTransform: "uppercase",
+            fontFamily: "var(--font-display)",
+            letterSpacing: "0.02em",
           }}>{t.label}</button>
         ))}
       </div>
@@ -1153,7 +1155,7 @@ export function PreMatchPage() {
         display: "flex", flexDirection: "column", background: "var(--color-neutral-900)",
       }}>
         <div style={{ padding: "12px 14px 8px", borderBottom: "1px solid var(--color-neutral-800)" }}>
-          <span style={{ fontSize: 11, fontWeight: 800, color: "var(--color-neutral-400)", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: "var(--color-neutral-100)", letterSpacing: "0.06em", textTransform: "uppercase", fontFamily: "var(--font-display)" }}>
             Prochains matchs
           </span>
         </div>
@@ -1164,14 +1166,18 @@ export function PreMatchPage() {
             return (
               <button key={m.id} onClick={() => setSelectedId(m.id)} style={{
                 width: "100%", textAlign: "left", padding: "10px 10px", borderRadius: 8, marginBottom: 4, cursor: "pointer",
-                background: isActive ? "rgba(196,43,71,0.1)" : "transparent",
-                border: isActive ? "1px solid rgba(196,43,71,0.3)" : "1px solid transparent",
-              }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: isActive ? "#C42B47" : "var(--color-neutral-200)", marginBottom: 3 }}>
+                background: isActive ? "var(--color-primary-500)" : "transparent",
+                border: isActive ? "1px solid var(--color-primary-500)" : "1px solid transparent",
+                transition: "all 150ms ease",
+              }}
+              onMouseEnter={e => { if(!isActive) e.currentTarget.style.background = "rgba(139, 26, 43, 0.08)"; }}
+              onMouseLeave={e => { if(!isActive) e.currentTarget.style.background = "transparent"; }}
+              >
+                <div style={{ fontSize: 12, fontWeight: 700, color: isActive ? "white" : "var(--color-neutral-100)", marginBottom: 3, fontFamily: "var(--font-display)" }}>
                   vs {m.opponent}
                 </div>
                 <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <span style={{ fontSize: 10, color: "var(--color-neutral-500)" }}>{m.date}</span>
+                  <span style={{ fontSize: 10, color: isActive ? "white" : "var(--color-neutral-400)", opacity: isActive ? 0.8 : 1 }}>{m.date}</span>
                   <span style={{
                     fontSize: 9, fontWeight: 700, padding: "1px 5px", borderRadius: 3,
                     background: isHome ? "rgba(34,197,94,0.1)" : "rgba(245,158,11,0.1)",

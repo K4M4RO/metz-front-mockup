@@ -37,7 +37,7 @@ export function PostMatchPage() {
         style={{ borderColor: "var(--color-neutral-800)" }}
       >
         <div className="px-5 py-4 border-b border-[var(--color-neutral-800)]">
-          <h2 className="text-xs font-bold text-[var(--color-neutral-400)] uppercase tracking-wider">
+          <h2 className="text-xs font-bold text-[var(--color-neutral-100)] uppercase tracking-wider" style={{ fontFamily: "var(--font-display)" }}>
             Rapports récents
           </h2>
         </div>
@@ -51,8 +51,8 @@ export function PostMatchPage() {
                 onClick={() => setSelectedMatch(m.id)}
                 className={`w-full text-left p-3 rounded-lg transition-all border ${
                   isActive 
-                    ? "bg-[rgba(196,43,71,0.1)] border-[rgba(196,43,71,0.3)] shadow-sm" 
-                    : "bg-transparent border-transparent hover:bg-[var(--color-neutral-800)]"
+                    ? "bg-[var(--color-primary-500)] border-[var(--color-primary-500)] shadow-sm" 
+                    : "bg-transparent border-transparent hover:bg-[rgba(139,26,43,0.1)]"
                 }`}
               >
                 <div className="flex items-center gap-2.5 mb-1.5">
@@ -66,15 +66,15 @@ export function PostMatchPage() {
                   >
                     {R_LABEL[m.result]}
                   </span>
-                  <span className={`text-[13px] font-bold truncate ${isActive ? "text-[#C42B47]" : "text-[var(--color-neutral-200)]"}`}>
+                  <span className={`text-[13px] font-bold truncate ${isActive ? "text-white" : "text-[var(--color-neutral-100)]"}`}>
                     vs {m.opponent}
                   </span>
                 </div>
                 <div className="flex items-center justify-between pl-7">
-                  <span className="text-[11px] text-[var(--color-neutral-500)]">
+                  <span className={`text-[11px] ${isActive ? "text-white/80" : "text-[var(--color-neutral-400)]"}`}>
                     {m.score} · {m.date}
                   </span>
-                  {isActive && <ChevronRight size={14} className="text-[#C42B47] opacity-60" />}
+                  {isActive && <ChevronRight size={14} className="text-white opacity-80" />}
                 </div>
               </button>
             );
@@ -102,7 +102,7 @@ export function PostMatchPage() {
               <div className="w-16 h-16 bg-[var(--color-neutral-800)] rounded-full flex items-center justify-center mx-auto mb-4">
                 <FileText size={32} className="text-[var(--color-neutral-500)]" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-2">Données en cours d'analyse</h3>
+              <h3 className="text-lg font-bold text-[var(--color-neutral-100)] mb-2" style={{ fontFamily: "var(--font-display)" }}>Données en cours d'analyse</h3>
               <p className="text-sm text-[var(--color-neutral-400)] mb-6">
                 Le rapport broadcast interactif est actuellement disponible pour le match face à Reims.
               </p>

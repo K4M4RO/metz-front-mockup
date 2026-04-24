@@ -2,28 +2,28 @@
 
 /* ─── Design Tokens ─── */
 :root {
-  /* Primary — Grenat FC Metz */
-  --color-primary-950: #1a0508;
-  --color-primary-900: #2e0a10;
-  --color-primary-800: #5c1420;
-  --color-primary-700: #8b1e30;
-  --color-primary-600: #a8223a;
-  --color-primary-500: #c42b47;
-  --color-primary-400: #d95a72;
-  --color-primary-300: #e88a9b;
-  --color-primary-200: #f2b8c2;
-  --color-primary-100: #fae4e8;
+  /* Primary — Grenat FC Metz (officiel) */
+  --color-primary-950: #0d0509;
+  --color-primary-900: #1a0a11;
+  --color-primary-800: #3d0f1e;
+  --color-primary-700: #5e142a;
+  --color-primary-600: #7a1525;
+  --color-primary-500: #8B1A2B;
+  --color-primary-400: #C42B47;
+  --color-primary-300: #d95a72;
+  --color-primary-200: #e88a9b;
+  --color-primary-100: #f5d5db;
 
   /* Neutral — Dark base */
-  --color-neutral-950: #09090b;
-  --color-neutral-900: #111113;
-  --color-neutral-800: #1c1c1f;
-  --color-neutral-700: #2a2a2e;
-  --color-neutral-600: #3f3f46;
-  --color-neutral-500: #71717a;
-  --color-neutral-400: #a1a1aa;
-  --color-neutral-300: #d4d4d8;
-  --color-neutral-100: #f4f4f5;
+  --color-neutral-950: #0A0A0A;
+  --color-neutral-900: #121212;
+  --color-neutral-800: #1A1A1E;
+  --color-neutral-700: #27272B;
+  --color-neutral-600: #3B3B42;
+  --color-neutral-500: #6B6B75;
+  --color-neutral-400: #9E9EA8;
+  --color-neutral-300: #D1D1D8;
+  --color-neutral-100: #F2F2F4;
 
   /* Semantic */
   --color-success: #22c55e;
@@ -36,6 +36,40 @@
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-modal: 0 25px 50px rgba(0, 0, 0, 0.7);
   --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Light Theme ─── */
+[data-theme="light"] {
+  /* Primary — keep grenat but adjust for light backgrounds */
+  --color-primary-950: #f5d5db;
+  --color-primary-900: #f0c4cc;
+  --color-primary-800: #e88a9b;
+  --color-primary-700: #C42B47;
+  --color-primary-600: #8B1A2B;
+  --color-primary-500: #8B1A2B;
+  --color-primary-400: #7a1525;
+  --color-primary-300: #5e142a;
+  --color-primary-200: #3d0f1e;
+  --color-primary-100: #1a0a11;
+
+  /* Neutral — Light base (inverted) */
+  --color-neutral-950: #FFFFFF;
+  --color-neutral-900: #F8F8FA;
+  --color-neutral-800: #EEEFF2;
+  --color-neutral-700: #E0E1E6;
+  --color-neutral-600: #C8C9D0;
+  --color-neutral-500: #8E8F99;
+  --color-neutral-400: #5A5B66;
+  --color-neutral-300: #2D2E33;
+  --color-neutral-100: #111113;
+
+  /* Semantic — slightly adjusted for light bg */
+  --color-danger-soft: #fecaca;
+
+  /* Shadows — lighter */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-modal: 0 25px 50px rgba(0, 0, 0, 0.15);
+  --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 @theme inline {
@@ -62,17 +96,22 @@
   --color-n-100: var(--color-neutral-100);
 
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-display: var(--font-dm-sans), -apple-system, sans-serif;
+  --font-display: var(--font-outfit), var(--font-dm-sans), -apple-system, sans-serif;
 }
 
 html,
 body {
   height: 100%;
   background-color: var(--color-neutral-950);
-  color: var(--color-neutral-300);
+  color: var(--color-neutral-400);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+  color: var(--color-neutral-100);
+  font-family: var(--font-display);
 }
 
 /* Scrollbar styling */
@@ -88,6 +127,22 @@ body {
   background: transparent;
 }
 *::-webkit-scrollbar-thumb {
-  background: var(--color-neutral-600);
+  background: var(--color-primary-800);
   border-radius: 2px;
+}
+
+.btn-grenat {
+  background-color: var(--color-primary-500);
+  color: white !important;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  transition: all 150ms ease;
+}
+
+.btn-grenat:hover {
+  background-color: var(--color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 26, 43, 0.3);
 }

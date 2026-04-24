@@ -52,7 +52,7 @@ export default function RapportsPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between px-8 py-6 border-b border-[var(--color-neutral-800)] bg-[var(--color-neutral-900)] flex-shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-neutral-100)] flex items-center gap-3 tracking-tight" style={{ fontFamily: "var(--font-dm-sans)" }}>
+          <h1 className="text-2xl font-bold flex items-center gap-3 tracking-tight">
             <FileText className="text-[var(--color-primary-500)]" size={24} />
             Rapports d'Évaluation
           </h1>
@@ -104,7 +104,7 @@ export default function RapportsPage() {
                     {player.avatarInitials}
                   </div>
                   <div className="min-w-0">
-                    <div className="font-bold text-[var(--color-neutral-100)] truncate tracking-tight text-base" style={{ fontFamily: "var(--font-dm-sans)" }}>
+                    <div className="font-bold text-[var(--color-neutral-100)] truncate tracking-tight text-base">
                       {player.firstName} {player.name}
                     </div>
                     <div className="text-xs text-[var(--color-neutral-400)] mt-0.5 flex items-center gap-1.5 truncate">
@@ -132,7 +132,7 @@ export default function RapportsPage() {
                 <div className="flex items-center justify-center">
                    <button 
                      onClick={() => setPdfModalPlayer(player)}
-                     className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded outline-none shadow-sm transition-all text-[var(--color-neutral-300)] bg-[var(--color-neutral-800)] border border-[var(--color-neutral-700)] hover:bg-[var(--color-primary-500)] hover:border-[var(--color-primary-500)] hover:text-white"
+                     className="btn-grenat flex items-center gap-2 px-3 py-1.5 text-[10px] rounded outline-none shadow-sm"
                      title="Configurer et exporter en PDF"
                    >
                      <FileDown size={14} />

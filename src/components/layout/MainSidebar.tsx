@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Search, TrendingUp, Activity, Settings, LogOut, User } from "lucide-react";
 
 type Module = "recrutement" | "formation" | "staff";
@@ -27,31 +28,16 @@ export function MainSidebar() {
       {/* Logo */}
       <div className="group relative mb-4">
         <div
-          className="w-10 h-10 rounded-lg flex items-center justify-center cursor-pointer"
-          style={{ backgroundColor: "var(--color-primary-900)" }}
+          className="w-10 h-10 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden"
+          style={{ backgroundColor: "transparent" }}
         >
-          {/* FC Metz Grenat badge — simplified SVG */}
-          <svg viewBox="0 0 40 40" width="32" height="32" fill="none">
-            <path
-              d="M20 4 L34 10 L34 22 C34 30 20 38 20 38 C20 38 6 30 6 22 L6 10 Z"
-              fill="var(--color-primary-600)"
-            />
-            <path
-              d="M20 8 L30 13 L30 22 C30 28.5 20 35 20 35 C20 35 10 28.5 10 22 L10 13 Z"
-              fill="var(--color-primary-800)"
-            />
-            <text
-              x="20"
-              y="25"
-              textAnchor="middle"
-              fontSize="9"
-              fontWeight="700"
-              fill="var(--color-primary-200)"
-              fontFamily="var(--font-dm-sans)"
-            >
-              FCM
-            </text>
-          </svg>
+          <Image
+            src="/fc-metz-logo.png"
+            alt="FC Metz"
+            width={36}
+            height={36}
+            className="object-contain"
+          />
         </div>
         {/* Tooltip */}
         <span
@@ -81,14 +67,14 @@ export function MainSidebar() {
               className="group relative w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
               style={{
                 backgroundColor: isActive
-                  ? "var(--color-primary-900)"
+                  ? "var(--color-primary-500)"
                   : "transparent",
-                transition: "background-color 120ms ease-out",
+                transition: "all 150ms ease",
               }}
               onMouseEnter={(e) => {
                 if (!isActive)
                   (e.currentTarget as HTMLElement).style.backgroundColor =
-                    "var(--color-neutral-700)";
+                    "rgba(139, 26, 43, 0.1)";
               }}
               onMouseLeave={(e) => {
                 if (!isActive)
@@ -98,10 +84,10 @@ export function MainSidebar() {
             >
               <Icon
                 size={20}
-                strokeWidth={1.5}
+                strokeWidth={isActive ? 2.5 : 1.5}
                 style={{
                   color: isActive
-                    ? "var(--color-primary-400)"
+                    ? "white"
                     : "var(--color-neutral-400)",
                 }}
               />
@@ -139,13 +125,13 @@ export function MainSidebar() {
           className="group relative w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
           onMouseEnter={(e) =>
             ((e.currentTarget as HTMLElement).style.backgroundColor =
-              "var(--color-neutral-700)")
+              "rgba(139, 26, 43, 0.1)")
           }
           onMouseLeave={(e) =>
             ((e.currentTarget as HTMLElement).style.backgroundColor =
               "transparent")
           }
-          style={{ transition: "background-color 120ms ease-out" }}
+          style={{ transition: "all 150ms ease" }}
         >
           <Settings
             size={20}
@@ -169,11 +155,11 @@ export function MainSidebar() {
         <div className="relative">
           <button
             onClick={() => setAvatarOpen((v) => !v)}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
             style={{
-              backgroundColor: "var(--color-primary-800)",
-              color: "var(--color-primary-200)",
-              fontFamily: "var(--font-dm-sans)",
+              backgroundColor: "var(--color-primary-500)",
+              color: "white",
+              fontFamily: "var(--font-display)",
             }}
           >
             IL
@@ -202,7 +188,7 @@ export function MainSidebar() {
                     className="text-xs font-medium"
                     style={{
                       color: "var(--color-neutral-100)",
-                      fontFamily: "var(--font-dm-sans)",
+                      fontFamily: "var(--font-display)",
                     }}
                   >
                     Imrane L.
@@ -219,7 +205,7 @@ export function MainSidebar() {
                   style={{ color: "var(--color-neutral-300)" }}
                   onMouseEnter={(e) =>
                     ((e.currentTarget as HTMLElement).style.backgroundColor =
-                      "var(--color-neutral-700)")
+                      "rgba(139, 26, 43, 0.1)")
                   }
                   onMouseLeave={(e) =>
                     ((e.currentTarget as HTMLElement).style.backgroundColor =
@@ -234,7 +220,7 @@ export function MainSidebar() {
                   style={{ color: "var(--color-danger)" }}
                   onMouseEnter={(e) =>
                     ((e.currentTarget as HTMLElement).style.backgroundColor =
-                      "var(--color-neutral-700)")
+                      "rgba(139, 26, 43, 0.1)")
                   }
                   onMouseLeave={(e) =>
                     ((e.currentTarget as HTMLElement).style.backgroundColor =

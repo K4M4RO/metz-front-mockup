@@ -236,8 +236,8 @@ export function CPAPage() {
       <div className="h-full flex flex-col items-center justify-center bg-[var(--color-neutral-950)] p-12">
         <div className="max-w-5xl w-full">
           <div className="mb-12">
-            <h1 className="text-3xl font-black text-white mb-2 uppercase tracking-tight">Intelligence CPA</h1>
-            <p className="text-neutral-500 text-sm">Sélectionnez une catégorie pour analyser les performances de la Ligue 2.</p>
+            <h1 className="text-3xl font-black text-[var(--color-neutral-100)] mb-2 uppercase tracking-tight" style={{ fontFamily: "var(--font-display)" }}>Intelligence CPA</h1>
+            <p className="text-[var(--color-neutral-500)] text-sm">Sélectionnez une catégorie pour analyser les performances de la Ligue 2.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-6">
@@ -254,8 +254,8 @@ export function CPAPage() {
                   <div className="w-12 h-12 rounded-xl bg-[#C42B47]/10 flex items-center justify-center text-[#C42B47] mb-6 border border-[#C42B47]/20">
                     <cat.icon size={24} />
                   </div>
-                  <h3 className="text-xl font-black text-white mb-2 uppercase">{cat.label}</h3>
-                  <p className="text-neutral-500 text-xs mb-6 max-w-xs">{cat.description}</p>
+                  <h3 className="text-xl font-black text-[var(--color-neutral-100)] mb-2 uppercase" style={{ fontFamily: "var(--font-display)" }}>{cat.label}</h3>
+                  <p className="text-[var(--color-neutral-500)] text-xs mb-6 max-w-xs">{cat.description}</p>
                   <div className="flex items-center justify-between">
                     <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
                       {cat.count} Événements analysés
@@ -302,7 +302,7 @@ export function CPAPage() {
       <div className="flex-1 flex overflow-hidden">
         {/* ── LEFT VERTICAL SIDEBAR ── */}
         <aside className="w-64 flex-shrink-0 bg-[var(--color-neutral-900)] border-r border-[var(--color-neutral-800)] flex flex-col">
-          <div className="p-4 text-[10px] font-bold text-neutral-600 uppercase tracking-widest border-b border-[var(--color-neutral-800)]">
+          <div className="p-4 text-[10px] font-bold text-[var(--color-neutral-100)] uppercase tracking-widest border-b border-[var(--color-neutral-800)]" style={{ fontFamily: "var(--font-display)" }}>
             Variantes Tactics
           </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-1">
@@ -337,7 +337,7 @@ export function CPAPage() {
                       <ChevronRight size={14} className="rotate-180" />
                     </button>
                   )}
-                  <h2 className="text-2xl font-black text-white uppercase tracking-tight">
+                  <h2 className="text-2xl font-black text-[var(--color-neutral-100)] uppercase tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
                     {selectedTeam ? `Analyse : ${selectedTeam}` : `Classement : ${SUB_FILTERS[selectedCategory].find(s => s.id === activeSub)?.label}`}
                   </h2>
                 </div>
@@ -362,7 +362,7 @@ export function CPAPage() {
               <div className="bg-[var(--color-neutral-900)] border border-[var(--color-neutral-800)] rounded-2xl overflow-hidden shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-black/20 text-[10px] font-black text-neutral-500 uppercase">
+                    <tr className="bg-black/5 text-[10px] font-black text-[var(--color-neutral-400)] uppercase" style={{ fontFamily: "var(--font-display)" }}>
                       <th className="px-6 py-4">Rang</th>
                       <th className="px-6 py-4">Équipe</th>
                       <th className="px-6 py-4">Conversion</th>
@@ -382,7 +382,7 @@ export function CPAPage() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded bg-neutral-800 flex items-center justify-center text-[10px] font-bold">EM</div>
-                            <span className="text-sm font-bold text-white group-hover:text-[#C42B47] transition-colors">{team.team}</span>
+                            <span className="text-sm font-bold text-[var(--color-neutral-100)] group-hover:text-[#C42B47] transition-colors">{team.team}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4 text-sm font-bold text-green-500 font-mono">{team.value}</td>
@@ -417,7 +417,7 @@ export function CPAPage() {
                       <div className="bg-[var(--color-neutral-900)] p-6 rounded-2xl border border-[var(--color-neutral-800)]">
                         <div className="flex items-center gap-3 mb-4">
                           <div className="p-2 bg-blue-500/10 rounded-lg"><Info size={16} className="text-blue-500" /></div>
-                          <h4 className="text-[10px] font-black text-white uppercase tracking-widest">Zones de Danger</h4>
+                          <h4 className="text-[10px] font-black text-[var(--color-neutral-100)] uppercase tracking-widest" style={{ fontFamily: "var(--font-display)" }}>Zones de Danger</h4>
                         </div>
                         <p className="text-[11px] text-[var(--color-neutral-400)] leading-relaxed">
                           Le tireur privilégie la force au sol. 58% des tirs sont dirigés vers le coin inférieur gauche.
@@ -427,16 +427,16 @@ export function CPAPage() {
                       <div className="bg-[var(--color-neutral-900)] p-6 rounded-2xl border border-[var(--color-neutral-800)]">
                         <div className="flex items-center gap-3 mb-4">
                           <div className="p-2 bg-orange-500/10 rounded-lg"><Zap size={16} className="text-orange-500" /></div>
-                          <h4 className="text-[10px] font-black text-white uppercase tracking-widest">Impact Tireurs</h4>
+                          <h4 className="text-[10px] font-black text-[var(--color-neutral-100)] uppercase tracking-widest" style={{ fontFamily: "var(--font-display)" }}>Impact Tireurs</h4>
                         </div>
                         <div className="space-y-3">
                           <div className="flex justify-between items-center text-[11px]">
                             <span className="text-[var(--color-neutral-400)]">Tireur A</span>
-                            <span className="font-bold text-white uppercase tracking-tighter">Précision 92%</span>
+                            <span className="font-bold text-[var(--color-neutral-100)] uppercase tracking-tighter">Précision 92%</span>
                           </div>
                           <div className="flex justify-between items-center text-[11px]">
                             <span className="text-[var(--color-neutral-400)]">Tireur B</span>
-                            <span className="font-bold text-white uppercase tracking-tighter">Précision 78%</span>
+                            <span className="font-bold text-[var(--color-neutral-100)] uppercase tracking-tighter">Précision 78%</span>
                           </div>
                         </div>
                       </div>
@@ -444,10 +444,10 @@ export function CPAPage() {
                       <div className="bg-[var(--color-neutral-900)] p-6 rounded-2xl border border-[var(--color-neutral-800)]">
                         <div className="flex items-center gap-3 mb-4">
                           <div className="p-2 bg-green-500/10 rounded-lg"><BarChart2 size={16} className="text-green-500" /></div>
-                          <h4 className="text-[10px] font-black text-white uppercase tracking-widest">Conversion</h4>
+                          <h4 className="text-[10px] font-black text-[var(--color-neutral-100)] uppercase tracking-widest" style={{ fontFamily: "var(--font-display)" }}>Conversion</h4>
                         </div>
                         <div className="flex items-center gap-4">
-                          <span className="text-4xl font-black text-white">88%</span>
+                          <span className="text-4xl font-black text-[var(--color-neutral-100)]">88%</span>
                           <div className="text-[9px] text-[var(--color-neutral-500)] uppercase font-bold leading-tight">
                             des penaltys <br /> aboutissent à un but.
                           </div>
@@ -458,7 +458,7 @@ export function CPAPage() {
                     {/* Main Viz Area */}
                     <div className="bg-[var(--color-neutral-900)] border border-[var(--color-neutral-800)] rounded-2xl p-10 shadow-2xl">
                       <div className="text-center mb-10">
-                        <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em]">Zones de Frappe (Derniers 24 mois)</h3>
+                        <h3 className="text-[10px] font-black text-[var(--color-neutral-400)] uppercase tracking-[0.3em]" style={{ fontFamily: "var(--font-display)" }}>Zones de Frappe (Derniers 24 mois)</h3>
                       </div>
                       <PenaltyViz sub={activeSub} />
                     </div>
@@ -477,7 +477,7 @@ export function CPAPage() {
                       <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
                           <Target size={18} className="text-[#C42B47]" />
-                          <h3 className="text-xs font-black text-white uppercase tracking-widest">Terrain Parlant : {selectedTeam}</h3>
+                          <h3 className="text-xs font-black text-[var(--color-neutral-100)] uppercase tracking-widest" style={{ fontFamily: "var(--font-display)" }}>Terrain Parlant : {selectedTeam}</h3>
                         </div>
                         <div className="text-[10px] font-bold text-neutral-500 bg-black/30 px-2 py-1 rounded">ÉCHANTILLON : 50 DERNIERS</div>
                       </div>
@@ -491,7 +491,7 @@ export function CPAPage() {
                       <div className="bg-[var(--color-neutral-900)] border border-[var(--color-neutral-800)] rounded-2xl p-6">
                         <div className="flex items-center gap-3 mb-4">
                           <TrendingUp size={18} className="text-green-500" />
-                          <h3 className="text-xs font-black text-white uppercase tracking-widest">Insight Performance</h3>
+                          <h3 className="text-xs font-black text-[var(--color-neutral-100)] uppercase tracking-widest" style={{ fontFamily: "var(--font-display)" }}>Insight Performance</h3>
                         </div>
                         <p className="text-xs text-neutral-400 leading-relaxed italic">
                           {selectedCategory === "corners"
@@ -506,7 +506,7 @@ export function CPAPage() {
                       </div>
 
                       <div className="bg-[var(--color-neutral-900)] border border-[var(--color-neutral-800)] rounded-2xl p-6">
-                        <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-widest mb-4">Cibles / Exécutants Clés</h3>
+                        <h3 className="text-[10px] font-black text-[var(--color-neutral-400)] uppercase tracking-widest mb-4" style={{ fontFamily: "var(--font-display)" }}>Cibles / Exécutants Clés</h3>
                         <div className="space-y-3">
                           {[
                             { name: "G. Mikautadze", val: "12 occurrences", danger: "90%" },
@@ -515,7 +515,7 @@ export function CPAPage() {
                           ].map((t, i) => (
                             <div key={i} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5 hover:border-[#C42B47]/30 transition-colors">
                               <div className="flex flex-col">
-                                <span className="text-[11px] font-bold text-white">{t.name}</span>
+                                <span className="text-[11px] font-bold text-[var(--color-neutral-100)]">{t.name}</span>
                                 <span className="text-[9px] text-neutral-500">{t.val}</span>
                               </div>
                               <span className="text-[10px] font-black text-[#C42B47]">{t.danger} DANGER</span>

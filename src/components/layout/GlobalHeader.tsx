@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Search, Bell, ChevronRight } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 
 const NOTIFICATIONS = 3;
 
@@ -81,9 +82,9 @@ export function GlobalHeader() {
             ? "var(--color-neutral-700)"
             : "var(--color-neutral-800)",
           border: searchFocused
-            ? "1px solid var(--color-primary-700)"
+            ? "1px solid var(--color-primary-500)"
             : "1px solid var(--color-neutral-600)",
-          transition: "border-color 120ms ease-out, background-color 120ms ease-out",
+          transition: "all 120ms ease-out",
         }}
       >
         <Search
@@ -127,6 +128,9 @@ export function GlobalHeader() {
 
       {/* Right actions */}
       <div className="flex items-center gap-3 flex-shrink-0">
+        {/* Theme toggle */}
+        <ThemeToggle />
+
         {/* Notification bell */}
         <div className="relative">
           <button
@@ -187,7 +191,7 @@ export function GlobalHeader() {
                     className="text-sm font-medium"
                     style={{
                       color: "var(--color-neutral-100)",
-                      fontFamily: "var(--font-dm-sans)",
+                      fontFamily: "var(--font-display)",
                     }}
                   >
                     Notifications
@@ -318,9 +322,9 @@ export function GlobalHeader() {
             <div
               className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold"
               style={{
-                backgroundColor: "var(--color-primary-800)",
-                color: "var(--color-primary-200)",
-                fontFamily: "var(--font-dm-sans)",
+                backgroundColor: "var(--color-primary-500)",
+                color: "white",
+                fontFamily: "var(--font-display)",
               }}
             >
               IL
@@ -330,7 +334,7 @@ export function GlobalHeader() {
                 className="text-xs font-medium leading-none"
                 style={{
                   color: "var(--color-neutral-200)",
-                  fontFamily: "var(--font-dm-sans)",
+                  fontFamily: "var(--font-display)",
                 }}
               >
                 Imrane L.
@@ -367,7 +371,7 @@ export function GlobalHeader() {
                     className="text-xs font-medium"
                     style={{
                       color: "var(--color-neutral-100)",
-                      fontFamily: "var(--font-dm-sans)",
+                      fontFamily: "var(--font-display)",
                     }}
                   >
                     Imrane L.

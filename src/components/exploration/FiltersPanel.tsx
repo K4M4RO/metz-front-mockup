@@ -281,7 +281,7 @@ export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
         <button
           onClick={() => setCollapsed(false)}
           className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-700)")}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "rgba(139, 26, 43, 0.1)")}
           onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")}
           title="Afficher les filtres"
         >
@@ -320,8 +320,8 @@ export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
             <span
               className="ml-2 text-xs px-1.5 py-0.5 rounded-full"
               style={{
-                backgroundColor: "var(--color-primary-900)",
-                color: "var(--color-primary-400)",
+                backgroundColor: "var(--color-primary-100)",
+                color: "var(--color-primary-700)",
               }}
             >
               actifs
@@ -333,8 +333,8 @@ export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
           className="flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors"
           style={{ color: "var(--color-neutral-500)" }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-700)";
-            (e.currentTarget as HTMLElement).style.color = "var(--color-neutral-300)";
+            (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(139, 26, 43, 0.1)";
+            (e.currentTarget as HTMLElement).style.color = "var(--color-primary-500)";
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
@@ -360,11 +360,12 @@ export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
                   <button
                     key={pos}
                     onClick={() => togglePosition(pos)}
-                    className="text-xs px-2 py-1 rounded font-medium transition-colors"
+                    className="text-[10px] uppercase px-2 py-1 rounded font-bold transition-all"
                     style={{
-                      backgroundColor: active ? "rgba(196,43,71,0.20)" : "rgba(196,43,71,0.08)",
-                      border: `1px solid ${active ? "rgba(196,43,71,0.60)" : "rgba(196,43,71,0.25)"}`,
-                      color: active ? "var(--color-primary-300)" : "var(--color-primary-500)",
+                      backgroundColor: active ? "var(--color-primary-500)" : "rgba(139, 26, 43, 0.05)",
+                      border: `1px solid ${active ? "var(--color-primary-500)" : "rgba(139, 26, 43, 0.2)"}`,
+                      color: active ? "white" : "var(--color-primary-500)",
+                      fontFamily: active ? "var(--font-display)" : "inherit",
                     }}
                   >
                     {pos}
@@ -459,7 +460,7 @@ export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
                   <label
                     key={league}
                     className="flex items-center gap-2.5 cursor-pointer py-1 px-1 rounded transition-colors"
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-800)")}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "rgba(139, 26, 43, 0.1)")}
                     onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")}
                   >
                     <div
@@ -496,19 +497,19 @@ export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
           onClick={reset}
           className="flex-1 text-xs py-2 rounded transition-colors"
           style={{ color: "var(--color-primary-400)" }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--color-primary-300)")}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--color-primary-500)")}
           onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--color-primary-400)")}
         >
           Réinitialiser
         </button>
         <button
-          className="flex-1 text-xs py-2 rounded font-medium transition-colors"
+          className="flex-1 text-[10px] uppercase py-2 rounded font-bold transition-colors btn-grenat"
           style={{
-            backgroundColor: "var(--color-primary-600)",
+            backgroundColor: "var(--color-primary-500)",
             color: "white",
           }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-primary-500)")}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-primary-600)")}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-primary-400)")}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-primary-500)")}
         >
           Appliquer ({filteredCount})
         </button>

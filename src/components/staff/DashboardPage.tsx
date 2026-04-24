@@ -83,11 +83,10 @@ function PastMatchCard({ match }: { match: typeof pastMatches[0] }) {
       <div style={{ display: "flex", gap: 6, padding: "8px 10px" }}>
         <Link
           href={`/staff/post-match?match=${match.id}`}
+          className="btn-grenat"
           style={{
             flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-            padding: "6px 8px", borderRadius: 6, textDecoration: "none", fontSize: 11, fontWeight: 600,
-            background: "rgba(196,43,71,0.12)", color: "#C42B47",
-            border: "1px solid rgba(196,43,71,0.25)",
+            padding: "6px 8px", borderRadius: 6, textDecoration: "none", fontSize: 10,
           }}
         >
           <FileText size={12} /> Rapport Post-Match
@@ -159,11 +158,14 @@ function UpcomingMatchCard({ match }: { match: typeof upcomingMatches[0] }) {
         </div>
 
         {/* CTA */}
-        <div style={{
-          display: "flex", alignItems: "center", gap: 6, padding: "8px 14px",
-          borderTop: "1px solid var(--color-neutral-700)",
-          fontSize: 11, fontWeight: 600, color: "#C42B47",
-        }}>
+        <div 
+          className="btn-grenat"
+          style={{
+            display: "flex", alignItems: "center", gap: 6, padding: "8px 14px",
+            borderTop: "1px solid var(--color-neutral-700)",
+            fontSize: 10, borderRadius: "0 0 10px 10px",
+          }}
+        >
           <FileText size={12} /> Voir rapport Pré-Match
           <ChevronRight size={12} style={{ marginLeft: "auto" }} />
         </div>
@@ -188,10 +190,8 @@ export function DashboardPage() {
         <span style={{ fontSize: 13, fontWeight: 600, color: "#C42B47" }}>
           Aucun match en direct actuellement
         </span>
-        <Link href="/match-center" style={{
-          marginLeft: "auto", fontSize: 11, fontWeight: 700, color: "#C42B47",
-          textDecoration: "none", padding: "4px 10px", borderRadius: 5,
-          background: "rgba(196,43,71,0.15)", border: "1px solid rgba(196,43,71,0.3)",
+        <Link href="/match-center" className="btn-grenat" style={{
+          marginLeft: "auto", fontSize: 9, textDecoration: "none", padding: "4px 10px", borderRadius: 5,
         }}>
           Ouvrir Match Center
         </Link>

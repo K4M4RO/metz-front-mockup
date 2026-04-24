@@ -35,7 +35,7 @@ export function ActionBar({ view, onViewChange, totalCount, activePills, onToggl
       >
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold text-[var(--color-neutral-300)] uppercase tracking-wider flex items-center gap-1.5">
-            <Brain size={14} className="text-[#6D071A]" /> Modèles IA :
+            <Brain size={14} className="text-[var(--color-primary-500)]" /> Modèles IA :
           </span>
         </div>
 
@@ -50,8 +50,8 @@ export function ActionBar({ view, onViewChange, totalCount, activePills, onToggl
             defaultValue="N. Kanté"
           />
           <div className="h-4 w-px bg-[var(--color-neutral-700)] mx-1"></div>
-          <input type="range" min="0" max="100" defaultValue="85" className="w-16 accent-[#6D071A]" />
-          <span className="text-xs text-[#6D071A] font-bold w-8 text-right">85%</span>
+          <input type="range" min="0" max="100" defaultValue="85" className="w-16 accent-[var(--color-primary-500)]" />
+          <span className="text-xs text-[var(--color-primary-500)] font-bold w-8 text-right">85%</span>
         </div>
 
         {/* Sélecteur de Fit Score */}
@@ -64,12 +64,22 @@ export function ActionBar({ view, onViewChange, totalCount, activePills, onToggl
              <option>Relayeur Box-to-Box</option>
           </select>
           <div className="h-4 w-px bg-[var(--color-neutral-700)] mx-1"></div>
-          <input type="range" min="0" max="100" defaultValue="80" className="w-16 accent-[#6D071A]" />
-          <span className="text-xs text-[#6D071A] font-bold w-8 text-right">80</span>
+          <input type="range" min="0" max="100" defaultValue="80" className="w-16 accent-[var(--color-primary-500)]" />
+          <span className="text-xs text-[var(--color-primary-500)] font-bold w-8 text-right">80</span>
         </div>
 
         {/* Bouton Ajouter */}
-        <button className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-[var(--color-neutral-800)] text-[var(--color-neutral-300)] border border-[var(--color-neutral-700)] rounded-lg hover:bg-[var(--color-neutral-700)] hover:text-white transition-colors ml-auto sm:ml-0 shadow-sm whitespace-nowrap">
+        <button 
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-[var(--color-neutral-800)] text-[var(--color-neutral-300)] border border-[var(--color-neutral-700)] rounded-lg transition-all ml-auto sm:ml-0 shadow-sm whitespace-nowrap"
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(139, 26, 43, 0.1)";
+            (e.currentTarget as HTMLElement).style.color = "var(--color-primary-500)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-800)";
+            (e.currentTarget as HTMLElement).style.color = "var(--color-neutral-300)";
+          }}
+        >
           <Plus size={14} /> Autres
         </button>
       </div>
@@ -89,21 +99,25 @@ export function ActionBar({ view, onViewChange, totalCount, activePills, onToggl
             <button
               key={pill.id}
               onClick={() => onTogglePill(pill.id)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] uppercase font-bold transition-all"
               style={{
-                backgroundColor: active ? "rgba(196,43,71,0.18)" : "var(--color-neutral-800)",
-                border: `1px solid ${active ? "rgba(196,43,71,0.50)" : "var(--color-neutral-600)"}`,
-                color: active ? "var(--color-primary-300)" : "var(--color-neutral-400)",
+                backgroundColor: active ? "var(--color-primary-500)" : "var(--color-neutral-800)",
+                border: `1px solid ${active ? "var(--color-primary-500)" : "var(--color-neutral-600)"}`,
+                color: active ? "white" : "var(--color-neutral-400)",
+                fontFamily: active ? "var(--font-display)" : "inherit",
+              }}
+              onMouseEnter={(e) => {
+                if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(139, 26, 43, 0.1)";
+              }}
+              onMouseLeave={(e) => {
+                if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-800)";
               }}
             >
               <span>{pill.emoji}</span>
               <span>{pill.label}</span>
               {active && (
-                <span
-                  className="ml-0.5"
-                  style={{ color: "var(--color-primary-400)" }}
-                >
-                  <X size={10} strokeWidth={2} />
+                <span className="ml-0.5">
+                  <X size={10} strokeWidth={3} />
                 </span>
               )}
             </button>
@@ -141,21 +155,22 @@ export function ActionBar({ view, onViewChange, totalCount, activePills, onToggl
               <button
                 key={id}
                 onClick={() => onViewChange(id)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] uppercase font-bold transition-all"
                 title={label}
                 style={{
-                  backgroundColor: active ? "var(--color-primary-900)" : "transparent",
-                  color: active ? "var(--color-primary-300)" : "var(--color-neutral-500)",
+                  backgroundColor: active ? "var(--color-primary-500)" : "transparent",
+                  color: active ? "white" : "var(--color-neutral-500)",
                   borderRight: id !== "scatter" ? "1px solid var(--color-neutral-700)" : undefined,
+                  fontFamily: active ? "var(--font-display)" : "inherit",
                 }}
                 onMouseEnter={(e) => {
-                  if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-800)";
+                  if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(139, 26, 43, 0.1)";
                 }}
                 onMouseLeave={(e) => {
                   if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
                 }}
               >
-                <Icon size={14} strokeWidth={1.5} />
+                <Icon size={14} strokeWidth={active ? 3 : 1.5} />
                 <span className="hidden sm:inline">{label}</span>
               </button>
             );
@@ -164,22 +179,22 @@ export function ActionBar({ view, onViewChange, totalCount, activePills, onToggl
 
         {/* Export button */}
         <button
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded text-[10px] uppercase font-bold transition-all"
           style={{
             backgroundColor: "var(--color-neutral-800)",
             border: "1px solid var(--color-neutral-600)",
             color: "var(--color-neutral-400)",
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-700)";
-            (e.currentTarget as HTMLElement).style.color = "var(--color-neutral-200)";
+            (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(139, 26, 43, 0.1)";
+            (e.currentTarget as HTMLElement).style.color = "var(--color-primary-500)";
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-800)";
             (e.currentTarget as HTMLElement).style.color = "var(--color-neutral-400)";
           }}
         >
-          <Download size={13} strokeWidth={1.5} />
+          <Download size={13} strokeWidth={2} />
           Exporter
         </button>
       </div>
