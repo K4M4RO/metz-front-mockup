@@ -193,9 +193,9 @@ export function EquipeTab() {
   const [activeSub, setActiveSub] = useState<SubTab>("style");
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col">
       <SubPills tabs={SUB_TABS} active={activeSub} onChange={(id) => setActiveSub(id as SubTab)} />
-      <div className="flex-1 overflow-y-auto" style={{ backgroundColor: "var(--color-neutral-900)" }}>
+      <div style={{ backgroundColor: "var(--color-neutral-900)" }}>
         {activeSub === "style"       && <StyleDeJeuSubTab />}
         {activeSub === "withwithout" && <WithWithoutTab />}
         {activeSub === "classement"  && <StandingsTable standings={STANDINGS} />}

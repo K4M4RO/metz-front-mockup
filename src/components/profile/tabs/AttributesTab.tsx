@@ -7,26 +7,29 @@ import { PlayerPositionAnalysis } from "@/components/profile/PlayerPositionAnaly
 export function AttributesTab() {
   return (
     <div className="p-6 space-y-4">
-      {/* Row 1: Radar + FormationGrid — side by side, capped at 340px */}
+      {/* Main Grid: 2 columns */}
       <div
         className="grid gap-4"
         style={{ gridTemplateColumns: "1fr 1fr" }}
       >
-        <div style={{ maxHeight: 340, overflow: "hidden" }}>
-          <RadarWidget />
+        {/* Left Column: Radar + ValueChart */}
+        <div className="space-y-4 flex flex-col">
+          <div style={{ maxHeight: 340, overflow: "hidden" }}>
+            <RadarWidget />
+          </div>
+          <div style={{ maxHeight: 220, overflow: "hidden" }}>
+            <ValueChart />
+          </div>
         </div>
+
+        {/* Right Column: FormationGrid + PositionAnalysis */}
         <div className="space-y-4 flex flex-col">
           <FormationGrid />
           <PlayerPositionAnalysis />
         </div>
       </div>
 
-      {/* Row 2: Value chart — full width, capped at 220px */}
-      <div style={{ maxHeight: 220, overflow: "hidden" }}>
-        <ValueChart />
-      </div>
-
-      {/* Row 3: Availability — full width, capped at 220px */}
+      {/* Row 2: Availability — full width, capped at 220px */}
       <div style={{ maxHeight: 220, overflow: "hidden" }}>
         <AvailabilityWidget />
       </div>

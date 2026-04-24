@@ -14,15 +14,21 @@ export function ProfilePage() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <HeroHeader />
-      <TabBar active={activeTab} onChange={setActiveTab} />
-
       <div className="flex-1 overflow-y-auto" style={{ backgroundColor: "var(--color-neutral-900)" }}>
-        {activeTab === "attributes" && <AttributesTab />}
-        {activeTab === "analyse"    && <AnalyseTab />}
-        {activeTab === "equipe"     && <EquipeTab />}
-        {activeTab === "rapports"   && <RapportsTab />}
-        {activeTab === "blessures"  && <BlessuresTab />}
+        <HeroHeader />
+        
+        {/* Sticky TabBar */}
+        <div className="sticky top-0 z-40">
+          <TabBar active={activeTab} onChange={setActiveTab} />
+        </div>
+
+        <div className="flex-1">
+          {activeTab === "attributes" && <AttributesTab />}
+          {activeTab === "analyse"    && <AnalyseTab />}
+          {activeTab === "equipe"     && <EquipeTab />}
+          {activeTab === "rapports"   && <RapportsTab />}
+          {activeTab === "blessures"  && <BlessuresTab />}
+        </div>
       </div>
     </div>
   );

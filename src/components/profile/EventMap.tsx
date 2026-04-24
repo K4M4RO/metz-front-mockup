@@ -368,7 +368,7 @@ function Pill({ label, active, onClick }: { label:string; active:boolean; onClic
 export function EventMap() {
   const [eventType,    setEventType]    = useState<EventType>("tirs");
   const [matchFilter,  setMatchFilter]  = useState("all");
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(true);
   const [activeSF,     setActiveSF]     = useState<Set<string>>(new Set());
   const [zoneOverlay,  setZoneOverlay]  = useState(false);
   const [tooltip,      setTooltip]      = useState<TooltipState | null>(null);
@@ -472,15 +472,37 @@ export function EventMap() {
             );
           })}
         </nav>
-
-        {/* Sidebar footer — event count */}
-        <div style={{ padding:"12px 16px", borderTop:"1px solid var(--color-neutral-700)" }}>
-          <div style={{ fontSize:10, color:"var(--color-neutral-500)", marginBottom:4 }}>Événements filtrés</div>
-          <div style={{ fontSize:22, fontWeight:700, color:"#C42B47", fontFamily:"var(--font-dm-sans)", lineHeight:1 }}>
-            {filteredCount}
-            <span style={{ fontSize:12, color:"var(--color-neutral-500)", fontWeight:400, marginLeft:4 }}>
-              / {EVENT_COUNTS[eventType]}
-            </span>
+        
+        {/* Sidebar Legend (Moved from bottom right) */}
+        <div style={{ padding:"14px 16px", borderTop:"1px solid var(--color-neutral-700)", flexShrink: 0 }}>
+          <div style={{ fontSize:10, fontWeight:600, textTransform:"uppercase", letterSpacing:"0.08em", color:"var(--color-neutral-500)", marginBottom: 8 }}>
+            Légende
+          </div>
+          <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+            {LEGENDS[eventType].map((item) => (
+              <div key={item.label} style={{ display:"flex", alignItems:"center", gap:8 }}>
+                {item.shape === "diamond" ? (
+                  <svg width={10} height={10} viewBox="0 0 10 10">
+                    <polygon points="5,0 10,5 5,10 0,5" fill={item.color} />
+                  </svg>
+                ) : item.shape === "star" ? (
+                  <svg width={10} height={10} viewBox="0 0 10 10">
+                    <polygon points="5,0 6.2,3.8 10,3.8 7,6 8.1,10 5,7.5 1.9,10 3,6 0,3.8 3.8,3.8" fill={item.color} />
+                  </svg>
+                ) : item.shape === "line" ? (
+                  <svg width={14} height={10} viewBox="0 0 14 10">
+                    <line x1={0} y1={5} x2={14} y2={5} stroke={item.color} strokeWidth={2} />
+                    <polygon points="14,5 10,3 10,7" fill={item.color} />
+                  </svg>
+                ) : (
+                  <span style={{ width:8, height:8, borderRadius:"50%", backgroundColor:item.color, display:"inline-block" }} />
+                )}
+                <span style={{ fontSize:10, color:"var(--color-neutral-400)" }}>{item.label}</span>
+              </div>
+            ))}
+            {eventType === "tirs" && (
+              <span style={{ fontSize:9, color:"var(--color-neutral-600)", fontStyle: "italic" }}>Taille = xG</span>
+            )}
           </div>
         </div>
       </div>
@@ -520,6 +542,17 @@ export function EventMap() {
               position:"absolute", right:10, top:"50%", transform:"translateY(-50%)",
               pointerEvents:"none", color:"var(--color-neutral-500)", fontSize:10,
             }}>▼</span>
+          </div>
+
+          {/* Filtered Count (Moved from sidebar) */}
+          <div style={{ padding: "0 10px", borderRight: "1px solid var(--color-neutral-700)", marginRight: 5 }}>
+            <div style={{ fontSize: 9, color: "var(--color-neutral-500)", textTransform: "uppercase" }}>Filtrés</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#C42B47", fontFamily: "var(--font-dm-sans)" }}>
+              {filteredCount}
+              <span style={{ fontSize: 10, color: "var(--color-neutral-600)", fontWeight: 400, marginLeft: 2 }}>
+                / {EVENT_COUNTS[eventType]}
+              </span>
+            </div>
           </div>
 
           {/* Zone toggle */}
@@ -664,38 +697,6 @@ export function EventMap() {
                 </p>
               ))}
             </div>
-          )}
-        </div>
-
-        {/* Legend */}
-        <div style={{
-          padding:"8px 16px",
-          borderTop:"1px solid var(--color-neutral-700)",
-          display:"flex", alignItems:"center", gap:14, flexWrap:"wrap",
-        }}>
-          {LEGENDS[eventType].map((item) => (
-            <div key={item.label} style={{ display:"flex", alignItems:"center", gap:5 }}>
-              {item.shape === "diamond" ? (
-                <svg width={10} height={10} viewBox="0 0 10 10">
-                  <polygon points="5,0 10,5 5,10 0,5" fill={item.color} />
-                </svg>
-              ) : item.shape === "star" ? (
-                <svg width={10} height={10} viewBox="0 0 10 10">
-                  <polygon points="5,0 6.2,3.8 10,3.8 7,6 8.1,10 5,7.5 1.9,10 3,6 0,3.8 3.8,3.8" fill={item.color} />
-                </svg>
-              ) : item.shape === "line" ? (
-                <svg width={14} height={10} viewBox="0 0 14 10">
-                  <line x1={0} y1={5} x2={14} y2={5} stroke={item.color} strokeWidth={2} />
-                  <polygon points="14,5 10,3 10,7" fill={item.color} />
-                </svg>
-              ) : (
-                <span style={{ width:8, height:8, borderRadius:"50%", backgroundColor:item.color, display:"inline-block" }} />
-              )}
-              <span style={{ fontSize:10, color:"var(--color-neutral-500)" }}>{item.label}</span>
-            </div>
-          ))}
-          {eventType === "tirs" && (
-            <span style={{ fontSize:10, color:"var(--color-neutral-600)", marginLeft:"auto" }}>Taille = xG</span>
           )}
         </div>
       </div>

@@ -15,12 +15,17 @@ interface Props {
   idPrefix?: string;
 }
 
-export function HeatmapPitch({ hotspots, width = 560, idPrefix = "hm" }: Props) {
+export function HeatmapPitch({ hotspots, width = 800, idPrefix = "hm" }: Props) {
   const W = width;
   const H = Math.round(W * 68 / 105);
 
   return (
-    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: "block" }}>
+    <svg 
+      width="100%" 
+      height="auto" 
+      viewBox={`0 0 ${W} ${H}`} 
+      style={{ display: "block", borderRadius: 4, overflow: "hidden" }}
+    >
       {/* Green pitch background */}
       <rect width={W} height={H} fill="#0A2E0A" />
 

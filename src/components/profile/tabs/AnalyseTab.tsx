@@ -88,7 +88,7 @@ function CoverageSubTab() {
         {mode === "saison" && (
           <>
             <div className="overflow-hidden rounded" style={{ maxWidth: "100%" }}>
-              <HeatmapPitch hotspots={SEASON_HOTSPOTS} width={800} idPrefix="season" />
+              <HeatmapPitch hotspots={SEASON_HOTSPOTS} idPrefix="season" />
             </div>
             <div className="flex items-center gap-3 mt-3">
               <span className="text-xs" style={{ color: "var(--color-neutral-500)" }}>Froid</span>
@@ -239,9 +239,11 @@ export function AnalyseTab() {
   const [activeSub, setActiveSub] = useState<SubTab>("couverture");
 
   return (
-    <div className="flex flex-col h-full">
-      <SubPills tabs={SUB_TABS} active={activeSub} onChange={(id) => setActiveSub(id as SubTab)} />
-      <div className="flex-1 overflow-y-auto" style={{ backgroundColor: "var(--color-neutral-900)" }}>
+    <div className="flex flex-col">
+      <div className="sticky z-30" style={{ top: 44 }}>
+        <SubPills tabs={SUB_TABS} active={activeSub} onChange={(id) => setActiveSub(id as SubTab)} />
+      </div>
+      <div style={{ backgroundColor: "var(--color-neutral-900)" }}>
         {activeSub === "couverture"   && <CoverageSubTab />}
         {activeSub === "performances" && <PerformancesTab />}
         {activeSub === "physique"     && <PhysicalTab />}
