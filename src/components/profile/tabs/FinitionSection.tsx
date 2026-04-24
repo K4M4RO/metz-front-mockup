@@ -1,6 +1,7 @@
 "use client";
 
-import { Info, Target, Zap, Footprints, Ruler } from "lucide-react";
+import { useState } from "react";
+import { Info, Target, Zap, Footprints, Ruler, Map } from "lucide-react";
 import { DonutChart } from "@/components/match-center/post-match/DonutChart";
 import { 
   FINITION_DASHBOARD, SHOT_IMPACTS, GOAL_ZONES, SNIPER_LOG 
@@ -106,9 +107,13 @@ function VerdictDashboard() {
 // ── Goal View ─────────────────────────────────────────────────────────────────
 
 function GoalView() {
+  const [selectedShotId, setSelectedShotId] = useState<number | null>(null);
+  const [focusMode, setFocusMode] = useState<boolean>(true);
+  const selectedShot = selectedShotId ? SHOT_IMPACTS.find(s => s.id === selectedShotId) : null;
+
   return (
-    <div className="bg-neutral-800/20 border border-neutral-700/30 rounded-xl p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="bg-neutral-800/20 border border-neutral-700/30 rounded-xl p-5">
+      <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-white flex items-center gap-2">
           <Target size={16} className="text-primary-500" /> Goal View : Cartographie des Frappes Cadrées
         </h3>
@@ -129,7 +134,7 @@ function GoalView() {
         </div>
       </div>
 
-      <div className="relative mx-auto" style={{ width: "80%", aspectRatio: "7.32 / 2.44" }}>
+      <div className="relative mx-auto" style={{ width: "65%", aspectRatio: "7.32 / 2.44" }}>
         {/* Goal Frame */}
         <div className="absolute inset-0 border-[6px] border-neutral-200 border-b-0 rounded-t-lg z-10" />
         <div className="absolute inset-0 bg-neutral-900/50">
@@ -155,18 +160,21 @@ function GoalView() {
             const size = 12 + shot.psxg * 35; // Size by PSxG
             const color = shot.result === "goal" ? "#22C55E" : "#EF4444"; // Color by Goal/No Goal
             const isTop = shot.y < 0.35; // If in the top 35% of the goal
+            const isSelected = selectedShotId === shot.id;
+            const isDimmed = focusMode && selectedShotId !== null && !isSelected;
 
             return (
               <div
                 key={shot.id}
-                className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full cursor-pointer hover:scale-125 transition-transform group/shot z-20"
+                onClick={() => setSelectedShotId(shot.id)}
+                className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full cursor-pointer transition-all group/shot ${isSelected ? 'ring-2 ring-white z-40' : 'z-20'} ${isDimmed ? 'opacity-20 grayscale-[50%]' : 'opacity-100 hover:ring-2 hover:ring-white/50'}`}
                 style={{
                   left: `${shot.x * 100}%`,
                   top: `${shot.y * 100}%`,
                   width: size,
                   height: size,
                   backgroundColor: color,
-                  boxShadow: `0 0 15px ${color}60`,
+                  boxShadow: isDimmed ? 'none' : `0 0 15px ${color}60`,
                   border: "2px solid rgba(255,255,255,0.4)",
                 }}
               >
@@ -195,10 +203,96 @@ function GoalView() {
         </div>
       </div>
       
-      <div className="flex items-center justify-center gap-12 mt-8">
+      <div className="flex items-center justify-center gap-12 mt-4">
         <div className="text-center">
           <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold mb-1">Zones de Prédilection</p>
           <Tooltip text="Répartition de la réussite par zone de la cage. Permet d'identifier si le joueur a des zones de frappe favorites ou s'il est prévisible pour un gardien." />
+        </div>
+      </div>
+
+      <div className="mt-4 border-t border-neutral-700/50 pt-4">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-sm font-bold text-white flex items-center gap-2">
+            <Map size={16} className="text-primary-500" /> Origine des frappes & Détails
+          </h4>
+          <button 
+            onClick={() => setFocusMode(!focusMode)}
+            className={`text-[10px] font-bold px-3 py-1.5 rounded border transition-colors ${focusMode ? 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:text-white' : 'bg-neutral-200 border-white text-black'}`}
+          >
+            {focusMode ? 'Activer Vue Globale (Tout voir)' : 'Activer Mode Focus (Isoler)'}
+          </button>
+        </div>
+        <div className="grid grid-cols-12 gap-8">
+          {/* Details Panel */}
+          <div className="col-span-4 bg-neutral-900 rounded-xl border border-neutral-800 p-6 flex flex-col justify-center min-h-[200px]">
+            {selectedShot ? (
+              <div className="space-y-4">
+                <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 border-b border-neutral-800 pb-2">Détails du tir sélectionné</div>
+                <div className="flex justify-between items-center">
+                  <span className="text-neutral-400 text-xs">xG Initial:</span>
+                  <span className="text-white font-black">{selectedShot.xg.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-neutral-400 text-xs">PSxG (Après tir):</span>
+                  <span className="text-white font-black">{selectedShot.psxg.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-neutral-400 text-xs">Vitesse de balle:</span>
+                  <span className="text-white font-black">{selectedShot.speed} km/h</span>
+                </div>
+                <div className="flex justify-between items-center pt-3 mt-1 border-t border-neutral-800">
+                  <span className="text-neutral-400 text-xs">Résultat:</span>
+                  <span className={`font-black uppercase text-xs ${selectedShot.result === 'goal' ? 'text-green-500' : selectedShot.result === 'post' ? 'text-orange-500' : 'text-red-500'}`}>
+                    {selectedShot.result === 'goal' ? 'BUT' : selectedShot.result === 'post' ? 'POTEAU' : 'ARRÊTÉ'}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center flex flex-col items-center gap-3">
+                <Target size={24} className="text-neutral-600" />
+                <p className="text-neutral-500 text-xs italic leading-relaxed">
+                  Sélectionnez un point sur la cage ou le terrain pour voir les détails balistiques du tir.
+                </p>
+              </div>
+            )}
+          </div>
+          
+          {/* Half Pitch */}
+          <div className="col-span-8 bg-[#141b14] rounded-xl border border-neutral-800 relative overflow-hidden" style={{ height: "220px" }}>
+            {/* Pitch lines */}
+            <div className="absolute inset-x-12 top-6 bottom-0 border border-white/20 border-b-0">
+              {/* Penalty box */}
+              <div className="absolute top-0 left-1/4 right-1/4 h-[40%] border border-white/20 border-t-0" />
+              {/* 6-yard box */}
+              <div className="absolute top-0 left-[38%] right-[38%] h-[15%] border border-white/20 border-t-0" />
+              {/* Penalty spot */}
+              <div className="absolute top-[28%] left-1/2 w-1.5 h-1.5 -ml-[3px] -mt-[3px] bg-white/40 rounded-full" />
+              {/* D-Curve */}
+              <div className="absolute top-[40%] left-1/2 w-[20%] h-[20%] border border-white/20 rounded-full -translate-x-1/2 -translate-y-1/2" style={{ clipPath: 'polygon(0 50%, 100% 50%, 100% 100%, 0 100%)' }} />
+            </div>
+             
+            {/* Shots on pitch */}
+            <div className="absolute inset-x-12 top-6 bottom-0 pointer-events-none">
+              {SHOT_IMPACTS.map((shot) => {
+                const isSelected = shot.id === selectedShotId;
+                const isDimmed = focusMode && selectedShotId !== null && !isSelected;
+                const color = shot.result === "goal" ? "#22C55E" : "#EF4444";
+                return (
+                  <div
+                    key={`pitch-${shot.id}`}
+                    onClick={() => setSelectedShotId(shot.id)}
+                    className={`absolute w-3.5 h-3.5 -ml-[7px] -mt-[7px] rounded-full cursor-pointer transition-all pointer-events-auto ${isSelected ? 'ring-2 ring-white shadow-[0_0_15px_rgba(255,255,255,0.8)] z-30' : 'z-20'} ${isDimmed ? 'opacity-20 grayscale-[50%]' : 'opacity-100 hover:ring-2 hover:ring-white/50'}`}
+                    style={{
+                      left: `${shot.pitchX * 100}%`,
+                      top: `${(1 - shot.pitchY) * 100}%`,
+                      backgroundColor: color,
+                      boxShadow: isDimmed ? 'none' : `0 0 10px ${color}80`
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -303,7 +397,7 @@ function BonusIndicators() {
 
 export function FinitionSection() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <VerdictDashboard />
       <GoalView />
       <BonusIndicators />

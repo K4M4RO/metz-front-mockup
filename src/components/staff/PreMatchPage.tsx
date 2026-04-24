@@ -1032,7 +1032,7 @@ function TabStrategyCPA({ opponent }: { opponent: string }) {
             <div style={{ background: "var(--color-neutral-800)", borderRadius: 10, padding: 20, border: "1px solid var(--color-neutral-700)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                 <Shield size={14} className="text-[#EF4444]" />
-                <h4 style={{ fontSize: 11, fontWeight: 800, color: "white", uppercase: "true", letterSpacing: "0.05em" }}>ANALYSE ADVERSE (DÉFENSE)</h4>
+                <h4 style={{ fontSize: 11, fontWeight: 800, color: "white", textTransform: "uppercase", letterSpacing: "0.05em" }}>ANALYSE ADVERSE (DÉFENSE)</h4>
               </div>
               <p style={{ fontSize: 10, color: "var(--color-neutral-400)", marginBottom: 16 }}>Leurs patterns habituels sur {activeSub}.</p>
 

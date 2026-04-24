@@ -5,6 +5,9 @@ export interface ShotImpact {
   xg: number;
   psxg: number;
   result: "goal" | "saved" | "post";
+  pitchX: number; // 0-1 (horizontal on pitch)
+  pitchY: number; // 0-1 (vertical on pitch, 1 is goal line)
+  speed: number;  // km/h
 }
 
 export interface SniperMatch {
@@ -33,16 +36,16 @@ export const FINITION_DASHBOARD = {
 };
 
 export const SHOT_IMPACTS: ShotImpact[] = [
-  { id: 1, x: 0.15, y: 0.20, xg: 0.12, psxg: 0.45, result: "goal" },
-  { id: 2, x: 0.85, y: 0.25, xg: 0.08, psxg: 0.38, result: "goal" },
-  { id: 3, x: 0.50, y: 0.50, xg: 0.35, psxg: 0.12, result: "saved" },
-  { id: 4, x: 0.70, y: 0.80, xg: 0.15, psxg: 0.55, result: "goal" },
-  { id: 5, x: 0.30, y: 0.15, xg: 0.05, psxg: 0.65, result: "goal" },
-  { id: 6, x: 0.90, y: 0.70, xg: 0.22, psxg: 0.18, result: "saved" },
-  { id: 7, x: 0.10, y: 0.85, xg: 0.10, psxg: 0.42, result: "goal" },
-  { id: 8, x: 0.55, y: 0.20, xg: 0.06, psxg: 0.05, result: "saved" },
-  { id: 9, x: 0.05, y: 0.95, xg: 0.04, psxg: 0.02, result: "post" },
-  { id: 10, x: 0.45, y: 0.75, xg: 0.45, psxg: 0.25, result: "saved" },
+  { id: 1, x: 0.15, y: 0.20, xg: 0.12, psxg: 0.45, result: "goal", pitchX: 0.35, pitchY: 0.85, speed: 92 },
+  { id: 2, x: 0.85, y: 0.25, xg: 0.08, psxg: 0.38, result: "goal", pitchX: 0.70, pitchY: 0.80, speed: 98 },
+  { id: 3, x: 0.50, y: 0.50, xg: 0.35, psxg: 0.12, result: "saved", pitchX: 0.50, pitchY: 0.92, speed: 85 },
+  { id: 4, x: 0.70, y: 0.80, xg: 0.15, psxg: 0.55, result: "goal", pitchX: 0.60, pitchY: 0.88, speed: 105 },
+  { id: 5, x: 0.30, y: 0.15, xg: 0.05, psxg: 0.65, result: "goal", pitchX: 0.20, pitchY: 0.75, speed: 110 },
+  { id: 6, x: 0.90, y: 0.70, xg: 0.22, psxg: 0.18, result: "saved", pitchX: 0.80, pitchY: 0.85, speed: 88 },
+  { id: 7, x: 0.10, y: 0.85, xg: 0.10, psxg: 0.42, result: "goal", pitchX: 0.40, pitchY: 0.82, speed: 95 },
+  { id: 8, x: 0.55, y: 0.20, xg: 0.06, psxg: 0.05, result: "saved", pitchX: 0.55, pitchY: 0.70, speed: 82 },
+  { id: 9, x: 0.05, y: 0.95, xg: 0.04, psxg: 0.02, result: "post", pitchX: 0.25, pitchY: 0.65, speed: 90 },
+  { id: 10, x: 0.45, y: 0.75, xg: 0.45, psxg: 0.25, result: "saved", pitchX: 0.50, pitchY: 0.95, speed: 86 },
 ];
 
 export const GOAL_ZONES = [
