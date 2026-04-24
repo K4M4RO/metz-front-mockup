@@ -6,15 +6,17 @@ import { TabMatchSummary } from "./TabMatchSummary";
 import { TabOnBall }      from "./TabOnBall";
 import { TabOffBall }     from "./TabOffBall";
 import { TabDefense }     from "./TabDefense";
+import { TabEndurance }   from "./TabEndurance";
 import { HOME_TEAM, AWAY_TEAM, MATCH_INFO } from "./data";
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
 
 const TABS = [
-  { id: "summary",  label: "Match Summary & Phases",  icon: BarChart2, shortLabel: "Summary"  },
-  { id: "onball",   label: "On-Ball — Passes & Déséquilibre", icon: Target,   shortLabel: "On-Ball"  },
-  { id: "offball",  label: "Off-Ball — Courses",       icon: Activity, shortLabel: "Off-Ball" },
-  { id: "defense",  label: "Défense & Pression",       icon: Shield,   shortLabel: "Défense"  },
+  { id: "summary",   label: "Match Summary & Phases",  icon: BarChart2, shortLabel: "Summary"  },
+  { id: "endurance", label: "Endurance & Fatigue",     icon: Activity,  shortLabel: "Endurance" },
+  { id: "onball",    label: "On-Ball — Passes & Déséquilibre", icon: Target,   shortLabel: "On-Ball"  },
+  { id: "animation", label: "Animation & Espaces",     icon: Activity,  shortLabel: "Animation" },
+  { id: "defense",   label: "Défense & Pression",       icon: Shield,   shortLabel: "Défense"  },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -184,8 +186,9 @@ export function PostMatchReport() {
       {/* Tab content */}
       <div style={{ flex: 1, overflow: "hidden" }}>
         {activeTab === "summary" && <TabMatchSummary />}
+        {activeTab === "endurance" && <TabEndurance />}
         {activeTab === "onball"  && <TabOnBall />}
-        {activeTab === "offball" && <TabOffBall />}
+        {activeTab === "animation" && <TabOffBall />}
         {activeTab === "defense" && <TabDefense />}
       </div>
     </div>

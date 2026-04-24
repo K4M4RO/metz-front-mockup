@@ -15,20 +15,20 @@ const PH = 460;
 
 const PHASES = ["Tous", "Build Up", "Create", "Finish", "Transition", "Direct"];
 const LINE_COLORS: Record<PassLine["lineBreaking"], string> = {
-  none:  "rgba(164,164,180,0.45)",
+  none: "rgba(164,164,180,0.45)",
   first: "rgba(59,130,246,0.8)",
-  mid:   "rgba(245,158,11,0.85)",
-  last:  "rgba(196,43,71,0.95)",
+  mid: "rgba(245,158,11,0.85)",
+  last: "rgba(196,43,71,0.95)",
 };
 
 function PassLab() {
   const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
-  const [selectedPhase,  setSelectedPhase]  = useState("Tous");
+  const [selectedPhase, setSelectedPhase] = useState("Tous");
 
   const filtered = useMemo(() => {
     return PASSES.filter((p) => {
       const playerOk = selectedPlayer === null || p.playerId === selectedPlayer;
-      const phaseOk  = selectedPhase === "Tous" || p.phase === selectedPhase;
+      const phaseOk = selectedPhase === "Tous" || p.phase === selectedPhase;
       return playerOk && phaseOk;
     });
   }, [selectedPlayer, selectedPhase]);
