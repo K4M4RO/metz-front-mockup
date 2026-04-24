@@ -5,8 +5,10 @@ export function middleware(req: NextRequest) {
 
   if (basicAuth) {
     const authValue = basicAuth.split(" ")[1];
-    // Décodage du Base64
-    const [user, pwd] = atob(authValue).split(":");
+    const decoded = atob(authValue);
+    const colonIndex = decoded.indexOf(":");
+    const user = colonIndex !== -1 ? decoded.substring(0, colonIndex) : decoded;
+    const pwd = colonIndex !== -1 ? decoded.substring(colonIndex + 1) : "";
 
     // Utilisation stricte des variables d'environnement (plus de valeurs en dur)
     const validUser = process.env.BASIC_AUTH_USER;
