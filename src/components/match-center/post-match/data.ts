@@ -69,6 +69,15 @@ export interface PressurePoint {
   presserId: number;
   pressedId: number;
   outcome: "loss" | "success" | "failed-pass";
+  action?: string;
+}
+
+export interface ReceivedPressurePoint {
+  x: number; y: number;
+  intensity: number;
+  playerId: number;
+  outcome: "kept" | "lost";
+  action?: string;
 }
 
 // ── Match Header ──────────────────────────────────────────────────────────────
@@ -413,16 +422,43 @@ export const RUN_PROFILES: RunProfileRow[] = [
 // ── Defense & Pressure ────────────────────────────────────────────────────────
 
 export const PRESSURE_POINTS: PressurePoint[] = [
-  { x: 0.25, y: 0.20, intensity: 0.9, presserId: 8, pressedId: 32, outcome: "loss" },
-  { x: 0.50, y: 0.18, intensity: 0.7, presserId: 11, pressedId: 30, outcome: "failed-pass" },
-  { x: 0.70, y: 0.25, intensity: 0.8, presserId: 10, pressedId: 31, outcome: "success" },
-  { x: 0.35, y: 0.30, intensity: 0.6, presserId: 6, pressedId: 33, outcome: "loss" },
-  { x: 0.60, y: 0.35, intensity: 0.5, presserId: 7, pressedId: 35, outcome: "success" },
-  { x: 0.20, y: 0.40, intensity: 0.7, presserId: 5, pressedId: 34, outcome: "failed-pass" },
-  { x: 0.80, y: 0.30, intensity: 0.8, presserId: 9, pressedId: 37, outcome: "loss" },
-  { x: 0.45, y: 0.45, intensity: 0.4, presserId: 6, pressedId: 36, outcome: "success" },
-  { x: 0.55, y: 0.22, intensity: 0.9, presserId: 11, pressedId: 32, outcome: "loss" },
-  { x: 0.30, y: 0.15, intensity: 0.6, presserId: 8, pressedId: 33, outcome: "success" },
+  { x: 0.25, y: 0.20, intensity: 0.9, presserId: 8, pressedId: 32, outcome: "loss", action: "Récupération réussie" },
+  { x: 0.50, y: 0.18, intensity: 0.7, presserId: 11, pressedId: 30, outcome: "failed-pass", action: "Passe forcée ratée" },
+  { x: 0.70, y: 0.25, intensity: 0.8, presserId: 10, pressedId: 31, outcome: "success", action: "Pression efficace" },
+  { x: 0.35, y: 0.30, intensity: 0.6, presserId: 6, pressedId: 33, outcome: "loss", action: "Récupération réussie" },
+  { x: 0.60, y: 0.35, intensity: 0.5, presserId: 7, pressedId: 35, outcome: "success", action: "Pression efficace" },
+  { x: 0.20, y: 0.40, intensity: 0.7, presserId: 5, pressedId: 34, outcome: "failed-pass", action: "Passe forcée ratée" },
+  { x: 0.80, y: 0.30, intensity: 0.8, presserId: 9, pressedId: 37, outcome: "loss", action: "Récupération réussie" },
+  { x: 0.45, y: 0.45, intensity: 0.4, presserId: 6, pressedId: 36, outcome: "success", action: "Pression efficace" },
+  { x: 0.55, y: 0.22, intensity: 0.9, presserId: 11, pressedId: 32, outcome: "loss", action: "Récupération réussie" },
+  { x: 0.30, y: 0.15, intensity: 0.6, presserId: 8, pressedId: 33, outcome: "success", action: "Pression efficace" },
+];
+
+export const RECEIVED_PRESSURE_POINTS: ReceivedPressurePoint[] = [
+  { x: 0.30, y: 0.65, intensity: 0.8, playerId: 6, outcome: "kept", action: "Ballon conservé" },
+  { x: 0.15, y: 0.75, intensity: 0.9, playerId: 4, outcome: "lost", action: "Perte sous pression" },
+  { x: 0.85, y: 0.70, intensity: 0.7, playerId: 5, outcome: "kept", action: "Sortie de balle réussie" },
+  { x: 0.50, y: 0.60, intensity: 0.6, playerId: 9, outcome: "lost", action: "Passe forcée interceptée" },
+  { x: 0.40, y: 0.80, intensity: 0.9, playerId: 2, outcome: "kept", action: "Dégagement propre" },
+  { x: 0.60, y: 0.75, intensity: 0.5, playerId: 3, outcome: "kept", action: "Ballon conservé" },
+  { x: 0.20, y: 0.60, intensity: 0.7, playerId: 8, outcome: "lost", action: "Tacle adverse réussi" },
+  { x: 0.75, y: 0.65, intensity: 0.8, playerId: 10, outcome: "kept", action: "Ballon conservé" },
+];
+
+export const PRESSURE_SCORES = [
+  { name: "Diallo", score: 88, pos: 75, neg: 25 },
+  { name: "Tsitaishvili", score: 82, pos: 68, neg: 32 },
+  { name: "Mbala", score: 79, pos: 60, neg: 40 },
+  { name: "Hein", score: 74, pos: 55, neg: 45 },
+  { name: "Deminguet", score: 71, pos: 50, neg: 50 },
+];
+
+export const RESISTANCE_SCORES = [
+  { name: "Gbamin", score: 92, pos: 85, neg: 15 },
+  { name: "Deminguet", score: 85, pos: 78, neg: 22 },
+  { name: "Sané", score: 78, pos: 70, neg: 30 },
+  { name: "Kouao", score: 72, pos: 65, neg: 35 },
+  { name: "Yegbe", score: 68, pos: 60, neg: 40 },
 ];
 
 export interface DefActionRow {
@@ -467,4 +503,11 @@ export const PRESSURE_CONSEQUENCES = {
   losses: { count: 5, pct: 42 },
   successPasses: { count: 4, pct: 33 },
   failedPasses: { count: 3, pct: 25 },
+};
+
+// Received Pressure consequences
+export const RECEIVED_CONSEQUENCES = {
+  kept: { count: 8, pct: 55 },
+  lost: { count: 4, pct: 30 },
+  forcedError: { count: 2, pct: 15 },
 };

@@ -16,7 +16,7 @@ const TABS = [
   { id: "endurance", label: "Endurance & Fatigue",     icon: Activity,  shortLabel: "Endurance" },
   { id: "onball",    label: "On-Ball — Passes & Déséquilibre", icon: Target,   shortLabel: "On-Ball"  },
   { id: "animation", label: "Animation & Espaces",     icon: Activity,  shortLabel: "Animation" },
-  { id: "defense",   label: "Défense & Pression",       icon: Shield,   shortLabel: "Défense"  },
+  { id: "defense",   label: "Pression & Défense",       icon: Shield,   shortLabel: "Pression"  },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
