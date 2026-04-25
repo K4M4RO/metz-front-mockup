@@ -5,8 +5,10 @@ import Link from "next/link";
 import {
   Calendar, Clock, MapPin, TrendingUp, TrendingDown, Minus,
   ArrowUpDown, LayoutGrid, FlaskConical, ChevronDown, ChevronRight,
-  Shield, Zap
+  Shield, Zap, Target
 } from "lucide-react";
+import { CornerViz, FreeKickViz, ThrowInViz, PenaltyViz, VizMode } from "./CPAComponents";
+import { LeagueDistribution } from "./LeagueDistribution";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -967,126 +969,167 @@ function TabPlayers() {
 
 // ─── Tab: Strategy CPA ────────────────────────────────────────────────────────
 function TabStrategyCPA({ opponent }: { opponent: string }) {
-  const [activeSub, setActiveSub] = useState("target-hunter");
+  const [activeSub, setActiveSub] = useState("corners");
+  const [activeVariant, setActiveVariant] = useState("inswing_l");
+  const [vizMode, setVizMode] = useState<VizMode>("distribution");
+  
   const subs = [
-    { id: "target-hunter", label: "Target Hunter" },
     { id: "corners", label: "Corners" },
     { id: "freekicks", label: "Coups Francs" },
     { id: "throwins", label: "Touches" },
     { id: "penalties", label: "Penaltys" },
   ];
 
+  const VARIANTS: Record<string, { id: string; label: string }[]> = {
+    corners: [
+      { id: "inswing_l", label: "Rentrant G." },
+      { id: "inswing_r", label: "Rentrant D." },
+      { id: "outswing_l", label: "Sortant G." },
+      { id: "outswing_r", label: "Sortant D." },
+      { id: "short", label: "À deux" },
+    ],
+    freekicks: [
+      { id: "wide_l", label: "Excentré G." },
+      { id: "wide_r", label: "Excentré D." },
+      { id: "direct", label: "Directs" },
+      { id: "deep", label: "Axiaux" },
+    ],
+    throwins: [
+      { id: "long", label: "Touches Longues" },
+      { id: "short", label: "Touches Courtes" },
+    ],
+    penalties: [
+      { id: "shooters", label: "Tireurs" },
+      { id: "history", label: "Historique" },
+    ],
+  };
+
+  const currentVariants = VARIANTS[activeSub] || [];
+
+  const handleMainTabChange = (id: string) => {
+    setActiveSub(id);
+    setActiveVariant(VARIANTS[id][0].id);
+  };
+
+  const MOCK_TEAMS = [
+    { id: "1", name: "Metz", value: 18.4, isMetz: true },
+    { id: "2", name: opponent, value: 12.2, isOpponent: true },
+    { id: "3", name: "Auxerre", value: 21.5 },
+    { id: "4", name: "Rodez", value: 8.4 },
+    { id: "5", name: "Caen", value: 15.6 },
+    { id: "6", name: "Pau", value: 10.1 },
+    { id: "7", name: "Amiens", value: 14.2 },
+    { id: "8", name: "Dunkerque", value: 9.5 },
+  ];
+
+  const getMetricInfo = () => {
+    switch (activeSub) {
+      case "corners": return { title: "Efficacité Corners", metric: "18.4% Conv.", desc: "Taux de conversion des corners en tirs ou buts sur les 50 dernières tentatives." };
+      case "freekicks": return { title: "Danger Coups Francs", metric: "1.2 xG/Match", desc: "Espérance de buts générée sur coups francs directs et excentrés." };
+      case "throwins": return { title: "Impact Touches", metric: "12% xG+", desc: "Surcroît de dangerosité généré par les touches longues par rapport à la moyenne." };
+      case "penalties": return { title: "Conversion Penalty", metric: "88% Réussite", desc: "Taux de réussite historique des tireurs actuels de l'équipe." };
+      default: return { title: "Performance CPA", metric: "Top 5", desc: "Classement général basé sur l'efficacité globale." };
+    }
+  };
+
+  const metricInfo = getMetricInfo();
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", gap: 6, marginBottom: 4 }}>
-        {subs.map(s => (
-          <button key={s.id} onClick={() => setActiveSub(s.id)} style={{
-            padding: "5px 12px", borderRadius: 6, fontSize: 10, fontWeight: 700, cursor: "pointer",
-            background: activeSub === s.id ? "rgba(196,43,71,0.15)" : "var(--color-neutral-800)",
-            color: activeSub === s.id ? "#C42B47" : "var(--color-neutral-400)",
-            border: activeSub === s.id ? "1px solid rgba(196,43,71,0.35)" : "1px solid var(--color-neutral-700)",
-            textTransform: "uppercase", letterSpacing: "0.05em"
-          }}>{s.label}</button>
-        ))}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 8, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 4, background: "var(--color-neutral-800)", padding: 3, borderRadius: 8, border: "1px solid var(--color-neutral-700)" }}>
+          {subs.map(s => (
+            <button key={s.id} onClick={() => handleMainTabChange(s.id)} style={{
+              padding: "6px 14px", borderRadius: 6, fontSize: 10, fontWeight: 800, cursor: "pointer",
+              background: activeSub === s.id ? "#C42B47" : "transparent",
+              color: activeSub === s.id ? "white" : "var(--color-neutral-400)",
+              border: "none",
+              textTransform: "uppercase", letterSpacing: "0.05em",
+              transition: "all 0.2s"
+            }}>{s.label}</button>
+          ))}
+        </div>
+
+        <div style={{ width: 1, height: 20, background: "var(--color-neutral-700)", margin: "0 4px" }} />
+
+        <div style={{ display: "flex", gap: 4 }}>
+          {currentVariants.map(v => (
+            <button key={v.id} onClick={() => setActiveVariant(v.id)} style={{
+              padding: "4px 10px", borderRadius: 5, fontSize: 9, fontWeight: 700, cursor: "pointer",
+              background: activeVariant === v.id ? "rgba(196,43,71,0.12)" : "transparent",
+              color: activeVariant === v.id ? "#C42B47" : "var(--color-neutral-500)",
+              border: activeVariant === v.id ? "1px solid rgba(196,43,71,0.25)" : "1px solid transparent",
+              transition: "all 0.2s"
+            }}>{v.label}</button>
+          ))}
+        </div>
       </div>
 
-      <div style={{ background: "var(--color-neutral-900)", borderRadius: 12, border: "1px solid var(--color-neutral-800)", padding: 24, minHeight: 400 }}>
-        {activeSub === "target-hunter" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 24 }}>
-            <div>
-              <h3 style={{ fontSize: 14, fontWeight: 800, color: "white", marginBottom: 16 }}>Analyse des Cibles (Target Hunter)</h3>
-              <p style={{ fontSize: 12, color: "var(--color-neutral-400)", marginBottom: 24 }}>
-                Identification des joueurs adverses les plus sollicités sur CPA et préconisations de marquage pour {opponent}.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: 24 }}>
+        {/* Left: Visualization */}
+        <div style={{ background: "var(--color-neutral-900)", borderRadius: 12, border: "1px solid var(--color-neutral-800)", padding: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, width: "100%" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Target size={18} className="text-[#C42B47]" />
+              <h3 style={{ fontSize: 12, fontWeight: 800, color: "white", textTransform: "uppercase", fontFamily: "var(--font-display)" }}>
+                Analyse Terrain : {VARIANTS[activeSub]?.find(v => v.id === activeVariant)?.label || activeSub}
+              </h3>
+            </div>
+            
+            {activeSub === "corners" && (
+              <div style={{ marginLeft: "auto", display: "flex", background: "var(--color-neutral-800)", padding: 1, borderRadius: 6, border: "1px solid rgba(255,255,255,0.05)" }}>
+                <button 
+                  onClick={() => setVizMode("distribution")}
+                  style={{ padding: "4px 10px", fontSize: 9, fontWeight: 800, borderRadius: 4, background: vizMode === "distribution" ? "#C42B47" : "transparent", color: vizMode === "distribution" ? "white" : "#666" }}
+                >DISTRIBUTION</button>
+                <button 
+                  onClick={() => setVizMode("events")}
+                  style={{ padding: "4px 10px", fontSize: 9, fontWeight: 800, borderRadius: 4, background: vizMode === "events" ? "#C42B47" : "transparent", color: vizMode === "events" ? "white" : "#666" }}
+                >ÉVÉNEMENTS</button>
+              </div>
+            )}
+          </div>
+
+          {activeSub === "corners" && <CornerViz mode={vizMode} sub={activeVariant} />}
+          {activeSub === "freekicks" && <FreeKickViz />}
+          {activeSub === "throwins" && <ThrowInViz />}
+          {activeSub === "penalties" && <PenaltyViz />}
+        </div>
+
+        {/* Right: Ranking & Insights */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <LeagueDistribution 
+            title={metricInfo.title}
+            metricLabel={metricInfo.metric}
+            description={metricInfo.desc}
+            teams={MOCK_TEAMS}
+          />
+
+          <div style={{ background: "var(--color-neutral-800)", borderRadius: 12, padding: 20, border: "1px solid var(--color-neutral-700)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+              <TrendingUp size={16} className="text-[#22C55E]" />
+              <h3 style={{ fontSize: 11, fontWeight: 800, color: "white", textTransform: "uppercase" }}>Insight Performance</h3>
+            </div>
+            <p style={{ fontSize: 11, color: "var(--color-neutral-400)", lineHeight: "1.5", fontStyle: "italic" }}>
+              "{opponent} montre une vulnérabilité sur les ballons au premier poteau. Leur bloc défensif a tendance à reculer trop vite, laissant un espace pour une déviation."
+            </p>
+          </div>
+
+          <div style={{ background: "var(--color-neutral-800)", borderRadius: 12, padding: 20, border: "1px solid var(--color-neutral-700)" }}>
+             <h3 style={{ fontSize: 10, fontWeight: 800, color: "var(--color-neutral-500)", textTransform: "uppercase", marginBottom: 12 }}>Cibles à surveiller</h3>
+             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {[
-                  { name: "Joueur Cible n°1", zone: "Premier Poteau", danger: "Trés Élevé", rec: "Marquage individuel strict (Kouyaté)" },
-                  { name: "Joueur Cible n°2", zone: "Point de Penalty", danger: "Élevé", rec: "Blocage de course au départ" },
-                ].map((target, i) => (
-                  <div key={i} style={{ padding: 16, background: "var(--color-neutral-800)", borderRadius: 10, border: "1px solid var(--color-neutral-700)" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 800, color: "white" }}>{target.name}</span>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#EF4444" }}>DANGER {target.danger}</span>
-                    </div>
-                    <div style={{ fontSize: 11, color: "var(--color-neutral-400)" }}>Zone : {target.zone}</div>
-                    <div style={{ fontSize: 11, color: "#C42B47", fontWeight: 700, marginTop: 4 }}>Préconisation : {target.rec}</div>
+                  { name: "Cible n°1", danger: "Trés Élevé" },
+                  { name: "Cible n°2", danger: "Élevé" }
+                ].map((t, i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "rgba(0,0,0,0.2)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.05)" }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "white" }}>{t.name}</span>
+                    <span style={{ fontSize: 9, fontWeight: 800, color: "#C42B47" }}>{t.danger}</span>
                   </div>
                 ))}
-              </div>
-            </div>
-            <div style={{ background: "var(--color-neutral-800)", borderRadius: 10, padding: 20, border: "1px solid var(--color-neutral-700)" }}>
-              <div style={{ fontSize: 11, fontWeight: 800, color: "var(--color-neutral-500)", textTransform: "uppercase", marginBottom: 12 }}>Visualisation Zones</div>
-              <PitchShell w={260} h={320}>
-                <circle cx={130} cy={60} r={40} fill="rgba(239,68,68,0.15)" stroke="#EF4444" strokeWidth={1} strokeDasharray="4 2" />
-                <circle cx={70} cy={45} r={25} fill="rgba(239,68,68,0.1)" stroke="#EF4444" strokeWidth={1} strokeDasharray="4 2" opacity={0.6} />
-                <text x={130} y={65} textAnchor="middle" fontSize={10} fill="white" fontWeight={700}>Zone A</text>
-              </PitchShell>
-            </div>
+             </div>
           </div>
-        )}
-
-        {activeSub !== "target-hunter" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-            {/* Defensive Prep (Opponent Attacks) */}
-            <div style={{ background: "var(--color-neutral-800)", borderRadius: 10, padding: 20, border: "1px solid var(--color-neutral-700)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-                <Shield size={14} className="text-[#EF4444]" />
-                <h4 style={{ fontSize: 11, fontWeight: 800, color: "white", textTransform: "uppercase", letterSpacing: "0.05em" }}>ANALYSE ADVERSE (DÉFENSE)</h4>
-              </div>
-              <p style={{ fontSize: 10, color: "var(--color-neutral-400)", marginBottom: 16 }}>Leurs patterns habituels sur {activeSub}.</p>
-
-              <div style={{ height: 220, background: "rgba(0,0,0,0.2)", borderRadius: 8, border: "1px solid var(--color-neutral-700)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {activeSub === "corners" && (
-                  <svg viewBox="0 0 100 100" style={{ width: "80%", height: "80%" }}>
-                    <rect x="0" y="0" width="100" height="100" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-                    <path d="M 5 5 Q 40 40 50 15" fill="none" stroke="#EF4444" strokeWidth="1" strokeDasharray="2 1" />
-                    <circle cx="50" cy="15" r="8" fill="rgba(239,68,68,0.2)" stroke="#EF4444" strokeWidth="0.5" />
-                  </svg>
-                )}
-                {activeSub === "freekicks" && (
-                  <svg viewBox="0 0 100 100" style={{ width: "80%", height: "80%" }}>
-                    <rect x="10" y="0" width="80" height="20" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-                    <circle cx="50" cy="50" r="2" fill="#F59E0B" />
-                    <path d="M 50 50 L 50 10" fill="none" stroke="#F59E0B" strokeWidth="1" />
-                  </svg>
-                )}
-                {activeSub === "throwins" && (
-                  <div style={{ fontSize: 9, color: "var(--color-neutral-500)", fontWeight: 700 }}>PATTERN TOUCHES LONGUES</div>
-                )}
-                {activeSub === "penalties" && (
-                  <div style={{ fontSize: 9, color: "var(--color-neutral-500)", fontWeight: 700 }}>CLUSTERS TIREURS</div>
-                )}
-              </div>
-
-              <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
-                <div style={{ fontSize: 10, color: "var(--color-neutral-300)" }}><span style={{ color: "#EF4444" }}>•</span> Danger principal : Premier poteau</div>
-                <div style={{ fontSize: 10, color: "var(--color-neutral-300)" }}><span style={{ color: "#EF4444" }}>•</span> Tireur préférentiel : Pied gauche rentrant</div>
-              </div>
-            </div>
-
-            {/* Offensive Prep (Our Plan) */}
-            <div style={{ background: "rgba(34,197,94,0.05)", borderRadius: 10, padding: 20, border: "1px solid rgba(34,197,94,0.2)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-                <Zap size={14} className="text-[#22C55E]" />
-                <h4 style={{ fontSize: 11, fontWeight: 800, color: "white", textTransform: "uppercase", letterSpacing: "0.05em" }}>NOTRE PLAN (OFFENSE)</h4>
-              </div>
-              <p style={{ fontSize: 10, color: "var(--color-neutral-400)", marginBottom: 16 }}>Exploiter leurs faiblesses sur {activeSub}.</p>
-
-              <div style={{ height: 220, background: "rgba(0,0,0,0.2)", borderRadius: 8, border: "1px solid rgba(34,197,94,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: 9, color: "#22C55E", fontWeight: 800, marginBottom: 4 }}>FAILLE DÉTECTÉE</div>
-                  <div style={{ fontSize: 12, color: "white", fontWeight: 700 }}>Second Poteau Isolé</div>
-                  <div style={{ fontSize: 9, color: "var(--color-neutral-500)", marginTop: 8 }}>Blocage du gardien par Millot</div>
-                </div>
-              </div>
-
-              <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
-                <div style={{ fontSize: 10, color: "var(--color-neutral-300)" }}><span style={{ color: "#22C55E" }}>•</span> Combinaison : "L'écran"</div>
-                <div style={{ fontSize: 10, color: "var(--color-neutral-300)" }}><span style={{ color: "#22C55E" }}>•</span> Cible : Traoré lancé</div>
-              </div>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
