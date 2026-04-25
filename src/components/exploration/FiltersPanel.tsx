@@ -364,7 +364,7 @@ export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
                     style={{
                       backgroundColor: active ? "var(--color-primary-500)" : "rgba(139, 26, 43, 0.05)",
                       border: `1px solid ${active ? "var(--color-primary-500)" : "rgba(139, 26, 43, 0.2)"}`,
-                      color: active ? "white" : "var(--color-primary-500)",
+                      color: active ? "var(--text-on-accent)" : "var(--color-primary-500)",
                       fontFamily: active ? "var(--font-display)" : "inherit",
                     }}
                   >
@@ -506,7 +506,7 @@ export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
           className="flex-1 text-[10px] uppercase py-2 rounded font-bold transition-colors btn-grenat"
           style={{
             backgroundColor: "var(--color-primary-500)",
-            color: "white",
+            color: "var(--text-on-accent)",
           }}
           onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-primary-400)")}
           onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-primary-500)")}

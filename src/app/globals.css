@@ -23,6 +23,7 @@
   --color-neutral-500: #6B6B75;
   --color-neutral-400: #9E9EA8;
   --color-neutral-300: #D1D1D8;
+  --color-neutral-200: #E4E4E9;
   --color-neutral-100: #F2F2F4;
 
   /* Semantic */
@@ -31,6 +32,51 @@
   --color-info: #3b82f6;
   --color-danger: #ef4444;
   --color-danger-soft: #7f1d1d;
+
+  /* ─── Semantic Surface Tokens ─── */
+  --bg-app:            var(--color-neutral-950);
+  --bg-surface:        var(--color-neutral-900);
+  --bg-surface-raised: var(--color-neutral-800);
+  --bg-hover:          var(--color-neutral-700);
+  --bg-active:         var(--color-primary-500);
+
+  /* ─── Semantic Text Tokens ─── */
+  --text-primary:   var(--color-neutral-100);
+  --text-secondary: var(--color-neutral-300);
+  --text-muted:     var(--color-neutral-400);
+  --text-disabled:  var(--color-neutral-500);
+  --text-on-accent: #ffffff;
+
+  /* ─── Semantic Border Tokens ─── */
+  --border-subtle:  var(--color-neutral-800);
+  --border-default: var(--color-neutral-700);
+  --border-strong:  var(--color-neutral-600);
+
+  /* ─── Primary RGB (for rgba usage) ─── */
+  --primary-rgb: 196, 43, 71;
+
+  /* ─── Semantic Status RGB (for rgba() usage) ─── */
+  --success-rgb:      34, 197, 94;
+  --warning-rgb:      234, 179, 8;
+  --info-rgb:         59, 130, 246;
+  --danger-rgb:       239, 68, 68;
+  --neutral-badge-rgb: 161, 161, 170;
+
+  /* ─── Rating color tokens ─── */
+  --rating-a: #22c55e; --rating-a-rgb: 34, 197, 94;
+  --rating-b: #84cc16; --rating-b-rgb: 132, 204, 22;
+  --rating-c: #eab308; --rating-c-rgb: 234, 179, 8;
+  --rating-d: #f97316; --rating-d-rgb: 249, 115, 22;
+  --rating-e: #ef4444; --rating-e-rgb: 239, 68, 68;
+
+  /* ─── Note/Kanban badge color tokens ─── */
+  --note-high: #4ade80; --note-high-rgb: 74, 222, 128;
+  --note-mid:  #fde047; --note-mid-rgb:  253, 224, 71;
+  --note-low:  #fb923c; --note-low-rgb:  251, 146, 60;
+  --note-bad:  #f87171; --note-bad-rgb:  248, 113, 113;
+
+  /* ─── Modal overlay ─── */
+  --overlay-bg: rgba(0, 0, 0, 0.5);
 
   /* Shadows */
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -61,10 +107,58 @@
   --color-neutral-500: #8E8F99;
   --color-neutral-400: #5A5B66;
   --color-neutral-300: #2D2E33;
+  --color-neutral-200: #1C1C1F;
   --color-neutral-100: #111113;
 
   /* Semantic — slightly adjusted for light bg */
   --color-danger-soft: #fecaca;
+
+  /* ─── Semantic Surface Tokens — Light ─── */
+  --bg-app:            #F5F5F7;
+  --bg-surface:        #FFFFFF;
+  --bg-surface-raised: #FFFFFF;
+  --bg-hover:          #F0F0F3;
+  --bg-active:         var(--color-primary-500);
+
+  --text-primary:   #111113;
+  --text-secondary: #2D2E33;
+  --text-muted:     #5A5B66;
+  --text-disabled:  #8E8F99;
+  --text-on-accent: #ffffff;
+
+  --border-subtle:  #EEEFF2;
+  --border-default: #E0E1E6;
+  --border-strong:  #C8C9D0;
+
+  --primary-rgb: 139, 26, 43;
+
+  /* ─── Semantic colors — darker for 4.5:1 contrast on light backgrounds ─── */
+  --color-success: #15803d;
+  --color-warning: #a16207;
+  --color-info:    #1d4ed8;
+  --color-danger:  #b91c1c;
+
+  --success-rgb:      21, 128, 61;
+  --warning-rgb:      161, 98, 7;
+  --info-rgb:         29, 78, 216;
+  --danger-rgb:       185, 28, 28;
+  --neutral-badge-rgb: 100, 100, 116;
+
+  /* ─── Rating tokens — darker for light backgrounds ─── */
+  --rating-a: #15803d; --rating-a-rgb: 21, 128, 61;
+  --rating-b: #4d7c0f; --rating-b-rgb: 77, 124, 15;
+  --rating-c: #a16207; --rating-c-rgb: 161, 98, 7;
+  --rating-d: #c2410c; --rating-d-rgb: 194, 65, 12;
+  --rating-e: #b91c1c; --rating-e-rgb: 185, 28, 28;
+
+  /* ─── Note/Kanban badge tokens — darker for light backgrounds ─── */
+  --note-high: #15803d; --note-high-rgb: 21, 128, 61;
+  --note-mid:  #a16207; --note-mid-rgb:  161, 98, 7;
+  --note-low:  #c2410c; --note-low-rgb:  194, 65, 12;
+  --note-bad:  #b91c1c; --note-bad-rgb:  185, 28, 28;
+
+  /* ─── Overlay ─── */
+  --overlay-bg: rgba(0, 0, 0, 0.2);
 
   /* Shadows — lighter */
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);

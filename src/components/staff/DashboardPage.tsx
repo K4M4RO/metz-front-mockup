@@ -31,20 +31,23 @@ const upcomingMatches = [
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const resultColors: Record<string, string> = { W: "#22C55E", D: "#F59E0B", L: "#EF4444" };
-const resultLabels: Record<string, string> = { W: "V", D: "N", L: "D" };
+const RESULT_STYLE: Record<string, { color: string; bg: string; border: string; label: string }> = {
+  W: { color: "var(--color-success)", bg: "rgba(var(--success-rgb), 0.12)", border: "rgba(var(--success-rgb), 0.33)", label: "V" },
+  D: { color: "var(--color-warning)", bg: "rgba(var(--warning-rgb), 0.12)", border: "rgba(var(--warning-rgb), 0.33)", label: "N" },
+  L: { color: "var(--color-danger)",  bg: "rgba(var(--danger-rgb),  0.12)", border: "rgba(var(--danger-rgb),  0.33)", label: "D" },
+};
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function ResultBadge({ result }: { result: string }) {
+  const cfg = RESULT_STYLE[result];
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", justifyContent: "center",
       width: 22, height: 22, borderRadius: 5, fontSize: 10, fontWeight: 800,
-      background: `${resultColors[result]}22`, color: resultColors[result],
-      border: `1px solid ${resultColors[result]}44`,
+      background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}`,
     }}>
-      {resultLabels[result]}
+      {cfg.label}
     </span>
   );
 }
@@ -118,8 +121,8 @@ function UpcomingMatchCard({ match }: { match: typeof upcomingMatches[0] }) {
         cursor: "pointer",
       }}
         onMouseEnter={e => {
-          (e.currentTarget as HTMLElement).style.borderColor = "rgba(196,43,71,0.5)";
-          (e.currentTarget as HTMLElement).style.background = "var(--color-neutral-750, #1e1e1e)";
+          (e.currentTarget as HTMLElement).style.borderColor = "rgba(var(--primary-rgb), 0.5)";
+          (e.currentTarget as HTMLElement).style.background = "var(--bg-hover)";
         }}
         onMouseLeave={e => {
           (e.currentTarget as HTMLElement).style.borderColor = "var(--color-neutral-700)";
@@ -131,9 +134,9 @@ function UpcomingMatchCard({ match }: { match: typeof upcomingMatches[0] }) {
           <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
             <span style={{
               fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 4,
-              background: isHome ? "rgba(34,197,94,0.15)" : "rgba(245,158,11,0.15)",
-              color: isHome ? "#22C55E" : "#F59E0B",
-              border: `1px solid ${isHome ? "rgba(34,197,94,0.3)" : "rgba(245,158,11,0.3)"}`,
+              background: isHome ? "rgba(var(--success-rgb), 0.15)" : "rgba(var(--warning-rgb), 0.15)",
+              color: isHome ? "var(--color-success)" : "var(--color-warning)",
+              border: `1px solid ${isHome ? "rgba(var(--success-rgb), 0.3)" : "rgba(var(--warning-rgb), 0.3)"}`,
             }}>{match.venue}</span>
             <span style={{
               fontSize: 10, fontWeight: 600, padding: "2px 7px", borderRadius: 4,
@@ -184,10 +187,10 @@ export function DashboardPage() {
       <div style={{
         display: "flex", alignItems: "center", gap: 10, padding: "10px 16px",
         borderRadius: 10, marginBottom: 24,
-        background: "rgba(196,43,71,0.08)", border: "1px solid rgba(196,43,71,0.25)",
+        background: "rgba(var(--primary-rgb), 0.08)", border: "1px solid rgba(var(--primary-rgb), 0.25)",
       }}>
-        <Radio size={15} style={{ color: "#C42B47" }} />
-        <span style={{ fontSize: 13, fontWeight: 600, color: "#C42B47" }}>
+        <Radio size={15} style={{ color: "var(--color-primary-400)" }} />
+        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-primary-400)" }}>
           Aucun match en direct actuellement
         </span>
         <Link href="/match-center" className="btn-grenat" style={{
@@ -206,7 +209,7 @@ export function DashboardPage() {
             <h2 style={{ fontSize: 13, fontWeight: 800, color: "var(--color-neutral-200)", margin: 0 }}>
               Derniers matchs
             </h2>
-            <Link href="/staff/post-match" style={{ fontSize: 11, color: "#C42B47", textDecoration: "none", fontWeight: 600 }}>
+            <Link href="/staff/post-match" style={{ fontSize: 11, color: "var(--color-primary-400)", textDecoration: "none", fontWeight: 600 }}>
               Voir tous les rapports Post-Match →
             </Link>
           </div>
@@ -221,7 +224,7 @@ export function DashboardPage() {
             <h2 style={{ fontSize: 13, fontWeight: 800, color: "var(--color-neutral-200)", margin: 0 }}>
               Prochains matchs
             </h2>
-            <Link href="/staff/pre-match" style={{ fontSize: 11, color: "#C42B47", textDecoration: "none", fontWeight: 600 }}>
+            <Link href="/staff/pre-match" style={{ fontSize: 11, color: "var(--color-primary-400)", textDecoration: "none", fontWeight: 600 }}>
               Voir tous les rapports Pré-Match →
             </Link>
           </div>

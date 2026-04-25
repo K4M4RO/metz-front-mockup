@@ -277,7 +277,7 @@ const LAB_CONFIG: Record<string, { filterGroups: FilterGroup[]; legendItems: { c
       { color: "#60A5FA", label: "Passe progressive" }, 
       { color: "#A78BFA", label: "Centre / Carry" }, 
       { color: "#EF4444", label: "Action ratée" },
-      { color: "#C42B47", label: "Heatmap xPV (fond)" }
+      { color: "var(--color-primary-400)", label: "Heatmap xPV (fond)" }
     ],
     filterGroups: [
       { label: "Type d'action", color: "#22C55E", items: ["Passe progressive", "Passe clé", "Centre"] },
@@ -318,7 +318,7 @@ const LAB_CONFIG: Record<string, { filterGroups: FilterGroup[]; legendItems: { c
   turnovers: {
     description: "Récupérations hautes + enchaînements vers le but",
     legendItems: [
-      { color: "#F59E0B", label: "Point de récupération" }, { color: "#C42B47", label: "Tir consécutif" }, { color: "rgba(255,255,255,0.3)", label: "Liaison récup → tir" },
+      { color: "#F59E0B", label: "Point de récupération" }, { color: "var(--color-primary-400)", label: "Tir consécutif" }, { color: "rgba(255,255,255,0.3)", label: "Liaison récup → tir" },
     ],
     filterGroups: [
       { label: "Conséquence", color: "#22C55E", items: ["A généré un tir : Oui", "A généré un tir : Non", "A généré un but : Oui"] },
@@ -373,8 +373,8 @@ function LinearRankingBar({ allTeams, advIdx, metzValue, unit }: { allTeams: num
       <line x1={(pct(avg) / 100) * W} y1={TRACK_Y - 5} x2={(pct(avg) / 100) * W} y2={TRACK_Y + TRACK_H + 5} stroke="var(--color-neutral-500)" strokeWidth={1.5} strokeDasharray="3 2" />
       <circle cx={(pct(advValue) / 100) * W} cy={TRACK_Y + TRACK_H / 2} r={6} fill="#F59E0B" />
       <text x={(pct(advValue) / 100) * W} y={TRACK_Y - 8} textAnchor="middle" fontSize={9} fill="#F59E0B" fontWeight={700}>{advValue}{unit}</text>
-      <circle cx={(pct(metzValue) / 100) * W} cy={TRACK_Y + TRACK_H / 2} r={6} fill="#C42B47" />
-      <text x={(pct(metzValue) / 100) * W} y={TRACK_Y - 8} textAnchor="middle" fontSize={9} fill="#C42B47" fontWeight={700}>{metzValue}{unit}</text>
+      <circle cx={(pct(metzValue) / 100) * W} cy={TRACK_Y + TRACK_H / 2} r={6} fill="var(--color-primary-400)" />
+      <text x={(pct(metzValue) / 100) * W} y={TRACK_Y - 8} textAnchor="middle" fontSize={9} fill="var(--color-primary-400)" fontWeight={700}>{metzValue}{unit}</text>
       <text x={0} y={40} fontSize={8} fill="var(--color-neutral-600)">{min}{unit}</text>
       <text x={W} y={40} fontSize={8} fill="var(--color-neutral-600)" textAnchor="end">{max}{unit}</text>
     </svg>
@@ -466,18 +466,18 @@ function VizDefense({ w, h }: { w: number; h: number }) {
           left: hoveredPt.x * w,
           top: hoveredPt.y * h > 60 ? hoveredPt.y * h - 15 : hoveredPt.y * h + 15,
           transform: hoveredPt.y * h > 60 ? "translate(-50%, -100%)" : "translate(-50%, 0)",
-          background: "var(--color-neutral-900)",
-          border: "1px solid var(--color-neutral-700)",
+          background: "var(--bg-surface-raised)",
+          border: "1px solid var(--border-default)",
           padding: "4px 10px",
           borderRadius: "6px",
           pointerEvents: "none",
           whiteSpace: "nowrap",
           zIndex: 50,
-          boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+          boxShadow: "var(--shadow-dropdown)",
           textAlign: "center"
         }}>
-          <div style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredPt.player}</div>
-          <div style={{ fontSize: 9, color: "#4ade80", fontWeight: 700 }}>{hoveredPt.action}</div>
+          <div style={{ fontSize: 10, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase" }}>{hoveredPt.player}</div>
+          <div style={{ fontSize: 9, color: "var(--color-success)", fontWeight: 700 }}>{hoveredPt.action}</div>
         </div>
       )}
     </div>
@@ -533,11 +533,11 @@ function VizBuildup({ w, h }: { w: number; h: number }) {
           display: "flex", flexDirection: "column", gap: 3
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
-             <span style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.from}</span>
+             <span style={{ fontSize: 10, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase" }}>{hoveredEvt.from}</span>
              {hoveredEvt.to && (
                <>
                  <span style={{ color: "var(--color-neutral-500)", fontSize: 8 }}>▶</span>
-                 <span style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.to}</span>
+                 <span style={{ fontSize: 10, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase" }}>{hoveredEvt.to}</span>
                </>
              )}
           </div>
@@ -565,7 +565,7 @@ function VizProgression({ w, h }: { w: number; h: number }) {
         {/* xPV heatmap in background (upper half) */}
         {EVT.heatmap.slice(0, 4).map((row, ri) => row.map((val, ci) => {
           const cw = (w - 20) / 12, ch = (h - 20) / 8;
-          return <rect key={`${ri}-${ci}`} x={10 + ci * cw} y={10 + ri * ch} width={cw} height={ch} fill="#C42B47" opacity={val * .35} style={{ pointerEvents: "none" }} />;
+          return <rect key={`${ri}-${ci}`} x={10 + ci * cw} y={10 + ri * ch} width={cw} height={ch} fill="var(--color-primary-400)" opacity={val * .35} style={{ pointerEvents: "none" }} />;
         }))}
         
         {/* Progressive passes toward last third */}
@@ -609,11 +609,11 @@ function VizProgression({ w, h }: { w: number; h: number }) {
           display: "flex", flexDirection: "column", gap: 3
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
-             <span style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.from}</span>
+             <span style={{ fontSize: 10, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase" }}>{hoveredEvt.from}</span>
              {hoveredEvt.to && (
                <>
                  <span style={{ color: "var(--color-neutral-500)", fontSize: 8 }}>▶</span>
-                 <span style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.to}</span>
+                 <span style={{ fontSize: 10, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase" }}>{hoveredEvt.to}</span>
                </>
              )}
           </div>
@@ -671,7 +671,7 @@ function VizShots({ w, h }: { w: number; h: number }) {
           display: "flex", flexDirection: "column", gap: 4
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
-             <span style={{ fontSize: 11, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.player}</span>
+             <span style={{ fontSize: 11, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase" }}>{hoveredEvt.player}</span>
           </div>
           <div style={{ display: "flex", gap: 8, fontSize: 9, fontWeight: 600, justifyContent: "center", alignItems: "center" }}>
              <span style={{ color: "var(--color-neutral-400)" }}>{hoveredEvt.action}</span>
@@ -682,7 +682,7 @@ function VizShots({ w, h }: { w: number; h: number }) {
           <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 4, paddingTop: 6, borderTop: "1px dashed var(--color-neutral-700)" }}>
              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
                <span style={{ fontSize: 8, color: "var(--color-neutral-500)", fontWeight: 800, letterSpacing: "0.05em" }}>xG</span>
-               <span style={{ fontSize: 11, color: "white", fontWeight: 800 }}>{hoveredEvt.xG.toFixed(2)}</span>
+               <span style={{ fontSize: 11, color: "var(--text-primary)", fontWeight: 800 }}>{hoveredEvt.xG.toFixed(2)}</span>
              </div>
              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
                <span style={{ fontSize: 8, color: "var(--color-neutral-500)", fontWeight: 800, letterSpacing: "0.05em" }}>PSxG</span>
@@ -735,7 +735,7 @@ function VizDuels({ w, h }: { w: number; h: number }) {
           boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
           display: "flex", flexDirection: "column", gap: 3
         }}>
-          <div style={{ fontSize: 11, fontWeight: 800, color: "white", textTransform: "uppercase", textAlign: "center" }}>{hoveredEvt.player}</div>
+          <div style={{ fontSize: 11, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", textAlign: "center" }}>{hoveredEvt.player}</div>
           <div style={{ display: "flex", gap: 8, fontSize: 9, fontWeight: 600, justifyContent: "center", alignItems: "center" }}>
              <span style={{ color: "#3B82F6" }}>{hoveredEvt.type}</span>
              <div style={{ width: 4, height: 4, borderRadius: 2, background: "var(--color-neutral-600)" }} />
@@ -791,9 +791,9 @@ function VizLBP({ w, h }: { w: number; h: number }) {
           display: "flex", flexDirection: "column", gap: 3
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
-             <span style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.from}</span>
+             <span style={{ fontSize: 10, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase" }}>{hoveredEvt.from}</span>
              <span style={{ color: "var(--color-neutral-500)", fontSize: 8 }}>▶</span>
-             <span style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.to}</span>
+             <span style={{ fontSize: 10, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase" }}>{hoveredEvt.to}</span>
           </div>
           <div style={{ display: "flex", gap: 8, fontSize: 9, fontWeight: 600, justifyContent: "center" }}>
              <span style={{ color: "#60A5FA" }}>{hoveredEvt.lineName}</span>
@@ -816,7 +816,7 @@ function VizTurnovers({ w, h }: { w: number; h: number }) {
     <div style={{ position: "relative" }}>
       <PitchShell w={w} h={h}>
         {/* Opponent half only — upper portion */}
-        <rect x={10} y={10} width={w - 20} height={(h - 20) / 2} fill="rgba(196,43,71,0.03)" style={{ pointerEvents: "none" }} />
+        <rect x={10} y={10} width={w - 20} height={(h - 20) / 2} fill="rgba(var(--primary-rgb),0.03)" style={{ pointerEvents: "none" }} />
         
         {EVT.turnovers.map((pt, i) => (
           <g key={i}
@@ -827,7 +827,7 @@ function VizTurnovers({ w, h }: { w: number; h: number }) {
             {pt.shot && (
               <>
                 <line x1={pt.x * w} y1={pt.y * h} x2={pt.sx * w} y2={pt.sy * h} stroke="rgba(255,255,255,0.4)" strokeWidth={1.5} strokeDasharray="4 3" />
-                <circle cx={pt.sx * w} cy={pt.sy * h} r={6} fill="#C42B47" stroke="#fff" strokeWidth={1} opacity={0.9} />
+                <circle cx={pt.sx * w} cy={pt.sy * h} r={6} fill="var(--color-primary-400)" stroke="#fff" strokeWidth={1} opacity={0.9} />
               </>
             )}
             <circle cx={pt.x * w} cy={pt.y * h} r={8} fill="#F59E0B" stroke="#fff" strokeWidth={1.5} opacity={0.95} />
@@ -860,7 +860,7 @@ function VizTurnovers({ w, h }: { w: number; h: number }) {
              {hoveredEvt.shot && (
                <>
                  <div style={{ width: 4, height: 4, borderRadius: 2, background: "var(--color-neutral-600)" }} />
-                 <span style={{ color: "#C42B47" }}>Tir consécutif</span>
+                 <span style={{ color: "var(--color-primary-400)" }}>Tir consécutif</span>
                </>
              )}
           </div>
@@ -1027,7 +1027,7 @@ function MiniPitch({ formation, size = 90 }: { formation: string; size?: number 
       <rect x={W * .3} y={3} width={W * .4} height={H * .15} fill="none" stroke="#2d4a2d" strokeWidth={0.7} />
       <rect x={W * .3} y={H - 3 - H * .15} width={W * .4} height={H * .15} fill="none" stroke="#2d4a2d" strokeWidth={0.7} />
       {positions.map((p, i) => (
-        <circle key={i} cx={p.x * W} cy={p.y * H} r={4.5} fill="#C42B47" stroke="#fff" strokeWidth={0.8} opacity={0.9} />
+        <circle key={i} cx={p.x * W} cy={p.y * H} r={4.5} fill="var(--color-primary-400)" stroke="#fff" strokeWidth={0.8} opacity={0.9} />
       ))}
     </svg>
   );
@@ -1044,8 +1044,11 @@ function TacticalHistorySection({ opponent }: { opponent: string }) {
 
   const sorted = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length);
 
-  const R_COLOR: Record<string, string> = { W: "#22C55E", D: "#F59E0B", L: "#EF4444" };
-  const R_LABEL: Record<string, string> = { W: "V", D: "N", L: "D" };
+  const R_STYLE: Record<string, { color: string; bg: string; border: string; label: string }> = {
+    W: { color: "var(--color-success)", bg: "rgba(var(--success-rgb), 0.12)", border: "rgba(var(--success-rgb), 0.33)", label: "V" },
+    D: { color: "var(--color-warning)", bg: "rgba(var(--warning-rgb), 0.12)", border: "rgba(var(--warning-rgb), 0.33)", label: "N" },
+    L: { color: "var(--color-danger)",  bg: "rgba(var(--danger-rgb),  0.12)", border: "rgba(var(--danger-rgb),  0.33)", label: "D" },
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -1058,7 +1061,7 @@ function TacticalHistorySection({ opponent }: { opponent: string }) {
         return (
           <div key={formation} style={{
             background: "var(--color-neutral-800)", borderRadius: 10,
-            border: isOpen ? "1px solid rgba(196,43,71,0.35)" : "1px solid var(--color-neutral-700)",
+            border: isOpen ? "1px solid rgba(var(--primary-rgb),0.35)" : "1px solid var(--color-neutral-700)",
             overflow: "hidden",
           }}>
             {/* Header row */}
@@ -1077,8 +1080,8 @@ function TacticalHistorySection({ opponent }: { opponent: string }) {
                 <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                   <span style={{
                     fontSize: 12, fontWeight: 700, padding: "2px 8px", borderRadius: 5,
-                    background: "rgba(196,43,71,0.15)", color: "#C42B47",
-                    border: "1px solid rgba(196,43,71,0.3)",
+                    background: "rgba(var(--primary-rgb),0.15)", color: "var(--color-primary-400)",
+                    border: "1px solid rgba(var(--primary-rgb),0.3)",
                   }}>
                     Utilisé {matches.length}× / 10
                   </span>
@@ -1091,10 +1094,10 @@ function TacticalHistorySection({ opponent }: { opponent: string }) {
                   {matches.map((m, i) => (
                     <span key={i} style={{
                       width: 16, height: 16, borderRadius: 3, fontSize: 8, fontWeight: 800,
-                      background: `${R_COLOR[m.result]}22`, color: R_COLOR[m.result],
-                      border: `1px solid ${R_COLOR[m.result]}44`,
+                      background: R_STYLE[m.result].bg, color: R_STYLE[m.result].color,
+                      border: `1px solid ${R_STYLE[m.result].border}`,
                       display: "flex", alignItems: "center", justifyContent: "center",
-                    }}>{R_LABEL[m.result]}</span>
+                    }}>{R_STYLE[m.result].label}</span>
                   ))}
                 </div>
               </div>
@@ -1114,10 +1117,10 @@ function TacticalHistorySection({ opponent }: { opponent: string }) {
                   }}>
                     <span style={{
                       width: 20, height: 20, borderRadius: 4, fontSize: 9, fontWeight: 800, flexShrink: 0,
-                      background: `${R_COLOR[m.result]}22`, color: R_COLOR[m.result],
-                      border: `1px solid ${R_COLOR[m.result]}44`,
+                      background: R_STYLE[m.result].bg, color: R_STYLE[m.result].color,
+                      border: `1px solid ${R_STYLE[m.result].border}`,
                       display: "flex", alignItems: "center", justifyContent: "center",
-                    }}>{R_LABEL[m.result]}</span>
+                    }}>{R_STYLE[m.result].label}</span>
                     <span style={{ fontSize: 11, color: "var(--color-neutral-400)", width: 50, flexShrink: 0 }}>{m.date}</span>
                     <span style={{ fontSize: 11, fontWeight: 600, color: "var(--color-neutral-200)", flex: 1 }}>
                       vs {m.vs}
@@ -1171,13 +1174,17 @@ function TabSummary({ opponent }: { opponent: string }) {
             {s.isForm ? (
               <div style={{ display: "flex", gap: 4, justifyContent: "center" }}>
                 {FORM_RESULTS.map((r, ri) => {
-                  const c = r === "W" ? "#22C55E" : r === "D" ? "#F59E0B" : "#EF4444";
+                  const RSTY = {
+                    W: { color: "var(--color-success)", bg: "rgba(var(--success-rgb), 0.12)", border: "rgba(var(--success-rgb), 0.33)", label: "V" },
+                    D: { color: "var(--color-warning)", bg: "rgba(var(--warning-rgb), 0.12)", border: "rgba(var(--warning-rgb), 0.33)", label: "N" },
+                    L: { color: "var(--color-danger)",  bg: "rgba(var(--danger-rgb),  0.12)", border: "rgba(var(--danger-rgb),  0.33)", label: "D" },
+                  }[r] ?? { color: "var(--text-muted)", bg: "transparent", border: "transparent", label: r };
                   return (
                     <span key={ri} style={{
                       width: 18, height: 18, borderRadius: 4, fontSize: 9, fontWeight: 800,
-                      background: `${c}22`, color: c, border: `1px solid ${c}44`,
+                      background: RSTY.bg, color: RSTY.color, border: `1px solid ${RSTY.border}`,
                       display: "flex", alignItems: "center", justifyContent: "center",
-                    }}>{r === "W" ? "V" : r}</span>
+                    }}>{RSTY.label}</span>
                   );
                 })}
               </div>
@@ -1237,7 +1244,7 @@ function TabTeamStats({ opponent }: { opponent: string }) {
           {TEAM_STATS_CATEGORIES.map(c => (
             <button key={c.id} onClick={() => setActiveCat(c.id)} style={{
               padding: "6px 14px", borderRadius: 6, fontSize: 10, fontWeight: 800, cursor: "pointer",
-              background: activeCat === c.id ? "#C42B47" : "transparent",
+              background: activeCat === c.id ? "var(--color-primary-400)" : "transparent",
               color: activeCat === c.id ? "white" : "var(--color-neutral-400)",
               border: "none",
               textTransform: "uppercase", letterSpacing: "0.05em",
@@ -1252,9 +1259,9 @@ function TabTeamStats({ opponent }: { opponent: string }) {
           {(["FOR", "AGAINST"] as StatSide[]).map(s => (
             <button key={s} onClick={() => setSide(s)} style={{
               padding: "4px 10px", borderRadius: 5, fontSize: 9, fontWeight: 700, cursor: "pointer",
-              background: side === s ? "rgba(196,43,71,0.12)" : "transparent",
-              color: side === s ? "#C42B47" : "var(--color-neutral-500)",
-              border: side === s ? "1px solid rgba(196,43,71,0.25)" : "1px solid transparent",
+              background: side === s ? "rgba(var(--primary-rgb),0.12)" : "transparent",
+              color: side === s ? "var(--color-primary-400)" : "var(--color-neutral-500)",
+              border: side === s ? "1px solid rgba(var(--primary-rgb),0.25)" : "1px solid transparent",
               transition: "all 0.2s"
             }}>{s === "FOR" ? "Pour (Metz Attaque)" : "Contre (Metz Défend)"}</button>
           ))}
@@ -1265,8 +1272,8 @@ function TabTeamStats({ opponent }: { opponent: string }) {
         {/* Left: Visualization (SmartVisualLab) */}
         <div style={{ background: "var(--color-neutral-900)", borderRadius: 12, border: "1px solid var(--color-neutral-800)", padding: 20 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-            <FlaskConical size={18} className="text-[#C42B47]" />
-            <h3 style={{ fontSize: 12, fontWeight: 800, color: "white", textTransform: "uppercase", fontFamily: "var(--font-display)" }}>
+            <FlaskConical size={18} style={{ color: "var(--color-primary-400)" }} />
+            <h3 style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", fontFamily: "var(--font-display)" }}>
               Analyse Labo : {cat.label}
             </h3>
           </div>
@@ -1335,9 +1342,9 @@ function TabPlayers() {
         {["ALL", "GK", "CB", "FB", "MF", "FW"].map(p => (
           <button key={p} onClick={() => setPosFilter(p)} style={{
             padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: "pointer",
-            background: posFilter === p ? "rgba(196,43,71,0.15)" : "var(--color-neutral-800)",
-            color: posFilter === p ? "#C42B47" : "var(--color-neutral-400)",
-            border: posFilter === p ? "1px solid rgba(196,43,71,0.35)" : "1px solid var(--color-neutral-700)",
+            background: posFilter === p ? "rgba(var(--primary-rgb),0.15)" : "var(--color-neutral-800)",
+            color: posFilter === p ? "var(--color-primary-400)" : "var(--color-neutral-400)",
+            border: posFilter === p ? "1px solid rgba(var(--primary-rgb),0.35)" : "1px solid var(--color-neutral-700)",
           }}>{p}</button>
         ))}
       </div>
@@ -1350,7 +1357,7 @@ function TabPlayers() {
               <th style={{ textAlign: "center", padding: "8px 6px", color: "var(--color-neutral-500)", fontWeight: 700, fontSize: 10 }}>Min.</th>
               {cols.map(c => (
                 <th key={c.key} onClick={() => { if (sortKey === c.key) setSortAsc(v => !v); else { setSortKey(c.key); setSortAsc(false); } }}
-                  style={{ textAlign: "center", padding: "8px 6px", cursor: "pointer", color: sortKey === c.key ? "#C42B47" : "var(--color-neutral-500)", fontWeight: 700, fontSize: 10, whiteSpace: "nowrap", userSelect: "none" }}>
+                  style={{ textAlign: "center", padding: "8px 6px", cursor: "pointer", color: sortKey === c.key ? "var(--color-primary-400)" : "var(--color-neutral-500)", fontWeight: 700, fontSize: 10, whiteSpace: "nowrap", userSelect: "none" }}>
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>{c.label}<ArrowUpDown size={9} /></span>
                 </th>
               ))}
@@ -1464,7 +1471,7 @@ function TabStrategyCPA({ opponent }: { opponent: string }) {
           {subs.map(s => (
             <button key={s.id} onClick={() => handleMainTabChange(s.id)} style={{
               padding: "6px 14px", borderRadius: 6, fontSize: 10, fontWeight: 800, cursor: "pointer",
-              background: activeSub === s.id ? "#C42B47" : "transparent",
+              background: activeSub === s.id ? "var(--color-primary-400)" : "transparent",
               color: activeSub === s.id ? "white" : "var(--color-neutral-400)",
               border: "none",
               textTransform: "uppercase", letterSpacing: "0.05em",
@@ -1479,9 +1486,9 @@ function TabStrategyCPA({ opponent }: { opponent: string }) {
           {currentVariants.map(v => (
             <button key={v.id} onClick={() => setActiveVariant(v.id)} style={{
               padding: "4px 10px", borderRadius: 5, fontSize: 9, fontWeight: 700, cursor: "pointer",
-              background: activeVariant === v.id ? "rgba(196,43,71,0.12)" : "transparent",
-              color: activeVariant === v.id ? "#C42B47" : "var(--color-neutral-500)",
-              border: activeVariant === v.id ? "1px solid rgba(196,43,71,0.25)" : "1px solid transparent",
+              background: activeVariant === v.id ? "rgba(var(--primary-rgb),0.12)" : "transparent",
+              color: activeVariant === v.id ? "var(--color-primary-400)" : "var(--color-neutral-500)",
+              border: activeVariant === v.id ? "1px solid rgba(var(--primary-rgb),0.25)" : "1px solid transparent",
               transition: "all 0.2s"
             }}>{v.label}</button>
           ))}
@@ -1493,8 +1500,8 @@ function TabStrategyCPA({ opponent }: { opponent: string }) {
         <div style={{ background: "var(--color-neutral-900)", borderRadius: 12, border: "1px solid var(--color-neutral-800)", padding: 20 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, width: "100%" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Target size={18} className="text-[#C42B47]" />
-              <h3 style={{ fontSize: 12, fontWeight: 800, color: "white", textTransform: "uppercase", fontFamily: "var(--font-display)" }}>
+              <Target size={18} style={{ color: "var(--color-primary-400)" }} />
+              <h3 style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", fontFamily: "var(--font-display)" }}>
                 Analyse Terrain : {VARIANTS[activeSub]?.find(v => v.id === activeVariant)?.label || activeSub}
               </h3>
             </div>
@@ -1503,11 +1510,11 @@ function TabStrategyCPA({ opponent }: { opponent: string }) {
               <div style={{ marginLeft: "auto", display: "flex", background: "var(--color-neutral-800)", padding: 1, borderRadius: 6, border: "1px solid rgba(255,255,255,0.05)" }}>
                 <button 
                   onClick={() => setVizMode("distribution")}
-                  style={{ padding: "4px 10px", fontSize: 9, fontWeight: 800, borderRadius: 4, background: vizMode === "distribution" ? "#C42B47" : "transparent", color: vizMode === "distribution" ? "white" : "#666" }}
+                  style={{ padding: "4px 10px", fontSize: 9, fontWeight: 800, borderRadius: 4, background: vizMode === "distribution" ? "var(--color-primary-400)" : "transparent", color: vizMode === "distribution" ? "white" : "#666" }}
                 >DISTRIBUTION</button>
                 <button 
                   onClick={() => setVizMode("events")}
-                  style={{ padding: "4px 10px", fontSize: 9, fontWeight: 800, borderRadius: 4, background: vizMode === "events" ? "#C42B47" : "transparent", color: vizMode === "events" ? "white" : "#666" }}
+                  style={{ padding: "4px 10px", fontSize: 9, fontWeight: 800, borderRadius: 4, background: vizMode === "events" ? "var(--color-primary-400)" : "transparent", color: vizMode === "events" ? "white" : "#666" }}
                 >ÉVÉNEMENTS</button>
               </div>
             )}
@@ -1530,8 +1537,8 @@ function TabStrategyCPA({ opponent }: { opponent: string }) {
 
           <div style={{ background: "var(--color-neutral-800)", borderRadius: 12, padding: 20, border: "1px solid var(--color-neutral-700)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-              <TrendingUp size={16} className="text-[#22C55E]" />
-              <h3 style={{ fontSize: 11, fontWeight: 800, color: "white", textTransform: "uppercase" }}>Insight Performance</h3>
+              <TrendingUp size={16} style={{ color: "var(--color-success)" }} />
+              <h3 style={{ fontSize: 11, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase" }}>Insight Performance</h3>
             </div>
             <p style={{ fontSize: 11, color: "var(--color-neutral-400)", lineHeight: "1.5", fontStyle: "italic" }}>
               "{opponent} montre une vulnérabilité sur les ballons au premier poteau. Leur bloc défensif a tendance à reculer trop vite, laissant un espace pour une déviation."
@@ -1545,9 +1552,9 @@ function TabStrategyCPA({ opponent }: { opponent: string }) {
                   { name: "Cible n°1", danger: "Trés Élevé" },
                   { name: "Cible n°2", danger: "Élevé" }
                 ].map((t, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "rgba(0,0,0,0.2)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.05)" }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "white" }}>{t.name}</span>
-                    <span style={{ fontSize: 9, fontWeight: 800, color: "#C42B47" }}>{t.danger}</span>
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "var(--bg-hover)", borderRadius: 8, border: "1px solid var(--border-subtle)" }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-primary)" }}>{t.name}</span>
+                    <span style={{ fontSize: 9, fontWeight: 800, color: "var(--color-primary-400)" }}>{t.danger}</span>
                   </div>
                 ))}
              </div>

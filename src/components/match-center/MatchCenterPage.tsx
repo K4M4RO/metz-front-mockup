@@ -85,10 +85,10 @@ const EVENTS: MatchEvent[] = [
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const FATIGUE_CONFIG = {
-  fresh: { label: "Frais",    color: "#22C55E", bg: "rgba(34,197,94,0.12)"  },
-  ready: { label: "Prêt",     color: "#84CC16", bg: "rgba(132,204,22,0.12)" },
-  warm:  { label: "Chaud",    color: "#F59E0B", bg: "rgba(245,158,11,0.12)" },
-  alert: { label: "Alerte",   color: "#EF4444", bg: "rgba(239,68,68,0.12)"  },
+  fresh: { label: "Frais",  color: "var(--color-success)", bg: "rgba(var(--success-rgb), 0.12)" },
+  ready: { label: "Prêt",   color: "var(--rating-b)",      bg: "rgba(var(--rating-b-rgb), 0.12)" },
+  warm:  { label: "Chaud",  color: "var(--color-warning)", bg: "rgba(var(--warning-rgb), 0.12)" },
+  alert: { label: "Alerte", color: "var(--color-danger)",  bg: "rgba(var(--danger-rgb),  0.12)" },
 };
 
 const EVENT_ICON: Record<MatchEvent["type"], string> = {
@@ -117,9 +117,9 @@ function modeBtnStyle(active: boolean): React.CSSProperties {
     cursor: "pointer",
     border: "1px solid",
     transition: "all 0.15s ease",
-    background: active ? "rgba(196,43,71,0.15)" : "transparent",
-    borderColor: active ? "rgba(196,43,71,0.4)" : "var(--color-neutral-700)",
-    color: active ? "#C42B47" : "var(--color-neutral-400)",
+    background: active ? "rgba(var(--primary-rgb), 0.15)" : "transparent",
+    borderColor: active ? "rgba(var(--primary-rgb), 0.4)" : "var(--color-neutral-700)",
+    color: active ? "var(--color-primary-400)" : "var(--color-neutral-400)",
   };
 }
 
@@ -229,7 +229,7 @@ function Pitch({ hoveredPlayer, onHover }: {
               {/* Glow on hover */}
               {isHov && (
                 <circle cx={cx} cy={cy} r={R + 5}
-                  fill={isMetz ? "rgba(196,43,71,0.25)" : "rgba(228,228,231,0.15)"}
+                  fill={isMetz ? "rgba(var(--primary-rgb),0.25)" : "rgba(228,228,231,0.15)"}
                 />
               )}
 
@@ -240,7 +240,7 @@ function Pitch({ hoveredPlayer, onHover }: {
               {/* Circle fill */}
               <circle
                 cx={cx} cy={cy} r={R}
-                fill={isMetz ? (isHov ? "#D43A55" : "#C42B47") : (isHov ? "#374151" : "#1E2A3A")}
+                fill={isMetz ? (isHov ? "#D43A55" : "var(--color-primary-400)") : (isHov ? "#374151" : "#1E2A3A")}
                 stroke={isMetz ? (isHov ? "#F87191" : "rgba(255,255,255,0.5)") : (isHov ? "#E4E4E7" : "rgba(228,228,231,0.6)")}
                 strokeWidth={isHov ? 2 : 1.5}
                 style={{ cursor: "pointer" }}
@@ -294,7 +294,7 @@ function Pitch({ hoveredPlayer, onHover }: {
           <div style={{ fontSize: 10, color: "var(--color-neutral-400)", marginTop: 2 }}>
             #{tooltip.player.number} · {tooltip.player.position}
           </div>
-          <div style={{ fontSize: 10, color: tooltip.player.team === "metz" ? "#C42B47" : "#9CA3AF", marginTop: 2 }}>
+          <div style={{ fontSize: 10, color: tooltip.player.team === "metz" ? "var(--color-primary-400)" : "var(--color-neutral-400)", marginTop: 2 }}>
             {tooltip.player.team === "metz" ? "FC Metz" : "Stade de Reims"}
           </div>
         </div>
@@ -317,7 +317,7 @@ function StatBar({ label, metzVal, awayVal, metzRaw, awayRaw, unit = "" }: {
   return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: "#C42B47" }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-primary-400)" }}>
           {metzRaw ?? `${metzVal}${unit}`}
         </span>
         <span style={{ fontSize: 10, color: "var(--color-neutral-400)", letterSpacing: "0.05em", textTransform: "uppercase" }}>
@@ -355,7 +355,7 @@ function XgBar({ metz, away }: { metz: number; away: number }) {
   return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
-        <span style={{ fontSize: 14, fontWeight: 800, color: "#C42B47" }}>{metz.toFixed(2)}</span>
+        <span style={{ fontSize: 14, fontWeight: 800, color: "var(--color-primary-400)" }}>{metz.toFixed(2)}</span>
         <span style={{ fontSize: 10, color: "var(--color-neutral-400)", textTransform: "uppercase", letterSpacing: "0.05em" }}>xG</span>
         <span style={{ fontSize: 14, fontWeight: 800, color: "var(--color-neutral-300)" }}>{away.toFixed(2)}</span>
       </div>
@@ -469,12 +469,12 @@ export function MatchCenterPage() {
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{
               width: 8, height: 8, borderRadius: "50%",
-              background: "#EF4444",
+              background: "var(--color-danger)",
               opacity: livePulse ? 1 : 0.3,
               transition: "opacity 0.3s",
               boxShadow: livePulse ? "0 0 6px #EF4444" : "none",
             }} />
-            <span style={{ fontSize: 10, fontWeight: 800, color: "#EF4444", letterSpacing: "0.12em" }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: "var(--color-danger)", letterSpacing: "0.12em" }}>
               LIVE
             </span>
           </div>
@@ -506,7 +506,7 @@ export function MatchCenterPage() {
             <span style={{
               fontSize: 36,
               fontWeight: 900,
-              color: "#C42B47",
+              color: "var(--color-primary-400)",
               width: 52,
               textAlign: "center",
               lineHeight: 1,
@@ -594,14 +594,14 @@ export function MatchCenterPage() {
                   padding: "7px 8px",
                   marginBottom: 4,
                   borderRadius: 6,
-                  background: p.warming ? "rgba(196,43,71,0.08)" : "var(--color-neutral-900)",
-                  border: `1px solid ${p.warming ? "rgba(196,43,71,0.25)" : "var(--color-neutral-800)"}`,
+                  background: p.warming ? "rgba(var(--primary-rgb),0.08)" : "var(--color-neutral-900)",
+                  border: `1px solid ${p.warming ? "rgba(var(--primary-rgb),0.25)" : "var(--color-neutral-800)"}`,
                   cursor: "default",
                 }}>
                   {/* Number badge */}
                   <div style={{
                     width: 24, height: 24, borderRadius: 4,
-                    background: p.warming ? "#C42B47" : "var(--color-neutral-800)",
+                    background: p.warming ? "var(--color-primary-400)" : "var(--color-neutral-800)",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 10, fontWeight: 800, color: "white",
                     flexShrink: 0,
@@ -731,10 +731,10 @@ export function MatchCenterPage() {
           }}>
             <div style={{
               fontSize: 10, fontWeight: 700,
-              color: "#C42B47",
+              color: "var(--color-primary-400)",
               display: "flex", alignItems: "center", gap: 5,
             }}>
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#C42B47" }} />
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--color-primary-400)" }} />
               FC Metz (Attaque →)
             </div>
             <div style={{ fontSize: 10, fontWeight: 700, color: "var(--color-neutral-500)" }}>
@@ -788,13 +788,13 @@ export function MatchCenterPage() {
             marginBottom: 10,
             display: "flex", alignItems: "center", gap: 6,
           }}>
-            <AlertTriangle size={12} style={{ color: "#F59E0B" }} /> Alertes Staff
+            <AlertTriangle size={12} style={{ color: "var(--color-warning)" }} /> Alertes Staff
           </div>
 
           {[
-            { name: "Sarr",       msg: "Avertissement reçu · 71'", color: "#F59E0B",  icon: "🟨" },
-            { name: "Mikautadze", msg: "Distance parcourue : 9.8km — surveillance",  color: "#EF4444",  icon: "⚠️" },
-            { name: "Niane",      msg: "Prêt à entrer — chauffe terminée",            color: "#22C55E",  icon: "⚡" },
+            { name: "Sarr",       msg: "Avertissement reçu · 71'",                    color: "var(--color-warning)", icon: "🟨" },
+            { name: "Mikautadze", msg: "Distance parcourue : 9.8km — surveillance",  color: "var(--color-danger)",  icon: "⚠️" },
+            { name: "Niane",      msg: "Prêt à entrer — chauffe terminée",            color: "var(--color-success)", icon: "⚡" },
           ].map((alert, i) => (
             <div key={i} style={{
               padding: "8px 10px",
@@ -839,7 +839,7 @@ export function MatchCenterPage() {
               <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
                 <div style={{
                   height: 36 * v,
-                  background: i >= 7 ? "#C42B47" : "var(--color-neutral-700)",
+                  background: i >= 7 ? "var(--color-primary-400)" : "var(--color-neutral-700)",
                   borderRadius: "2px 2px 0 0",
                   transition: "height 0.5s",
                 }} />

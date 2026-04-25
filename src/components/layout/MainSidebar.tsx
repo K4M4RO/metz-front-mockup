@@ -74,7 +74,7 @@ export function MainSidebar() {
               onMouseEnter={(e) => {
                 if (!isActive)
                   (e.currentTarget as HTMLElement).style.backgroundColor =
-                    "rgba(139, 26, 43, 0.1)";
+                    "rgba(var(--primary-rgb), 0.1)";
               }}
               onMouseLeave={(e) => {
                 if (!isActive)
@@ -125,7 +125,7 @@ export function MainSidebar() {
           className="group relative w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
           onMouseEnter={(e) =>
             ((e.currentTarget as HTMLElement).style.backgroundColor =
-              "rgba(139, 26, 43, 0.1)")
+              "rgba(var(--primary-rgb), 0.1)")
           }
           onMouseLeave={(e) =>
             ((e.currentTarget as HTMLElement).style.backgroundColor =
@@ -205,7 +205,7 @@ export function MainSidebar() {
                   style={{ color: "var(--color-neutral-300)" }}
                   onMouseEnter={(e) =>
                     ((e.currentTarget as HTMLElement).style.backgroundColor =
-                      "rgba(139, 26, 43, 0.1)")
+                      "rgba(var(--primary-rgb), 0.1)")
                   }
                   onMouseLeave={(e) =>
                     ((e.currentTarget as HTMLElement).style.backgroundColor =
@@ -220,7 +220,7 @@ export function MainSidebar() {
                   style={{ color: "var(--color-danger)" }}
                   onMouseEnter={(e) =>
                     ((e.currentTarget as HTMLElement).style.backgroundColor =
-                      "rgba(139, 26, 43, 0.1)")
+                      "rgba(var(--primary-rgb), 0.1)")
                   }
                   onMouseLeave={(e) =>
                     ((e.currentTarget as HTMLElement).style.backgroundColor =

@@ -151,8 +151,8 @@ export function CampagnesPage() {
         </div>
         <button style={{
           padding: "10px 20px",
-          backgroundColor: "#C42B47",
-          color: "white",
+          backgroundColor: "var(--color-primary-400)",
+          color: "var(--text-on-accent)",
           border: "none",
           borderRadius: "8px",
           fontSize: "14px",
@@ -198,7 +198,7 @@ export function CampagnesPage() {
               backgroundColor: "var(--color-neutral-800)",
               border: "1px solid var(--color-neutral-700)",
               borderRadius: "8px",
-              color: "white",
+              color: "var(--text-primary)",
               fontSize: "14px",
               outline: "none"
             }}
@@ -247,7 +247,7 @@ export function CampagnesPage() {
               overflow: "hidden"
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "#C42B47";
+              e.currentTarget.style.borderColor = "var(--color-primary-400)";
               e.currentTarget.style.transform = "translateY(-4px)";
               e.currentTarget.style.boxShadow = "0 12px 24px rgba(0,0,0,0.4)";
             }}
@@ -315,7 +315,7 @@ export function CampagnesPage() {
                 alignItems: "center"
               }}>
                 <PriorityBadge priority={campaign.priority} />
-                <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#C42B47", fontSize: "12px", fontWeight: 600 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--color-primary-400)", fontSize: "12px", fontWeight: 600 }}>
                   Voir Kanban <ArrowRight size={14} />
                 </div>
               </div>

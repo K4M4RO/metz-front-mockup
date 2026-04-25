@@ -232,7 +232,7 @@ export function GlobalHeader() {
                     className="px-4 py-3 cursor-pointer transition-colors"
                     style={{
                       backgroundColor: notif.unread
-                        ? "rgba(196, 43, 71, 0.05)"
+                        ? "rgba(var(--primary-rgb), 0.05)"
                         : "transparent",
                       borderBottom: "1px solid var(--color-neutral-700)",
                     }}
@@ -243,7 +243,7 @@ export function GlobalHeader() {
                     onMouseLeave={(e) =>
                       ((e.currentTarget as HTMLElement).style.backgroundColor =
                         notif.unread
-                          ? "rgba(196, 43, 71, 0.05)"
+                          ? "rgba(var(--primary-rgb), 0.05)"
                           : "transparent")
                     }
                   >

@@ -20,10 +20,10 @@ interface LeagueDistributionProps {
   maxLabel?: string;
 }
 
-export function LeagueDistribution({ 
-  title, 
-  metricLabel, 
-  description, 
+export function LeagueDistribution({
+  title,
+  metricLabel,
+  description,
   teams,
   minLabel = "Pire",
   maxLabel = "Meilleur"
@@ -40,75 +40,116 @@ export function LeagueDistribution({
   };
 
   return (
-    <div className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 mb-6 transition-all hover:bg-white/10">
+    <div
+      className="w-full rounded-xl p-4 mb-6 transition-all"
+      style={{
+        background: "var(--bg-surface)",
+        border: "1px solid var(--border-subtle)",
+      }}
+      onMouseEnter={e => (e.currentTarget.style.background = "var(--bg-hover)")}
+      onMouseLeave={e => (e.currentTarget.style.background = "var(--bg-surface)")}
+    >
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">{title}</h4>
+          <h4
+            className="text-[10px] font-black uppercase tracking-[0.2em]"
+            style={{ color: "var(--text-primary)" }}
+          >
+            {title}
+          </h4>
           <div className="group relative">
-            <Info size={12} className="text-neutral-500 cursor-help" />
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-black/95 border border-white/10 rounded-lg text-[9px] text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+            <Info size={12} style={{ color: "var(--text-muted)" }} className="cursor-help" />
+            <div
+              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 rounded-lg text-[9px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50"
+              style={{
+                background: "var(--bg-surface-raised)",
+                border: "1px solid var(--border-default)",
+                color: "var(--text-muted)",
+              }}
+            >
               {description}
             </div>
           </div>
         </div>
-        <div className="text-[10px] font-bold text-[#C42B47] uppercase tracking-widest bg-[#C42B47]/10 px-2 py-1 rounded">
+        <div
+          className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded"
+          style={{ color: "var(--color-primary-400)", backgroundColor: "rgba(var(--primary-rgb), 0.1)" }}
+        >
           {metricLabel}
         </div>
       </div>
 
       <div className="relative h-12 flex items-center">
         {/* The Line */}
-        <div className="absolute w-full h-[1px] bg-white/20" />
-        
-        {/* Background Dots (only for teams without logos) */}
-        {teams.filter(t => 
-          t.id !== min.id && 
-          t.id !== max.id && 
-          !t.isMetz && 
+        <div className="absolute w-full h-[1px]" style={{ background: "var(--border-default)" }} />
+
+        {/* Background Dots */}
+        {teams.filter(t =>
+          t.id !== min.id &&
+          t.id !== max.id &&
+          !t.isMetz &&
           !t.isOpponent
         ).map((t, i) => (
-          <div 
-            key={i} 
-            className="absolute w-1.5 h-1.5 rounded-full bg-neutral-600 transition-all"
-            style={{ left: `${getPos(t.value)}%`, transform: 'translateX(-50%)' }}
+          <div
+            key={i}
+            className="absolute w-1.5 h-1.5 rounded-full transition-all"
+            style={{ background: "var(--color-neutral-500)", left: `${getPos(t.value)}%`, transform: 'translateX(-50%)' }}
           />
         ))}
 
-        {/* Highlights: Logos */}
-        
         {/* Min Team */}
         <div className="absolute flex flex-col items-center gap-1" style={{ left: '0%', transform: 'translateX(-50%)' }}>
-          <div className="w-6 h-6 rounded-full bg-neutral-800 border border-white/10 flex items-center justify-center overflow-hidden">
-             <span className="text-[8px] font-bold text-neutral-500">{min.name.substring(0,2).toUpperCase()}</span>
+          <div
+            className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden"
+            style={{ background: "var(--bg-surface-raised)", border: "1px solid var(--border-default)" }}
+          >
+            <span className="text-[8px] font-bold" style={{ color: "var(--text-muted)" }}>{min.name.substring(0,2).toUpperCase()}</span>
           </div>
-          <span className="text-[7px] font-bold text-neutral-500 uppercase">{minLabel}</span>
+          <span className="text-[7px] font-bold uppercase" style={{ color: "var(--text-muted)" }}>{minLabel}</span>
         </div>
 
         {/* Max Team */}
         <div className="absolute flex flex-col items-center gap-1" style={{ left: '100%', transform: 'translateX(-50%)' }}>
-          <div className="w-6 h-6 rounded-full bg-neutral-800 border border-white/10 flex items-center justify-center overflow-hidden">
-             <span className="text-[8px] font-bold text-neutral-500">{max.name.substring(0,2).toUpperCase()}</span>
+          <div
+            className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden"
+            style={{ background: "var(--bg-surface-raised)", border: "1px solid var(--border-default)" }}
+          >
+            <span className="text-[8px] font-bold" style={{ color: "var(--text-muted)" }}>{max.name.substring(0,2).toUpperCase()}</span>
           </div>
-          <span className="text-[7px] font-bold text-neutral-500 uppercase">{maxLabel}</span>
+          <span className="text-[7px] font-bold uppercase" style={{ color: "var(--text-muted)" }}>{maxLabel}</span>
         </div>
 
         {/* Opponent */}
         {opponent && (
           <div className="absolute flex flex-col items-center gap-1 z-10" style={{ left: `${getPos(opponent.value)}%`, transform: 'translateX(-50%)' }}>
-            <div className="w-8 h-8 rounded-full bg-white border-2 border-[#F59E0B] flex items-center justify-center overflow-hidden shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-               <span className="text-[10px] font-black text-black">{opponent.name.substring(0,2).toUpperCase()}</span>
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden"
+              style={{
+                background: "var(--bg-surface)",
+                border: "2px solid var(--color-warning)",
+                boxShadow: "0 0 12px rgba(var(--warning-rgb), 0.3)",
+              }}
+            >
+               <span className="text-[10px] font-black" style={{ color: "var(--text-primary)" }}>{opponent.name.substring(0,2).toUpperCase()}</span>
             </div>
-            <span className="text-[8px] font-black text-[#F59E0B] uppercase">{opponent.name}</span>
+            <span className="text-[8px] font-black uppercase" style={{ color: "var(--color-warning)" }}>{opponent.name}</span>
           </div>
         )}
 
-        {/* FC Metz */}
+        {/* FC Metz — fond blanc + bordure grenat pour que le logo soit visible dans les 2 modes */}
         {metz && (
           <div className="absolute flex flex-col items-center gap-1 z-20" style={{ left: `${getPos(metz.value)}%`, transform: 'translateX(-50%)' }}>
-            <div className="w-10 h-10 rounded-full bg-[#C42B47] border-2 border-white flex items-center justify-center overflow-hidden shadow-[0_0_20px_rgba(196,43,71,0.4)]">
-               <Image src="/fc-metz-logo.png" alt="FC Metz" width={24} height={24} className="object-contain" />
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden"
+              style={{
+                background: "var(--bg-surface)",
+                border: "2.5px solid var(--color-primary-400)",
+                boxShadow: "0 0 16px rgba(var(--primary-rgb), 0.35)",
+              }}
+            >
+               <Image src="/fc-metz-logo.png" alt="FC Metz" width={26} height={26} className="object-contain" />
             </div>
-            <span className="text-[8px] font-black text-[#C42B47] uppercase tracking-tighter">FC Metz</span>
+            <span className="text-[8px] font-black uppercase tracking-tighter" style={{ color: "var(--color-primary-400)" }}>FC Metz</span>
           </div>
         )}
       </div>

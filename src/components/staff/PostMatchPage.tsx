@@ -14,8 +14,11 @@ const PAST_MATCHES = [
   { id: "metz-reims", date: "Aujourd'hui", opponent: "Stade de Reims", score: "3 – 2", result: "W", isLatest: true },
 ];
 
-const R_COLOR: Record<string, string> = { W: "#22C55E", D: "#F59E0B", L: "#EF4444" };
-const R_LABEL: Record<string, string> = { W: "V", D: "N", L: "D" };
+const R_STYLE: Record<string, { color: string; bg: string; border: string; label: string }> = {
+  W: { color: "var(--color-success)", bg: "rgba(var(--success-rgb), 0.12)", border: "rgba(var(--success-rgb), 0.33)", label: "V" },
+  D: { color: "var(--color-warning)", bg: "rgba(var(--warning-rgb), 0.12)", border: "rgba(var(--warning-rgb), 0.33)", label: "N" },
+  L: { color: "var(--color-danger)",  bg: "rgba(var(--danger-rgb),  0.12)", border: "rgba(var(--danger-rgb),  0.33)", label: "D" },
+};
 
 export function PostMatchPage() {
   const searchParams = useSearchParams();
@@ -52,19 +55,19 @@ export function PostMatchPage() {
                 className={`w-full text-left p-3 rounded-lg transition-all border ${
                   isActive 
                     ? "bg-[var(--color-primary-500)] border-[var(--color-primary-500)] shadow-sm" 
-                    : "bg-transparent border-transparent hover:bg-[rgba(139,26,43,0.1)]"
+                    : "bg-transparent border-transparent hover:bg-[var(--bg-hover)]"
                 }`}
               >
                 <div className="flex items-center gap-2.5 mb-1.5">
-                  <span 
+                  <span
                     className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-black"
-                    style={{ 
-                      backgroundColor: `${R_COLOR[m.result]}22`, 
-                      color: R_COLOR[m.result],
-                      border: `1px solid ${R_COLOR[m.result]}44`
+                    style={{
+                      backgroundColor: R_STYLE[m.result].bg,
+                      color: R_STYLE[m.result].color,
+                      border: `1px solid ${R_STYLE[m.result].border}`,
                     }}
                   >
-                    {R_LABEL[m.result]}
+                    {R_STYLE[m.result].label}
                   </span>
                   <span className={`text-[13px] font-bold truncate ${isActive ? "text-white" : "text-[var(--color-neutral-100)]"}`}>
                     vs {m.opponent}
@@ -108,7 +111,11 @@ export function PostMatchPage() {
               </p>
               <button 
                 onClick={() => setSelectedMatch("metz-reims")}
-                className="px-6 py-2 bg-[#C42B47] hover:bg-[#A8253D] text-white text-sm font-bold rounded-lg transition-colors"
+                className="px-6 py-2 text-white text-sm font-bold rounded-lg transition-colors"
+                style={{ backgroundColor: "var(--color-primary-500)" }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = "var(--color-primary-600)")}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = "var(--color-primary-500)")}
+
               >
                 Voir FC Metz - Reims
               </button>

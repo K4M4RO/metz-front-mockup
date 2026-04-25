@@ -84,7 +84,7 @@ function NavLink({
 }: {
   item: NavItem; isActive: boolean; accentColor?: string;
 }) {
-  const accent = accentColor ?? "#C42B47";
+  const accent = accentColor ?? "var(--color-primary-500)";
   return (
     <Link
       href={item.href}
@@ -102,7 +102,7 @@ function NavLink({
       onMouseEnter={e => {
         if (!isActive) {
           const el = e.currentTarget as HTMLElement;
-          el.style.backgroundColor = "rgba(139, 26, 43, 0.08)";
+          el.style.backgroundColor = "rgba(var(--primary-rgb), 0.08)";
           el.style.color = "var(--color-primary-500)";
         }
       }}
@@ -147,8 +147,8 @@ export function ContextualSidebar() {
           {module.title}
           {module.subtitle && (
             <>
-              <span style={{ color: "#C42B47", margin: "0 3px" }}>·</span>
-              <span style={{ color: "#C42B47" }}>{module.subtitle}</span>
+              <span style={{ color: "var(--color-primary-400)", margin: "0 3px" }}>·</span>
+              <span style={{ color: "var(--color-primary-400)" }}>{module.subtitle}</span>
             </>
           )}
         </h2>
@@ -164,7 +164,7 @@ export function ContextualSidebar() {
               key={item.id}
               item={item}
               isActive={activeId === item.id}
-              accentColor="var(--color-primary-500)"
+              accentColor={undefined}
             />
           ))}
         </div>
@@ -173,14 +173,14 @@ export function ContextualSidebar() {
       {/* Footer */}
       <div style={{ padding: "10px 14px", borderTop: "1px solid var(--color-neutral-800)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-          <span style={{ width: 8, height: 8, borderRadius: "50%", flexShrink: 0, background: "#C42B47" }} />
+          <span style={{ width: 8, height: 8, borderRadius: "50%", flexShrink: 0, background: "var(--color-primary-400)" }} />
           <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-neutral-300)", fontFamily: "var(--font-display)" }}>
             FC Metz
           </span>
           <span style={{
             marginLeft: "auto", fontSize: 9, padding: "2px 6px", borderRadius: 4,
-            background: "rgba(196,43,71,0.15)", border: "1px solid rgba(196,43,71,0.3)",
-            color: "#C42B47", fontWeight: 700,
+            background: "rgba(var(--primary-rgb), 0.15)", border: "1px solid rgba(var(--primary-rgb), 0.3)",
+            color: "var(--color-primary-400)", fontWeight: 700,
           }}>Pro</span>
         </div>
         <p style={{ fontSize: 10, color: "var(--color-neutral-600)", margin: "3px 0 0" }}>Saison 2024–25</p>

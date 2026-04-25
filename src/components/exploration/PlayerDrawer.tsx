@@ -58,7 +58,7 @@ function MiniRadar({ radar }: { radar: Player["radar"] }) {
       {/* Player polygon */}
       <polygon
         points={playerPoints}
-        fill="rgba(196,43,71,0.18)"
+        fill="rgba(var(--primary-rgb), 0.18)"
         stroke="var(--color-primary-500)"
         strokeWidth="1.5"
         strokeLinejoin="round"
@@ -131,14 +131,14 @@ export function PlayerDrawer({ player, onClose }: Props) {
   if (!player) return null;
 
   const statusCfg = STATUS_CONFIG[player.status];
-  const ratingColor = RATING_CONFIG[player.rating];
+  const ratingCfg = RATING_CONFIG[player.rating];
 
   return (
     <>
       {/* Backdrop */}
       <div
         className="absolute inset-0 z-30"
-        style={{ backgroundColor: "rgba(0,0,0,0.35)" }}
+        style={{ backgroundColor: "var(--overlay-bg)" }}
         onClick={onClose}
       />
 
@@ -192,8 +192,8 @@ export function PlayerDrawer({ player, onClose }: Props) {
                 <span
                   className="text-xs px-1.5 py-0.5 rounded font-medium"
                   style={{
-                    backgroundColor: "rgba(196,43,71,0.15)",
-                    border: "1px solid rgba(196,43,71,0.35)",
+                    backgroundColor: "rgba(var(--primary-rgb), 0.15)",
+                    border: "1px solid rgba(var(--primary-rgb), 0.35)",
                     color: "var(--color-primary-400)",
                   }}
                 >
@@ -203,8 +203,8 @@ export function PlayerDrawer({ player, onClose }: Props) {
                   <span
                     className="text-xs px-1.5 py-0.5 rounded font-medium"
                     style={{
-                      backgroundColor: "rgba(239,68,68,0.12)",
-                      border: "1px solid rgba(239,68,68,0.30)",
+                      backgroundColor: "rgba(var(--danger-rgb), 0.12)",
+                      border: "1px solid rgba(var(--danger-rgb), 0.30)",
                       color: "var(--color-danger)",
                     }}
                   >
@@ -273,7 +273,7 @@ export function PlayerDrawer({ player, onClose }: Props) {
             </span>
             <div
               className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{ backgroundColor: ratingColor + "22", border: `1px solid ${ratingColor}55`, color: ratingColor }}
+              style={{ backgroundColor: ratingCfg.bg, border: `1px solid ${ratingCfg.border}`, color: ratingCfg.color }}
             >
               {player.rating}
             </div>

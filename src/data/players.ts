@@ -128,15 +128,19 @@ export const POSITION_LABELS: Record<Position, string> = {
 };
 
 export const STATUS_CONFIG: Record<KanbanStatus, { color: string; bg: string; border: string }> = {
-  'Priorité':    { color: '#22C55E', bg: 'rgba(34,197,94,0.12)',   border: 'rgba(34,197,94,0.35)'  },
-  'Contacté':    { color: '#EAB308', bg: 'rgba(234,179,8,0.12)',   border: 'rgba(234,179,8,0.35)'  },
-  'À suivre':    { color: '#EAB308', bg: 'rgba(234,179,8,0.12)',   border: 'rgba(234,179,8,0.35)'  },
-  'Pré-accord':  { color: '#C42B47', bg: 'rgba(196,43,71,0.12)',   border: 'rgba(196,43,71,0.35)'  },
-  'Identifié':   { color: '#A1A1AA', bg: 'rgba(161,161,170,0.10)', border: 'rgba(161,161,170,0.25)'},
-  'Observation': { color: '#3B82F6', bg: 'rgba(59,130,246,0.12)',  border: 'rgba(59,130,246,0.35)' },
-  'Écarté':      { color: '#EF4444', bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.35)'  },
+  'Priorité':    { color: 'var(--color-success)',       bg: 'rgba(var(--success-rgb), 0.12)',       border: 'rgba(var(--success-rgb), 0.35)'       },
+  'Contacté':    { color: 'var(--color-warning)',       bg: 'rgba(var(--warning-rgb), 0.12)',       border: 'rgba(var(--warning-rgb), 0.35)'       },
+  'À suivre':    { color: 'var(--color-warning)',       bg: 'rgba(var(--warning-rgb), 0.12)',       border: 'rgba(var(--warning-rgb), 0.35)'       },
+  'Pré-accord':  { color: 'var(--color-primary-400)',  bg: 'rgba(var(--primary-rgb), 0.12)',       border: 'rgba(var(--primary-rgb), 0.35)'       },
+  'Identifié':   { color: 'var(--text-muted)',          bg: 'rgba(var(--neutral-badge-rgb), 0.10)', border: 'rgba(var(--neutral-badge-rgb), 0.25)' },
+  'Observation': { color: 'var(--color-info)',          bg: 'rgba(var(--info-rgb), 0.12)',          border: 'rgba(var(--info-rgb), 0.35)'          },
+  'Écarté':      { color: 'var(--color-danger)',        bg: 'rgba(var(--danger-rgb), 0.12)',        border: 'rgba(var(--danger-rgb), 0.35)'        },
 };
 
-export const RATING_CONFIG: Record<Rating, string> = {
-  A: '#22C55E', B: '#84CC16', C: '#EAB308', D: '#F97316', E: '#EF4444',
+export const RATING_CONFIG: Record<Rating, { color: string; bg: string; border: string }> = {
+  A: { color: 'var(--rating-a)', bg: 'rgba(var(--rating-a-rgb), 0.10)', border: 'rgba(var(--rating-a-rgb), 0.33)' },
+  B: { color: 'var(--rating-b)', bg: 'rgba(var(--rating-b-rgb), 0.10)', border: 'rgba(var(--rating-b-rgb), 0.33)' },
+  C: { color: 'var(--rating-c)', bg: 'rgba(var(--rating-c-rgb), 0.10)', border: 'rgba(var(--rating-c-rgb), 0.33)' },
+  D: { color: 'var(--rating-d)', bg: 'rgba(var(--rating-d-rgb), 0.10)', border: 'rgba(var(--rating-d-rgb), 0.33)' },
+  E: { color: 'var(--rating-e)', bg: 'rgba(var(--rating-e-rgb), 0.10)', border: 'rgba(var(--rating-e-rgb), 0.33)' },
 };

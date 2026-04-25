@@ -103,7 +103,7 @@ export function ActionBar({ view, onViewChange, totalCount, activePills, onToggl
               style={{
                 backgroundColor: active ? "var(--color-primary-500)" : "var(--color-neutral-800)",
                 border: `1px solid ${active ? "var(--color-primary-500)" : "var(--color-neutral-600)"}`,
-                color: active ? "white" : "var(--color-neutral-400)",
+                color: active ? "var(--text-on-accent)" : "var(--color-neutral-400)",
                 fontFamily: active ? "var(--font-display)" : "inherit",
               }}
               onMouseEnter={(e) => {
@@ -159,7 +159,7 @@ export function ActionBar({ view, onViewChange, totalCount, activePills, onToggl
                 title={label}
                 style={{
                   backgroundColor: active ? "var(--color-primary-500)" : "transparent",
-                  color: active ? "white" : "var(--color-neutral-500)",
+                  color: active ? "var(--text-on-accent)" : "var(--color-neutral-500)",
                   borderRight: id !== "scatter" ? "1px solid var(--color-neutral-700)" : undefined,
                   fontFamily: active ? "var(--font-display)" : "inherit",
                 }}

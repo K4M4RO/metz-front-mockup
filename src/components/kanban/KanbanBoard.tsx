@@ -82,10 +82,10 @@ const INITIAL_COLUMNS: Column[] = [
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function noteBadgeStyle(note: number): { background: string; color: string } {
-  if (note >= 8.0) return { background: "rgba(34,197,94,0.15)",  color: "#4ADE80" };
-  if (note >= 7.0) return { background: "rgba(234,179,8,0.15)",  color: "#FDE047" };
-  if (note >= 6.5) return { background: "rgba(249,115,22,0.15)", color: "#FB923C" };
-  return               { background: "rgba(239,68,68,0.15)",  color: "#F87171" };
+  if (note >= 8.0) return { background: "rgba(var(--note-high-rgb), 0.15)", color: "var(--note-high)" };
+  if (note >= 7.0) return { background: "rgba(var(--note-mid-rgb),  0.15)", color: "var(--note-mid)"  };
+  if (note >= 6.5) return { background: "rgba(var(--note-low-rgb),  0.15)", color: "var(--note-low)"  };
+  return               { background: "rgba(var(--note-bad-rgb),  0.15)", color: "var(--note-bad)"  };
 }
 
 // ─── Card component ───────────────────────────────────────────────────────────
@@ -110,9 +110,9 @@ function KanbanCard({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        background: hovered ? "rgba(255,255,255,0.04)" : "var(--color-neutral-800, #1F2937)",
+        background: hovered ? "var(--bg-hover)" : "var(--color-neutral-800, #1F2937)",
         border: hovered ? "1px solid transparent" : "1px solid var(--color-neutral-700, #374151)",
-        borderLeft: hovered ? "3px solid #C42B47" : "1px solid var(--color-neutral-700, #374151)",
+        borderLeft: hovered ? "3px solid var(--color-primary-400)" : "1px solid var(--color-neutral-700, #374151)",
         borderRadius: "8px",
         padding: "12px",
         cursor: isLocked ? "not-allowed" : "grab",
@@ -125,7 +125,7 @@ function KanbanCard({
       {/* Lock icon for locked cards */}
       {isLocked && (
         <div style={{ position: "absolute", top: 8, right: 8 }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-400)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
@@ -139,7 +139,7 @@ function KanbanCard({
           width: 32, height: 32, borderRadius: "50%",
           background: card.avatarBg,
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 11, fontWeight: 700, color: "#fff",
+          fontSize: 11, fontWeight: 700, color: "var(--text-on-accent)",
           flexShrink: 0,
         }}>
           {card.initials}
@@ -209,8 +209,8 @@ function KanbanColumn({
         flexShrink: 0,
         display: "flex",
         flexDirection: "column",
-        background: isDragOver ? "rgba(196,43,71,0.08)" : "var(--color-neutral-900, #111827)",
-        border: isDragOver ? "1px solid rgba(196,43,71,0.3)" : "1px solid var(--color-neutral-800, #1F2937)",
+        background: isDragOver ? "rgba(var(--primary-rgb), 0.08)" : "var(--color-neutral-900, #111827)",
+        border: isDragOver ? "1px solid rgba(var(--primary-rgb), 0.3)" : "1px solid var(--color-neutral-800, #1F2937)",
         borderTop: `4px solid ${column.borderColor}`,
         borderRadius: 10,
         overflow: "hidden",
@@ -229,7 +229,7 @@ function KanbanColumn({
           fontSize: 11,
           fontWeight: 700,
           letterSpacing: "0.08em",
-          color: "#fff",
+          color: "var(--text-primary)",
           textTransform: "uppercase",
         }}>
           {column.label}
@@ -266,15 +266,15 @@ function KanbanColumn({
             width: "100%",
             padding: "7px 0",
             background: "transparent",
-            border: "1px solid #C42B47",
+            border: "1px solid var(--color-primary-400)",
             borderRadius: 6,
-            color: "#C42B47",
+            color: "var(--color-primary-400)",
             fontSize: 12,
             fontWeight: 600,
             cursor: "pointer",
             transition: "background 0.15s",
           }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(196,43,71,0.08)"; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(var(--primary-rgb), 0.08)"; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
         >
           + Ajouter
@@ -297,11 +297,11 @@ function Toast({ visible }: { visible: boolean }) {
       transition: "opacity 0.25s, transform 0.25s",
       pointerEvents: "none",
       zIndex: 9999,
-      background: "#1C1C1F",
-      border: "1px solid #EF4444",
+      background: "var(--bg-surface-raised)",
+      border: "1px solid var(--color-danger)",
       borderRadius: 8,
       padding: "10px 20px",
-      color: "#EF4444",
+      color: "var(--color-danger)",
       fontSize: 13,
       fontWeight: 600,
       whiteSpace: "nowrap",
@@ -436,7 +436,7 @@ export function KanbanBoard({
           </Link>
 
           <div>
-            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#fff", lineHeight: 1.2 }}>
+            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.2 }}>
               {title}
             </h1>
             <p style={{ margin: "4px 0 0", fontSize: 13, color: "var(--color-neutral-500, #6B7280)" }}>
@@ -451,16 +451,16 @@ export function KanbanBoard({
             onClick={() => {}}
             style={{
               padding: "8px 16px",
-              background: "#C42B47",
+              background: "var(--color-primary-400)",
               border: "none",
               borderRadius: 6,
-              color: "#fff",
+              color: "var(--text-on-accent)",
               fontSize: 13,
               fontWeight: 600,
               cursor: "pointer",
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#A8233C"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#C42B47"; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "var(--color-primary-600)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "var(--color-primary-400)"; }}
           >
             + Ajouter un joueur
           </button>
@@ -476,7 +476,7 @@ export function KanbanBoard({
               fontWeight: 500,
               cursor: "pointer",
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.05)"; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "var(--bg-hover)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
           >
             Exporter PDF
@@ -493,7 +493,7 @@ export function KanbanBoard({
               fontWeight: 500,
               cursor: "pointer",
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.05)"; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "var(--bg-hover)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
           >
             Archiver

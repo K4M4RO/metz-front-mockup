@@ -13,8 +13,8 @@ function PosBadge({ pos }: { pos: Player["position"] }) {
     <span
       className="inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded"
       style={{
-        backgroundColor: "rgba(196,43,71,0.12)",
-        border: "1px solid rgba(196,43,71,0.35)",
+        backgroundColor: "rgba(var(--primary-rgb), 0.12)",
+        border: "1px solid rgba(var(--primary-rgb), 0.35)",
         color: "var(--color-primary-400)",
         whiteSpace: "nowrap",
         fontSize: 11,
@@ -47,14 +47,14 @@ function StatusBadge({ status }: { status: Player["status"] }) {
 
 // ─── Rating badge ──────────────────────────────────────────────────────────────
 function RatingBadge({ rating }: { rating: Player["rating"] }) {
-  const color = RATING_CONFIG[rating];
+  const cfg = RATING_CONFIG[rating];
   return (
     <div
       className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold mx-auto"
       style={{
-        backgroundColor: color + "1A",
-        border: `1.5px solid ${color}55`,
-        color,
+        backgroundColor: cfg.bg,
+        border: `1.5px solid ${cfg.border}`,
+        color: cfg.color,
       }}
     >
       {rating}
@@ -341,7 +341,7 @@ export function PlayerTable({ players, onRowClick }: Props) {
                     <span
                       className="inline-flex items-center justify-center font-bold text-xs"
                       style={{
-                        color: player.id % 2 === 0 ? "var(--color-neutral-300)" : "#cc1d3e", // Eclairci
+                        color: player.id % 2 === 0 ? "var(--color-neutral-300)" : "var(--color-primary-400)",
                       }}
                     >
                       {80 + (player.id % 18)}%
@@ -351,9 +351,9 @@ export function PlayerTable({ players, onRowClick }: Props) {
                     <div
                       className="inline-flex items-center justify-center text-[10px] font-bold px-1.5 py-0.5 rounded"
                       style={{
-                        backgroundColor: (75 + (player.id % 20)) > 85 ? "rgba(109,7,26,0.3)" : "var(--color-neutral-800)",
-                        color: (75 + (player.id % 20)) > 85 ? "#ff5277" : "var(--color-neutral-300)",
-                        border: `1px solid ${(75 + (player.id % 20)) > 85 ? "rgba(196,43,71,0.5)" : "var(--color-neutral-700)"}`
+                        backgroundColor: (75 + (player.id % 20)) > 85 ? "rgba(var(--primary-rgb), 0.2)" : "var(--color-neutral-800)",
+                        color: (75 + (player.id % 20)) > 85 ? "var(--color-primary-300)" : "var(--color-neutral-300)",
+                        border: `1px solid ${(75 + (player.id % 20)) > 85 ? "rgba(var(--primary-rgb), 0.5)" : "var(--color-neutral-700)"}`
                       }}
                     >
                       {75 + (player.id % 20)}

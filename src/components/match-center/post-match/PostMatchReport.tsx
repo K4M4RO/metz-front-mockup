@@ -41,10 +41,10 @@ function MatchHeader() {
         <div style={{
           padding: "2px 8px",
           borderRadius: 4,
-          background: "rgba(196,43,71,0.15)",
-          border: "1px solid rgba(196,43,71,0.3)",
+          background: "rgba(var(--primary-rgb), 0.15)",
+          border: "1px solid rgba(var(--primary-rgb), 0.3)",
           fontSize: 9, fontWeight: 800,
-          color: "#C42B47",
+          color: "var(--color-primary-400)",
           textTransform: "uppercase", letterSpacing: "0.08em",
         }}>
           Post-Match
@@ -61,7 +61,7 @@ function MatchHeader() {
       <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
         {/* Home */}
         <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#C42B47" }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--color-primary-400)" }}>
             {HOME_TEAM.name}
           </div>
           <div style={{ fontSize: 9, color: "var(--color-neutral-500)" }}>Domicile</div>
@@ -76,7 +76,7 @@ function MatchHeader() {
           gap: 0,
         }}>
           <span style={{
-            fontSize: 32, fontWeight: 900, color: "#C42B47",
+            fontSize: 32, fontWeight: 900, color: "var(--color-primary-400)",
             width: 44, textAlign: "center", lineHeight: 1,
           }}>
             {MATCH_INFO.homeScore}
@@ -137,10 +137,10 @@ function TabBar({ activeTab, onSelect }: {
               padding: "11px 18px",
               fontSize: 11,
               fontWeight: isActive ? 700 : 500,
-              color: isActive ? "#C42B47" : "var(--color-neutral-500)",
+              color: isActive ? "var(--color-primary-400)" : "var(--color-neutral-500)",
               background: "transparent",
               border: "none",
-              borderBottom: `2px solid ${isActive ? "#C42B47" : "transparent"}`,
+              borderBottom: `2px solid ${isActive ? "var(--color-primary-400)" : "transparent"}`,
               cursor: "pointer",
               whiteSpace: "nowrap",
               transition: "all 0.15s ease",
