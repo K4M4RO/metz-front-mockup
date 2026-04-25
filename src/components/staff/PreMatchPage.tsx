@@ -108,6 +108,7 @@ const TEAM_STATS_CATEGORIES = [
     id: "finition", label: "Finition", vizType: "shots",
     metrics: [
       { label: "xG P90", valueFor: 1.42, valueAgainst: 1.18, unit: "", allTeams: [0.5, 0.65, 0.78, 0.9, 1.0, 1.1, 1.18, 1.28, 1.35, 1.42, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.15, 2.4], advIdx: 6 },
+      { label: "PSxG P90", valueFor: 1.25, valueAgainst: 1.05, unit: "", allTeams: [0.4, 0.55, 0.68, 0.8, 0.9, 1.0, 1.05, 1.15, 1.2, 1.25, 1.35, 1.45, 1.55, 1.65, 1.75, 1.85, 2.0, 2.2], advIdx: 6 },
       { label: "Tirs cadrés %", valueFor: 38, valueAgainst: 32, unit: "%", allTeams: [22, 25, 27, 29, 31, 32, 34, 36, 38, 40, 42, 44, 46, 48, 51, 54, 57, 61], advIdx: 5 },
     ],
   },
@@ -156,23 +157,36 @@ const PLAYER_NAMES = ["Caillard", "Nzinga", "Kouyaté", "Traoré", "Celestine", 
 
 const EVT = {
   passes: [
-    { x1: .3, y1: .7, x2: .5, y2: .55, ok: true }, { x1: .5, y1: .55, x2: .7, y2: .4, ok: true },
-    { x1: .2, y1: .6, x2: .45, y2: .35, ok: false }, { x1: .6, y1: .65, x2: .8, y2: .5, ok: true },
-    { x1: .15, y1: .72, x2: .38, y2: .55, ok: true }, { x1: .38, y1: .55, x2: .16, y2: .36, ok: false },
-    { x1: .64, y1: .55, x2: .84, y2: .36, ok: true }, { x1: .84, y1: .36, x2: .50, y2: .17, ok: true },
-    { x1: .87, y1: .73, x2: .64, y2: .55, ok: true }, { x1: .36, y1: .55, x2: .50, y2: .36, ok: true },
+    { x1: .3, y1: .7, x2: .5, y2: .55, ok: true, from: "Kouyaté", to: "Mendes", action: "Passe courte", pressure: true },
+    { x1: .5, y1: .55, x2: .7, y2: .4, ok: true, from: "Mendes", to: "Jallow", action: "Passe longue", pressure: false },
+    { x1: .2, y1: .6, x2: .45, y2: .35, ok: false, from: "Nzinga", to: "Camara", action: "Passe courte", pressure: true },
+    { x1: .6, y1: .65, x2: .8, y2: .5, ok: true, from: "Traoré", to: "Angban", action: "Passe courte", pressure: false },
+    { x1: .15, y1: .72, x2: .38, y2: .55, ok: true, from: "Caillard", to: "Nzinga", action: "Passe courte", pressure: false },
+    { x1: .38, y1: .55, x2: .16, y2: .36, ok: false, from: "Nzinga", to: "Kouassi", action: "Passe longue", pressure: true },
+    { x1: .64, y1: .55, x2: .84, y2: .36, ok: true, from: "Angban", to: "Camara", action: "Passe courte", pressure: false },
+    { x1: .84, y1: .36, x2: .50, y2: .17, ok: true, from: "Camara", to: "Jallow", action: "Passe courte", pressure: false },
+    { x1: .87, y1: .73, x2: .64, y2: .55, ok: true, from: "Celestine", to: "Angban", action: "Passe courte", pressure: true },
+    { x1: .36, y1: .55, x2: .50, y2: .36, ok: true, from: "Kouyaté", to: "Mendes", action: "Passe courte", pressure: false },
   ],
   carries: [
-    { x1: .36, y1: .55, x2: .45, y2: .40 }, { x1: .64, y1: .55, x2: .72, y2: .42 },
-    { x1: .16, y1: .36, x2: .28, y2: .25 }, { x1: .84, y1: .36, x2: .72, y2: .24 },
-    { x1: .13, y1: .73, x2: .20, y2: .58 }, { x1: .87, y1: .73, x2: .80, y2: .60 },
-    { x1: .50, y1: .36, x2: .50, y2: .22 }, { x1: .50, y1: .17, x2: .58, y2: .12 },
+    { x1: .36, y1: .55, x2: .45, y2: .40, from: "Kouyaté", to: "", action: "Carry", ok: true, pressure: true },
+    { x1: .64, y1: .55, x2: .72, y2: .42, from: "Angban", to: "", action: "Carry", ok: true, pressure: false },
+    { x1: .16, y1: .36, x2: .28, y2: .25, from: "Nzinga", to: "", action: "Carry", ok: true, pressure: false },
+    { x1: .84, y1: .36, x2: .72, y2: .24, from: "Camara", to: "", action: "Carry", ok: false, pressure: true },
+    { x1: .13, y1: .73, x2: .20, y2: .58, from: "Traoré", to: "", action: "Carry", ok: true, pressure: true },
+    { x1: .87, y1: .73, x2: .80, y2: .60, from: "Celestine", to: "", action: "Carry", ok: true, pressure: false },
+    { x1: .50, y1: .36, x2: .50, y2: .22, from: "Mendes", to: "", action: "Carry", ok: true, pressure: false },
+    { x1: .50, y1: .17, x2: .58, y2: .12, from: "Jallow", to: "", action: "Carry", ok: false, pressure: true },
   ],
   shots: [
-    { x: .50, y: .15, xG: .42, outcome: "goal" }, { x: .40, y: .20, xG: .18, outcome: "saved" },
-    { x: .60, y: .18, xG: .25, outcome: "saved" }, { x: .35, y: .28, xG: .08, outcome: "off" },
-    { x: .65, y: .25, xG: .12, outcome: "off" }, { x: .50, y: .32, xG: .05, outcome: "saved" },
-    { x: .28, y: .35, xG: .03, outcome: "off" }, { x: .55, y: .22, xG: .15, outcome: "goal" },
+    { x: .50, y: .15, xG: .42, psxg: .65, outcome: "goal", player: "Kouyaté", assist: "Traoré", action: "Pied droit" }, 
+    { x: .40, y: .20, xG: .18, psxg: .25, outcome: "saved", player: "Mendes", assist: null, action: "Tête" },
+    { x: .60, y: .18, xG: .25, psxg: .12, outcome: "saved", player: "Jallow", assist: "Camara", action: "Pied gauche" }, 
+    { x: .35, y: .28, xG: .08, psxg: 0, outcome: "off", player: "Angban", assist: "Lopy", action: "Pied droit" },
+    { x: .65, y: .25, xG: .12, psxg: 0, outcome: "off", player: "Caillard", assist: null, action: "Pied droit" }, 
+    { x: .50, y: .32, xG: .05, psxg: .10, outcome: "saved", player: "Nzinga", assist: "Celestine", action: "Pied gauche" },
+    { x: .28, y: .35, xG: .03, psxg: 0, outcome: "off", player: "Traoré", assist: null, action: "Pied droit" }, 
+    { x: .55, y: .22, xG: .15, psxg: .45, outcome: "goal", player: "Kouyaté", assist: "Mendes", action: "Pied droit" },
   ],
   heatmap: Array.from({ length: 8 }, (_, row) => Array.from({ length: 12 }, (_, col) => {
     const cx = col / 11, cy = row / 7;
@@ -184,27 +198,49 @@ const EVT = {
     );
   })),
   duels: [
-    { x: .2, y: .7, won: true }, { x: .5, y: .65, won: false }, { x: .8, y: .6, won: true }, { x: .3, y: .5, won: true },
-    { x: .7, y: .45, won: false }, { x: .15, y: .4, won: true }, { x: .85, y: .35, won: true }, { x: .4, y: .3, won: false },
-    { x: .6, y: .25, won: true }, { x: .5, y: .8, won: false }, { x: .25, y: .6, won: true }, { x: .75, y: .55, won: false },
-    { x: .45, y: .7, won: true }, { x: .55, y: .4, won: true }, { x: .35, y: .35, won: false },
+    { x: .2, y: .7, won: true, player: "Traoré", type: "Au sol", phase: "Duel défensif" }, 
+    { x: .5, y: .65, won: false, player: "Camara", type: "Aérien", phase: "Duel offensif" }, 
+    { x: .8, y: .6, won: true, player: "Kouyaté", type: "Au sol", phase: "Duel défensif" }, 
+    { x: .3, y: .5, won: true, player: "Nzinga", type: "Au sol", phase: "Duel défensif" },
+    { x: .7, y: .45, won: false, player: "Lopy", type: "Aérien", phase: "Duel défensif" }, 
+    { x: .15, y: .4, won: true, player: "Angban", type: "Au sol", phase: "Duel offensif" }, 
+    { x: .85, y: .35, won: true, player: "Mendes", type: "Aérien", phase: "Duel offensif" }, 
+    { x: .4, y: .3, won: false, player: "Jallow", type: "Au sol", phase: "Duel offensif" },
+    { x: .6, y: .25, won: true, player: "Kouyaté", type: "Au sol", phase: "Duel défensif" }, 
+    { x: .5, y: .8, won: false, player: "Camara", type: "Aérien", phase: "Duel offensif" }, 
+    { x: .25, y: .6, won: true, player: "Traoré", type: "Au sol", phase: "Duel défensif" }, 
+    { x: .75, y: .55, won: false, player: "Lopy", type: "Au sol", phase: "Duel offensif" },
+    { x: .45, y: .7, won: true, player: "Angban", type: "Aérien", phase: "Duel offensif" }, 
+    { x: .55, y: .4, won: true, player: "Mendes", type: "Au sol", phase: "Duel défensif" }, 
+    { x: .35, y: .35, won: false, player: "Jallow", type: "Au sol", phase: "Duel offensif" },
   ],
   turnovers: [
-    { x: .3, y: .25, shot: true, sx: .5, sy: .15 }, { x: .6, y: .3, shot: false, sx: 0, sy: 0 },
-    { x: .2, y: .35, shot: true, sx: .4, sy: .2 }, { x: .7, y: .28, shot: false, sx: 0, sy: 0 },
-    { x: .45, y: .22, shot: true, sx: .55, sy: .18 }, { x: .8, y: .32, shot: false, sx: 0, sy: 0 },
-    { x: .35, y: .3, shot: false, sx: 0, sy: 0 }, { x: .65, y: .25, shot: true, sx: .5, sy: .17 },
+    { x: .3, y: .25, shot: true, sx: .5, sy: .15, player: "Kouyaté", action: "Interception" }, 
+    { x: .6, y: .3, shot: false, sx: 0, sy: 0, player: "Camara", action: "Tacle" },
+    { x: .2, y: .35, shot: true, sx: .4, sy: .2, player: "Nzinga", action: "Récupération" }, 
+    { x: .7, y: .28, shot: false, sx: 0, sy: 0, player: "Lopy", action: "Pression haute" },
+    { x: .45, y: .22, shot: true, sx: .55, sy: .18, player: "Traoré", action: "Interception" }, 
+    { x: .8, y: .32, shot: false, sx: 0, sy: 0, player: "Mendes", action: "Tacle" },
+    { x: .35, y: .3, shot: false, sx: 0, sy: 0, player: "Angban", action: "Récupération" }, 
+    { x: .65, y: .25, shot: true, sx: .5, sy: .17, player: "Jallow", action: "Pression haute" },
   ],
   lbp: [
-    { x1: .2, y1: .6, x2: .6, y2: .45, line: .55 }, { x1: .3, y1: .65, x2: .7, y2: .38, line: .55 },
-    { x1: .15, y1: .72, x2: .5, y2: .35, line: .38 }, { x1: .5, y1: .55, x2: .8, y2: .22, line: .38 },
-    { x1: .35, y1: .5, x2: .65, y2: .3, line: .55 }, { x1: .4, y1: .6, x2: .6, y2: .2, line: .38 },
+    { x1: .2, y1: .6, x2: .6, y2: .45, from: "Nzinga", to: "Jallow", lineName: "Première ligne", breakType: "Through", ok: true },
+    { x1: .3, y1: .65, x2: .7, y2: .38, from: "Traoré", to: "Camara", lineName: "Ligne du Milieu", breakType: "Around", ok: true },
+    { x1: .15, y1: .72, x2: .5, y2: .35, from: "Caillard", to: "Mendes", lineName: "Dernière ligne", breakType: "Through", ok: false },
+    { x1: .5, y1: .55, x2: .8, y2: .22, from: "Kouyaté", to: "Jallow", lineName: "Ligne du Milieu", breakType: "Through", ok: true },
+    { x1: .35, y1: .5, x2: .65, y2: .3, from: "Lopy", to: "Angban", lineName: "Première ligne", breakType: "Around", ok: true },
+    { x1: .4, y1: .6, x2: .6, y2: .2, from: "Celestine", to: "Mendes", lineName: "Dernière ligne", breakType: "Through", ok: false },
   ],
   runs: [
-    { x1: .30, y1: .45, x2: .45, y2: .22 }, { x1: .70, y1: .45, x2: .60, y2: .20 },
-    { x1: .20, y1: .50, x2: .30, y2: .28 }, { x1: .80, y1: .50, x2: .72, y2: .25 },
-    { x1: .50, y1: .40, x2: .50, y2: .18 }, { x1: .15, y1: .60, x2: .22, y2: .35 },
-    { x1: .85, y1: .60, x2: .78, y2: .38 }, { x1: .60, y1: .50, x2: .68, y2: .28 },
+    { x1: .30, y1: .45, x2: .45, y2: .22, player: "Jallow", type: "Dans le dos", zone: "Demi-espace gauche" },
+    { x1: .70, y1: .45, x2: .60, y2: .20, player: "Diallo", type: "Appel croisé", zone: "Axe" },
+    { x1: .20, y1: .50, x2: .30, y2: .28, player: "Traoré", type: "Dédoublement", zone: "Couloir gauche" },
+    { x1: .80, y1: .50, x2: .72, y2: .25, player: "Mendes", type: "Dans le dos", zone: "Couloir droit" },
+    { x1: .50, y1: .40, x2: .50, y2: .18, player: "Mikautadze", type: "Dans le dos", zone: "Axe" },
+    { x1: .15, y1: .60, x2: .22, y2: .35, player: "Asoro", type: "Dédoublement", zone: "Couloir gauche" },
+    { x1: .85, y1: .60, x2: .78, y2: .38, player: "Van Den Kerkhof", type: "Appel croisé", zone: "Couloir droit" },
+    { x1: .60, y1: .50, x2: .68, y2: .28, player: "Camara", type: "Appui", zone: "Demi-espace droit" },
   ],
 };
 
@@ -220,7 +256,6 @@ const LAB_CONFIG: Record<string, { filterGroups: FilterGroup[]; legendItems: { c
       { color: "#4ade80", label: "Point de récupération" },
     ],
     filterGroups: [
-      { label: "Acteurs", color: "#C42B47", items: PLAYER_NAMES.slice(0, 6) },
       { label: "Type d'action défensive", color: "#EF4444", items: ["Pression haute", "Récupération", "Tacle", "Interception", "Faute commise"] },
       { label: "Zones", color: "#3B82F6", items: ["Tiers défensif", "Milieu", "Dernier tiers"] },
     ],
@@ -231,20 +266,20 @@ const LAB_CONFIG: Record<string, { filterGroups: FilterGroup[]; legendItems: { c
       { color: "#22C55E", label: "Passe réussie" }, { color: "#EF4444", label: "Passe ratée" }, { color: "#3B82F6", label: "Carry" },
     ],
     filterGroups: [
-      { label: "Joueur (Départ)", color: "#C42B47", items: PLAYER_NAMES.slice(0, 5) },
-      { label: "Joueur (Cible)", color: "#3B82F6", items: PLAYER_NAMES.slice(1, 6) },
       { label: "Type d'action", color: "#22C55E", items: ["Passe courte", "Passe longue", "Carry"] },
-      { label: "Contexte", color: "#A855F7", items: ["Sous pression : Oui", "Sous pression : Non", "Réussite : Oui", "Réussite : Non"] },
+      { label: "Sous pression", color: "#A855F7", items: ["Oui", "Non"] },
+      { label: "Réussite", color: "#F59E0B", items: ["Oui", "Non"] },
     ],
   },
   progression: {
     description: "Vecteurs progressifs vers le dernier tiers + xPV heatmap",
     legendItems: [
-      { color: "#C42B47", label: "Heatmap xPV (fond)" }, { color: "#60A5FA", label: "Passe progressive" }, { color: "#A78BFA", label: "Centre" },
+      { color: "#60A5FA", label: "Passe progressive" }, 
+      { color: "#A78BFA", label: "Centre / Carry" }, 
+      { color: "#EF4444", label: "Action ratée" },
+      { color: "#C42B47", label: "Heatmap xPV (fond)" }
     ],
     filterGroups: [
-      { label: "Joueur (Départ)", color: "#C42B47", items: PLAYER_NAMES.slice(0, 5) },
-      { label: "Joueur (Cible)", color: "#3B82F6", items: PLAYER_NAMES.slice(5, 10) },
       { label: "Type d'action", color: "#22C55E", items: ["Passe progressive", "Passe clé", "Centre"] },
       { label: "Zone de destination", color: "#F59E0B", items: ["Surface de réparation", "Couloirs", "Axe"] },
     ],
@@ -255,8 +290,6 @@ const LAB_CONFIG: Record<string, { filterGroups: FilterGroup[]; legendItems: { c
       { color: "#22C55E", label: "But" }, { color: "#F59E0B", label: "Cadré / arrêté" }, { color: "#EF4444", label: "Hors cadre / bloqué" },
     ],
     filterGroups: [
-      { label: "Tireur", color: "#C42B47", items: PLAYER_NAMES.slice(5, 11) },
-      { label: "Passeur décisif", color: "#3B82F6", items: PLAYER_NAMES.slice(0, 6) },
       { label: "Résultat", color: "#22C55E", items: ["But", "Cadré", "Hors cadre", "Bloqué"] },
       { label: "Type de tir", color: "#F59E0B", items: ["Pied droit", "Pied gauche", "Tête", "Coup franc"] },
       { label: "Contexte", color: "#A855F7", items: ["Attaque placée", "Contre-attaque", "CPA"] },
@@ -268,7 +301,6 @@ const LAB_CONFIG: Record<string, { filterGroups: FilterGroup[]; legendItems: { c
       { color: "#22C55E", label: "Duel gagné" }, { color: "#EF4444", label: "Duel perdu" },
     ],
     filterGroups: [
-      { label: "Acteurs", color: "#C42B47", items: PLAYER_NAMES.slice(0, 7) },
       { label: "Type de duel", color: "#3B82F6", items: ["Aérien", "Au sol"] },
       { label: "Phase de jeu", color: "#22C55E", items: ["Duel offensif (avec ballon)", "Duel défensif (sans ballon)"] },
     ],
@@ -281,8 +313,6 @@ const LAB_CONFIG: Record<string, { filterGroups: FilterGroup[]; legendItems: { c
     filterGroups: [
       { label: "Ligne franchie", color: "#F59E0B", items: ["Première ligne (Attaquants)", "Ligne du Milieu", "Dernière ligne (Défenseurs)"] },
       { label: "Type de franchissement", color: "#A855F7", items: ["À travers le bloc (Through)", "Contournement (Around)"] },
-      { label: "Lanceur", color: "#C42B47", items: PLAYER_NAMES.slice(0, 5) },
-      { label: "Receveur", color: "#3B82F6", items: PLAYER_NAMES.slice(5, 10) },
     ],
   },
   turnovers: {
@@ -301,7 +331,6 @@ const LAB_CONFIG: Record<string, { filterGroups: FilterGroup[]; legendItems: { c
       { color: "#A855F7", label: "Course dans le dos" }, { color: "#60A5FA", label: "Appel croisé" }, { color: "#F59E0B", label: "Dédoublement" },
     ],
     filterGroups: [
-      { label: "Acteurs (coureur)", color: "#C42B47", items: PLAYER_NAMES.slice(5, 11) },
       { label: "Profil de course", color: "#A855F7", items: ["Dans le dos (In Behind)", "Appui (Coming Short)", "Appel croisé", "Dédoublement (Overlap)"] },
       { label: "Zone de départ", color: "#3B82F6", items: ["Couloirs", "Demi-espaces", "Axe"] },
     ],
@@ -405,131 +434,498 @@ function arrow(x1: number, y1: number, x2: number, y2: number, color: string, da
 }
 
 function VizDefense({ w, h }: { w: number; h: number }) {
+  const [hoveredPt, setHoveredPt] = useState<any>(null);
+
   return (
-    <PitchShell w={w} h={h}>
-      {EVT.heatmap.map((row, ri) => row.map((val, ci) => {
-        const cw = (w - 20) / 12, ch = (h - 20) / 8;
-        const r = Math.floor(val * 220 + 35), g = Math.floor((1 - val) * 80), b = Math.floor((1 - val) * 30);
-        return <rect key={`${ri}-${ci}`} x={10 + ci * cw} y={10 + ri * ch} width={cw} height={ch} fill={`rgb(${r},${g},${b})`} opacity={val * .65 + .05} />;
-      }))}
-      {EVT.turnovers.map((pt, i) => (
-        <circle key={i} cx={pt.x * w} cy={pt.y * h} r={5} fill="#4ade80" stroke="#fff" strokeWidth={1} opacity={0.9} />
-      ))}
-    </PitchShell>
+    <div style={{ position: "relative" }}>
+      <PitchShell w={w} h={h}>
+        {EVT.heatmap.map((row, ri) => row.map((val, ci) => {
+          const cw = (w - 20) / 12, ch = (h - 20) / 8;
+          const r = Math.floor(val * 220 + 35), g = Math.floor((1 - val) * 80), b = Math.floor((1 - val) * 30);
+          return <rect key={`${ri}-${ci}`} x={10 + ci * cw} y={10 + ri * ch} width={cw} height={ch} fill={`rgb(${r},${g},${b})`} opacity={val * .65 + .05} style={{ pointerEvents: "none" }} />;
+        }))}
+        {EVT.turnovers.map((pt, i) => (
+          <circle 
+            key={i} 
+            cx={pt.x * w} 
+            cy={pt.y * h} 
+            r={hoveredPt === pt ? 7 : 5} 
+            fill="#4ade80" 
+            stroke="#fff" 
+            strokeWidth={hoveredPt === pt ? 2 : 1} 
+            opacity={0.9} 
+            onMouseEnter={() => setHoveredPt(pt)}
+            onMouseLeave={() => setHoveredPt(null)}
+            style={{ cursor: "pointer", transition: "all 0.2s" }}
+          />
+        ))}
+      </PitchShell>
+      {hoveredPt && (
+        <div style={{
+          position: "absolute",
+          left: hoveredPt.x * w,
+          top: hoveredPt.y * h > 60 ? hoveredPt.y * h - 15 : hoveredPt.y * h + 15,
+          transform: hoveredPt.y * h > 60 ? "translate(-50%, -100%)" : "translate(-50%, 0)",
+          background: "var(--color-neutral-900)",
+          border: "1px solid var(--color-neutral-700)",
+          padding: "4px 10px",
+          borderRadius: "6px",
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+          zIndex: 50,
+          boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+          textAlign: "center"
+        }}>
+          <div style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredPt.player}</div>
+          <div style={{ fontSize: 9, color: "#4ade80", fontWeight: 700 }}>{hoveredPt.action}</div>
+        </div>
+      )}
+    </div>
   );
 }
 
 function VizBuildup({ w, h }: { w: number; h: number }) {
+  const [hoveredEvt, setHoveredEvt] = useState<any>(null);
+
+  const getTooltipPos = (evt: any) => {
+    return { x: ((evt.x1 + evt.x2) / 2) * w, y: ((evt.y1 + evt.y2) / 2) * h };
+  };
+
   return (
-    <PitchShell w={w} h={h}>
-      {/* Only own half (y > 0.5) */}
-      {EVT.passes.filter(p => p.y1 > 0.5).map((p, i) =>
-        <g key={i}>{arrow(p.x1 * w, p.y1 * h, p.x2 * w, p.y2 * h, p.ok ? "#22C55E" : "#EF4444")}</g>
+    <div style={{ position: "relative" }}>
+      <PitchShell w={w} h={h}>
+        {EVT.passes.filter(p => p.y1 > 0.5).map((p, i) => (
+          <g key={`p${i}`} 
+             onMouseEnter={() => setHoveredEvt(p)} 
+             onMouseLeave={() => setHoveredEvt(null)}
+             style={{ cursor: "pointer", transition: "opacity 0.2s" }}
+             opacity={hoveredEvt && hoveredEvt !== p ? 0.3 : 1}>
+            {arrow(p.x1 * w, p.y1 * h, p.x2 * w, p.y2 * h, p.ok ? "#22C55E" : "#EF4444")}
+            <line x1={p.x1 * w} y1={p.y1 * h} x2={p.x2 * w} y2={p.y2 * h} stroke="transparent" strokeWidth={15} />
+          </g>
+        ))}
+        {EVT.carries.filter(c => c.y1 > 0.5).map((c, i) => (
+          <g key={`c${i}`} 
+             onMouseEnter={() => setHoveredEvt(c)} 
+             onMouseLeave={() => setHoveredEvt(null)}
+             style={{ cursor: "pointer", transition: "opacity 0.2s" }}
+             opacity={hoveredEvt && hoveredEvt !== c ? 0.3 : 1}>
+            <line x1={c.x1 * w} y1={c.y1 * h} x2={c.x2 * w} y2={c.y2 * h} stroke="#3B82F6" strokeWidth={hoveredEvt === c ? 4 : 2.5} strokeLinecap="round" opacity={0.75} />
+            <circle cx={c.x1 * w} cy={c.y1 * h} r={3} fill="#3B82F6" opacity={0.6} />
+            <line x1={c.x1 * w} y1={c.y1 * h} x2={c.x2 * w} y2={c.y2 * h} stroke="transparent" strokeWidth={15} />
+          </g>
+        ))}
+      </PitchShell>
+      {hoveredEvt && (
+        <div style={{
+          position: "absolute",
+          left: getTooltipPos(hoveredEvt).x,
+          top: getTooltipPos(hoveredEvt).y > 80 ? getTooltipPos(hoveredEvt).y - 20 : getTooltipPos(hoveredEvt).y + 20,
+          transform: getTooltipPos(hoveredEvt).y > 80 ? "translate(-50%, -100%)" : "translate(-50%, 0)",
+          background: "var(--color-neutral-900)",
+          border: "1px solid var(--color-neutral-700)",
+          padding: "6px 12px",
+          borderRadius: "8px",
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+          zIndex: 50,
+          boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+          display: "flex", flexDirection: "column", gap: 3
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
+             <span style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.from}</span>
+             {hoveredEvt.to && (
+               <>
+                 <span style={{ color: "var(--color-neutral-500)", fontSize: 8 }}>▶</span>
+                 <span style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.to}</span>
+               </>
+             )}
+          </div>
+          <div style={{ display: "flex", gap: 8, fontSize: 9, fontWeight: 600, justifyContent: "center" }}>
+             <span style={{ color: "var(--color-neutral-400)" }}>{hoveredEvt.action}</span>
+             <span style={{ color: hoveredEvt.ok ? "#4ade80" : "#ef4444" }}>{hoveredEvt.ok ? "Réussie" : "Ratée"}</span>
+             {hoveredEvt.pressure && <span style={{ color: "#f59e0b" }}>Pression</span>}
+          </div>
+        </div>
       )}
-      {EVT.carries.filter(c => c.y1 > 0.5).map((c, i) => (
-        <g key={`c${i}`}>
-          <line x1={c.x1 * w} y1={c.y1 * h} x2={c.x2 * w} y2={c.y2 * h} stroke="#3B82F6" strokeWidth={2.5} strokeLinecap="round" opacity={0.75} />
-          <circle cx={c.x1 * w} cy={c.y1 * h} r={3} fill="#3B82F6" opacity={0.6} />
-        </g>
-      ))}
-    </PitchShell>
+    </div>
   );
 }
 
 function VizProgression({ w, h }: { w: number; h: number }) {
+  const [hoveredEvt, setHoveredEvt] = useState<any>(null);
+
+  const getTooltipPos = (evt: any) => {
+    return { x: ((evt.x1 + evt.x2) / 2) * w, y: ((evt.y1 + evt.y2) / 2) * h };
+  };
+
   return (
-    <PitchShell w={w} h={h}>
-      {/* xPV heatmap in background (upper half) */}
-      {EVT.heatmap.slice(0, 4).map((row, ri) => row.map((val, ci) => {
-        const cw = (w - 20) / 12, ch = (h - 20) / 8;
-        return <rect key={`${ri}-${ci}`} x={10 + ci * cw} y={10 + ri * ch} width={cw} height={ch} fill="#C42B47" opacity={val * .35} />;
-      }))}
-      {/* Progressive passes toward last third */}
-      {EVT.lbp.map((p, i) =>
-        <g key={i}>{arrow(p.x1 * w, p.y1 * h, p.x2 * w, p.y2 * h, "#60A5FA")}</g>
+    <div style={{ position: "relative" }}>
+      <PitchShell w={w} h={h}>
+        {/* xPV heatmap in background (upper half) */}
+        {EVT.heatmap.slice(0, 4).map((row, ri) => row.map((val, ci) => {
+          const cw = (w - 20) / 12, ch = (h - 20) / 8;
+          return <rect key={`${ri}-${ci}`} x={10 + ci * cw} y={10 + ri * ch} width={cw} height={ch} fill="#C42B47" opacity={val * .35} style={{ pointerEvents: "none" }} />;
+        }))}
+        
+        {/* Progressive passes toward last third */}
+        {EVT.lbp.map((p, i) => (
+          <g key={i}
+             onMouseEnter={() => setHoveredEvt(p)} 
+             onMouseLeave={() => setHoveredEvt(null)}
+             style={{ cursor: "pointer", transition: "opacity 0.2s" }}
+             opacity={hoveredEvt && hoveredEvt !== p ? 0.3 : 1}>
+            {arrow(p.x1 * w, p.y1 * h, p.x2 * w, p.y2 * h, p.ok === false ? "#EF4444" : "#60A5FA")}
+            <line x1={p.x1 * w} y1={p.y1 * h} x2={p.x2 * w} y2={p.y2 * h} stroke="transparent" strokeWidth={15} />
+          </g>
+        ))}
+        {/* Crosses / Carries mapped as dashed arrows */}
+        {EVT.carries.filter(c => c.y2 < 0.45).map((c, i) => (
+          <g key={`run${i}`}
+             onMouseEnter={() => setHoveredEvt(c)} 
+             onMouseLeave={() => setHoveredEvt(null)}
+             style={{ cursor: "pointer", transition: "opacity 0.2s" }}
+             opacity={hoveredEvt && hoveredEvt !== c ? 0.3 : 1}>
+            {arrow(c.x1 * w, c.y1 * h, c.x2 * w, c.y2 * h, c.ok === false ? "#EF4444" : "#A78BFA", true)}
+            <line x1={c.x1 * w} y1={c.y1 * h} x2={c.x2 * w} y2={c.y2 * h} stroke="transparent" strokeWidth={15} />
+          </g>
+        ))}
+      </PitchShell>
+      
+      {hoveredEvt && (
+        <div style={{
+          position: "absolute",
+          left: getTooltipPos(hoveredEvt).x,
+          top: getTooltipPos(hoveredEvt).y > 80 ? getTooltipPos(hoveredEvt).y - 20 : getTooltipPos(hoveredEvt).y + 20,
+          transform: getTooltipPos(hoveredEvt).y > 80 ? "translate(-50%, -100%)" : "translate(-50%, 0)",
+          background: "var(--color-neutral-900)",
+          border: "1px solid var(--color-neutral-700)",
+          padding: "6px 12px",
+          borderRadius: "8px",
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+          zIndex: 50,
+          boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+          display: "flex", flexDirection: "column", gap: 3
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
+             <span style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.from}</span>
+             {hoveredEvt.to && (
+               <>
+                 <span style={{ color: "var(--color-neutral-500)", fontSize: 8 }}>▶</span>
+                 <span style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.to}</span>
+               </>
+             )}
+          </div>
+          <div style={{ display: "flex", gap: 8, fontSize: 9, fontWeight: 600, justifyContent: "center" }}>
+             <span style={{ color: "var(--color-neutral-400)" }}>{hoveredEvt.action}</span>
+             <span style={{ color: hoveredEvt.ok !== false ? "#4ade80" : "#ef4444" }}>{hoveredEvt.ok !== false ? "Réussie" : "Ratée"}</span>
+             {hoveredEvt.zone && <span style={{ color: "#f59e0b" }}>{hoveredEvt.zone}</span>}
+          </div>
+        </div>
       )}
-      {EVT.carries.filter(c => c.y2 < 0.45).map((c, i) =>
-        <g key={`run${i}`}>{arrow(c.x1 * w, c.y1 * h, c.x2 * w, c.y2 * h, "#A78BFA", true)}</g>
-      )}
-    </PitchShell>
+    </div>
   );
 }
 
 function VizShots({ w, h }: { w: number; h: number }) {
   const S_COLOR: Record<string, string> = { goal: "#22C55E", saved: "#F59E0B", off: "#EF4444" };
+  const S_LABEL: Record<string, string> = { goal: "But", saved: "Arrêt / Cadré", off: "Hors cadre" };
+  const [hoveredEvt, setHoveredEvt] = useState<any>(null);
+
   return (
-    <PitchShell w={w} h={h}>
-      <rect x={w * .42} y={10} width={w * .16} height={8} fill="#fff" opacity={0.25} />
-      {EVT.shots.map((s, i) => {
-        const cx = s.x * w, cy = s.y * h, r = 6 + s.xG * 22, c = S_COLOR[s.outcome];
-        return (
-          <g key={i}>
-            <circle cx={cx} cy={cy} r={r} fill={c} opacity={0.2} />
-            <circle cx={cx} cy={cy} r={r * .45} fill={c} opacity={0.9} />
-            <text x={cx} y={cy + 3} textAnchor="middle" fontSize={7} fill="#fff" fontWeight={700}>{s.xG.toFixed(2)}</text>
-          </g>
-        );
-      })}
-    </PitchShell>
+    <div style={{ position: "relative" }}>
+      <PitchShell w={w} h={h}>
+        <rect x={w * .42} y={10} width={w * .16} height={8} fill="#fff" opacity={0.25} />
+        {EVT.shots.map((s, i) => {
+          const cx = s.x * w, cy = s.y * h, r = 6 + s.xG * 22, c = S_COLOR[s.outcome];
+          return (
+            <g key={i}
+               onMouseEnter={() => setHoveredEvt(s)} 
+               onMouseLeave={() => setHoveredEvt(null)}
+               style={{ cursor: "pointer", transition: "opacity 0.2s" }}
+               opacity={hoveredEvt && hoveredEvt !== s ? 0.3 : 1}>
+              <circle cx={cx} cy={cy} r={r} fill={c} opacity={0.2} />
+              <circle cx={cx} cy={cy} r={r * .45} fill={c} opacity={0.9} />
+              <text x={cx} y={cy + 2.5} textAnchor="middle" fontSize={6} fill="#fff" fontWeight={800} style={{ pointerEvents: "none" }}>{s.xG.toFixed(2)}</text>
+              <circle cx={cx} cy={cy} r={r} fill="transparent" />
+            </g>
+          );
+        })}
+      </PitchShell>
+
+      {hoveredEvt && (
+        <div style={{
+          position: "absolute",
+          left: hoveredEvt.x * w,
+          top: hoveredEvt.y * h > 100 ? hoveredEvt.y * h - (6 + hoveredEvt.xG * 22) - 10 : hoveredEvt.y * h + (6 + hoveredEvt.xG * 22) + 10,
+          transform: hoveredEvt.y * h > 100 ? "translate(-50%, -100%)" : "translate(-50%, 0)",
+          background: "var(--color-neutral-900)",
+          border: "1px solid var(--color-neutral-700)",
+          padding: "6px 12px",
+          borderRadius: "8px",
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+          zIndex: 50,
+          boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+          display: "flex", flexDirection: "column", gap: 4
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
+             <span style={{ fontSize: 11, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.player}</span>
+          </div>
+          <div style={{ display: "flex", gap: 8, fontSize: 9, fontWeight: 600, justifyContent: "center", alignItems: "center" }}>
+             <span style={{ color: "var(--color-neutral-400)" }}>{hoveredEvt.action}</span>
+             <div style={{ width: 4, height: 4, borderRadius: 2, background: "var(--color-neutral-600)" }} />
+             <span style={{ color: S_COLOR[hoveredEvt.outcome] }}>{S_LABEL[hoveredEvt.outcome]}</span>
+          </div>
+          
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 4, paddingTop: 6, borderTop: "1px dashed var(--color-neutral-700)" }}>
+             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+               <span style={{ fontSize: 8, color: "var(--color-neutral-500)", fontWeight: 800, letterSpacing: "0.05em" }}>xG</span>
+               <span style={{ fontSize: 11, color: "white", fontWeight: 800 }}>{hoveredEvt.xG.toFixed(2)}</span>
+             </div>
+             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+               <span style={{ fontSize: 8, color: "var(--color-neutral-500)", fontWeight: 800, letterSpacing: "0.05em" }}>PSxG</span>
+               <span style={{ fontSize: 11, color: hoveredEvt.psxg > 0 ? "#60A5FA" : "var(--color-neutral-400)", fontWeight: 800 }}>{hoveredEvt.psxg.toFixed(2)}</span>
+             </div>
+          </div>
+          
+          {hoveredEvt.assist && (
+            <div style={{ fontSize: 9, color: "var(--color-neutral-400)", textAlign: "center", marginTop: 2 }}>
+              Assist: <span style={{ color: "var(--color-neutral-200)", fontWeight: 700 }}>{hoveredEvt.assist}</span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
 function VizDuels({ w, h }: { w: number; h: number }) {
+  const [hoveredEvt, setHoveredEvt] = useState<any>(null);
+
   return (
-    <PitchShell w={w} h={h}>
-      {EVT.duels.map((d, i) => (
-        <g key={i}>
-          <circle cx={d.x * w} cy={d.y * h} r={7} fill={d.won ? "#22C55E" : "#EF4444"} opacity={0.8} />
-          <text x={d.x * w} y={d.y * h + 4} textAnchor="middle" fontSize={8} fill="#fff" fontWeight={800}>{d.won ? "✓" : "✕"}</text>
-        </g>
-      ))}
-    </PitchShell>
+    <div style={{ position: "relative" }}>
+      <PitchShell w={w} h={h}>
+        {EVT.duels.map((d, i) => (
+          <g key={i}
+             onMouseEnter={() => setHoveredEvt(d)} 
+             onMouseLeave={() => setHoveredEvt(null)}
+             style={{ cursor: "pointer", transition: "opacity 0.2s" }}
+             opacity={hoveredEvt && hoveredEvt !== d ? 0.3 : 1}>
+            <circle cx={d.x * w} cy={d.y * h} r={hoveredEvt === d ? 9 : 7} fill={d.won ? "#22C55E" : "#EF4444"} opacity={0.8} style={{ transition: "all 0.2s" }} />
+            <text x={d.x * w} y={d.y * h + 3} textAnchor="middle" fontSize={8} fill="#fff" fontWeight={900} style={{ pointerEvents: "none" }}>{d.won ? "✓" : "✕"}</text>
+          </g>
+        ))}
+      </PitchShell>
+
+      {hoveredEvt && (
+        <div style={{
+          position: "absolute",
+          left: hoveredEvt.x * w,
+          top: hoveredEvt.y * h > 80 ? hoveredEvt.y * h - 15 : hoveredEvt.y * h + 15,
+          transform: hoveredEvt.y * h > 80 ? "translate(-50%, -100%)" : "translate(-50%, 0)",
+          background: "var(--color-neutral-900)",
+          border: "1px solid var(--color-neutral-700)",
+          padding: "6px 12px",
+          borderRadius: "8px",
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+          zIndex: 50,
+          boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+          display: "flex", flexDirection: "column", gap: 3
+        }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: "white", textTransform: "uppercase", textAlign: "center" }}>{hoveredEvt.player}</div>
+          <div style={{ display: "flex", gap: 8, fontSize: 9, fontWeight: 600, justifyContent: "center", alignItems: "center" }}>
+             <span style={{ color: "#3B82F6" }}>{hoveredEvt.type}</span>
+             <div style={{ width: 4, height: 4, borderRadius: 2, background: "var(--color-neutral-600)" }} />
+             <span style={{ color: hoveredEvt.won ? "#22C55E" : "#EF4444" }}>{hoveredEvt.won ? "Gagné" : "Perdu"}</span>
+          </div>
+          <div style={{ fontSize: 9, color: "var(--color-neutral-500)", textAlign: "center" }}>{hoveredEvt.phase}</div>
+        </div>
+      )}
+    </div>
   );
 }
 
 function VizLBP({ w, h }: { w: number; h: number }) {
+  const [hoveredEvt, setHoveredEvt] = useState<any>(null);
   const lineYs = [0.55, 0.38, 0.22];
+
+  const getTooltipPos = (evt: any) => {
+    return { x: ((evt.x1 + evt.x2) / 2) * w, y: ((evt.y1 + evt.y2) / 2) * h };
+  };
+
   return (
-    <PitchShell w={w} h={h}>
-      {lineYs.map((ly, i) => (
-        <line key={i} x1={10} y1={ly * h} x2={w - 10} y2={ly * h} stroke="rgba(255,255,255,0.12)" strokeWidth={1.5} strokeDasharray="6 4" />
-      ))}
-      {EVT.lbp.map((p, i) => {
-        const crossesLine = lineYs.some(ly => (p.y1 > ly && p.y2 < ly));
-        return <g key={i}>{arrow(p.x1 * w, p.y1 * h, p.x2 * w, p.y2 * h, crossesLine ? "#60A5FA" : "rgba(100,140,255,0.5)")}</g>;
-      })}
-    </PitchShell>
+    <div style={{ position: "relative" }}>
+      <PitchShell w={w} h={h}>
+        {lineYs.map((ly, i) => (
+          <line key={i} x1={10} y1={ly * h} x2={w - 10} y2={ly * h} stroke="rgba(255,255,255,0.15)" strokeWidth={1.5} strokeDasharray="6 4" />
+        ))}
+        {EVT.lbp.map((p, i) => (
+          <g key={i}
+             onMouseEnter={() => setHoveredEvt(p)} 
+             onMouseLeave={() => setHoveredEvt(null)}
+             style={{ cursor: "pointer", transition: "opacity 0.2s" }}
+             opacity={hoveredEvt && hoveredEvt !== p ? 0.3 : 1}>
+            {arrow(p.x1 * w, p.y1 * h, p.x2 * w, p.y2 * h, p.ok ? "#60A5FA" : "#EF4444")}
+            <line x1={p.x1 * w} y1={p.y1 * h} x2={p.x2 * w} y2={p.y2 * h} stroke="transparent" strokeWidth={15} />
+          </g>
+        ))}
+      </PitchShell>
+
+      {hoveredEvt && (
+        <div style={{
+          position: "absolute",
+          left: getTooltipPos(hoveredEvt).x,
+          top: getTooltipPos(hoveredEvt).y > 80 ? getTooltipPos(hoveredEvt).y - 20 : getTooltipPos(hoveredEvt).y + 20,
+          transform: getTooltipPos(hoveredEvt).y > 80 ? "translate(-50%, -100%)" : "translate(-50%, 0)",
+          background: "var(--color-neutral-900)",
+          border: "1px solid var(--color-neutral-700)",
+          padding: "6px 12px",
+          borderRadius: "8px",
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+          zIndex: 50,
+          boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+          display: "flex", flexDirection: "column", gap: 3
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}>
+             <span style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.from}</span>
+             <span style={{ color: "var(--color-neutral-500)", fontSize: 8 }}>▶</span>
+             <span style={{ fontSize: 10, fontWeight: 800, color: "white", textTransform: "uppercase" }}>{hoveredEvt.to}</span>
+          </div>
+          <div style={{ display: "flex", gap: 8, fontSize: 9, fontWeight: 600, justifyContent: "center" }}>
+             <span style={{ color: "#60A5FA" }}>{hoveredEvt.lineName}</span>
+             <div style={{ width: 4, height: 4, borderRadius: 2, background: "var(--color-neutral-600)" }} />
+             <span style={{ color: "#A855F7" }}>{hoveredEvt.breakType}</span>
+          </div>
+          <div style={{ fontSize: 9, color: hoveredEvt.ok ? "#4ade80" : "#ef4444", textAlign: "center", fontWeight: 700 }}>
+            {hoveredEvt.ok ? "Passe réussie" : "Passe échouée"}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
 function VizTurnovers({ w, h }: { w: number; h: number }) {
+  const [hoveredEvt, setHoveredEvt] = useState<any>(null);
+
   return (
-    <PitchShell w={w} h={h}>
-      {/* Opponent half only — upper portion */}
-      <rect x={10} y={10} width={w - 20} height={(h - 20) / 2} fill="rgba(196,43,71,0.03)" />
-      {EVT.turnovers.map((pt, i) => (
-        <g key={i}>
-          {pt.shot && (
-            <>
-              <line x1={pt.x * w} y1={pt.y * h} x2={pt.sx * w} y2={pt.sy * h} stroke="rgba(255,255,255,0.3)" strokeWidth={1.2} strokeDasharray="4 3" />
-              <circle cx={pt.sx * w} cy={pt.sy * h} r={5} fill="#C42B47" opacity={0.85} />
-            </>
-          )}
-          <circle cx={pt.x * w} cy={pt.y * h} r={7} fill="#F59E0B" stroke="#fff" strokeWidth={1.2} opacity={0.9} />
-        </g>
-      ))}
-    </PitchShell>
+    <div style={{ position: "relative" }}>
+      <PitchShell w={w} h={h}>
+        {/* Opponent half only — upper portion */}
+        <rect x={10} y={10} width={w - 20} height={(h - 20) / 2} fill="rgba(196,43,71,0.03)" style={{ pointerEvents: "none" }} />
+        
+        {EVT.turnovers.map((pt, i) => (
+          <g key={i}
+             onMouseEnter={() => setHoveredEvt(pt)} 
+             onMouseLeave={() => setHoveredEvt(null)}
+             style={{ cursor: "pointer", transition: "opacity 0.2s" }}
+             opacity={hoveredEvt && hoveredEvt !== pt ? 0.3 : 1}>
+            {pt.shot && (
+              <>
+                <line x1={pt.x * w} y1={pt.y * h} x2={pt.sx * w} y2={pt.sy * h} stroke="rgba(255,255,255,0.4)" strokeWidth={1.5} strokeDasharray="4 3" />
+                <circle cx={pt.sx * w} cy={pt.sy * h} r={6} fill="#C42B47" stroke="#fff" strokeWidth={1} opacity={0.9} />
+              </>
+            )}
+            <circle cx={pt.x * w} cy={pt.y * h} r={8} fill="#F59E0B" stroke="#fff" strokeWidth={1.5} opacity={0.95} />
+            {pt.shot && <line x1={pt.x * w} y1={pt.y * h} x2={pt.sx * w} y2={pt.sy * h} stroke="transparent" strokeWidth={15} />}
+          </g>
+        ))}
+      </PitchShell>
+
+      {hoveredEvt && (
+        <div style={{
+          position: "absolute",
+          left: hoveredEvt.x * w,
+          top: hoveredEvt.y * h > 80 ? hoveredEvt.y * h - 20 : hoveredEvt.y * h + 20,
+          transform: hoveredEvt.y * h > 80 ? "translate(-50%, -100%)" : "translate(-50%, 0)",
+          background: "var(--color-neutral-900)",
+          border: "1px solid var(--color-neutral-700)",
+          padding: "8px 14px",
+          borderRadius: "8px",
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+          zIndex: 50,
+          boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+          display: "flex", flexDirection: "column", gap: 4
+        }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: "white", textTransform: "uppercase", textAlign: "center" }}>
+            {hoveredEvt.player}
+          </div>
+          <div style={{ display: "flex", gap: 8, fontSize: 9, fontWeight: 600, justifyContent: "center", alignItems: "center" }}>
+             <span style={{ color: "#F59E0B" }}>{hoveredEvt.action}</span>
+             {hoveredEvt.shot && (
+               <>
+                 <div style={{ width: 4, height: 4, borderRadius: 2, background: "var(--color-neutral-600)" }} />
+                 <span style={{ color: "#C42B47" }}>Tir consécutif</span>
+               </>
+             )}
+          </div>
+          <div style={{ fontSize: 9, color: "var(--color-neutral-500)", textAlign: "center" }}>
+            {hoveredEvt.shot ? "Enchaînement direct récup → tir" : "Récupération haute sans tir"}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
 function VizRuns({ w, h }: { w: number; h: number }) {
+  const [hoveredEvt, setHoveredEvt] = useState<any>(null);
   const colors = ["#A855F7", "#60A5FA", "#F59E0B", "#A855F7", "#60A5FA", "#F59E0B", "#A855F7", "#60A5FA"];
+
+  const getTooltipPos = (evt: any) => {
+    return { x: ((evt.x1 + evt.x2) / 2) * w, y: ((evt.y1 + evt.y2) / 2) * h };
+  };
+
   return (
-    <PitchShell w={w} h={h}>
-      {EVT.runs.map((r, i) =>
-        <g key={i}>{arrow(r.x1 * w, r.y1 * h, r.x2 * w, r.y2 * h, colors[i % colors.length], true)}</g>
+    <div style={{ position: "relative" }}>
+      <PitchShell w={w} h={h}>
+        {EVT.runs.map((r, i) => (
+          <g key={i}
+             onMouseEnter={() => setHoveredEvt(r)} 
+             onMouseLeave={() => setHoveredEvt(null)}
+             style={{ cursor: "pointer", transition: "opacity 0.2s" }}
+             opacity={hoveredEvt && hoveredEvt !== r ? 0.3 : 1}>
+            {arrow(r.x1 * w, r.y1 * h, r.x2 * w, r.y2 * h, colors[i % colors.length], true)}
+            <line x1={r.x1 * w} y1={r.y1 * h} x2={r.x2 * w} y2={r.y2 * h} stroke="transparent" strokeWidth={15} />
+          </g>
+        ))}
+      </PitchShell>
+
+      {hoveredEvt && (
+        <div style={{
+          position: "absolute",
+          left: getTooltipPos(hoveredEvt).x,
+          top: getTooltipPos(hoveredEvt).y > 80 ? getTooltipPos(hoveredEvt).y - 20 : getTooltipPos(hoveredEvt).y + 20,
+          transform: getTooltipPos(hoveredEvt).y > 80 ? "translate(-50%, -100%)" : "translate(-50%, 0)",
+          background: "var(--color-neutral-900)",
+          border: "1px solid var(--color-neutral-700)",
+          padding: "8px 14px",
+          borderRadius: "8px",
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+          zIndex: 50,
+          boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+          display: "flex", flexDirection: "column", gap: 4
+        }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: "white", textTransform: "uppercase", textAlign: "center" }}>
+            {hoveredEvt.player}
+          </div>
+          <div style={{ display: "flex", gap: 8, fontSize: 9, fontWeight: 600, justifyContent: "center", alignItems: "center" }}>
+             <span style={{ color: "#A855F7" }}>{hoveredEvt.type}</span>
+             <div style={{ width: 4, height: 4, borderRadius: 2, background: "var(--color-neutral-600)" }} />
+             <span style={{ color: "#3B82F6" }}>{hoveredEvt.zone}</span>
+          </div>
+          <div style={{ fontSize: 9, color: "var(--color-neutral-500)", textAlign: "center" }}>
+            Course offensive hors-ballon
+          </div>
+        </div>
       )}
-    </PitchShell>
+    </div>
   );
 }
 
@@ -556,6 +952,9 @@ function SmartVisualLab({ vizType, opponent }: { vizType: string; opponent: stri
   function toggle(group: string, item: string) {
     setActiveFilters(prev => {
       const cur = prev[group] ?? [];
+      if (group === "Sous pression" || group === "Réussite" || group === "Conséquence") {
+        return { ...prev, [group]: cur.includes(item) ? [] : [item] };
+      }
       return { ...prev, [group]: cur.includes(item) ? cur.filter(x => x !== item) : [...cur, item] };
     });
   }
@@ -563,45 +962,53 @@ function SmartVisualLab({ vizType, opponent }: { vizType: string; opponent: stri
   const totalActive = Object.values(activeFilters).flat().length;
 
   return (
-    <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-      {/* Filter panel */}
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* Filter panel (Horizontal) */}
       <div style={{
-        width: 184, flexShrink: 0, background: "var(--color-neutral-800)", borderRadius: 10,
+        background: "var(--color-neutral-800)", borderRadius: 10,
         border: "1px solid var(--color-neutral-700)", padding: "12px",
       }}>
-        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-500)", marginBottom: 10 }}>
-          Filtres dynamiques
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-neutral-500)" }}>
+            Filtres dynamiques
+          </div>
+          {totalActive > 0 && (
+            <button onClick={() => setActiveFilters({})} style={{
+              padding: "4px 8px", borderRadius: 4, cursor: "pointer",
+              fontSize: 9, fontWeight: 700, color: "var(--color-neutral-400)",
+              background: "var(--color-neutral-700)", border: "1px solid var(--color-neutral-600)",
+            }}>
+              Réinitialiser ({totalActive})
+            </button>
+          )}
         </div>
-        {cfg.filterGroups.map(g => (
-          <FilterSection key={g.label} label={g.label} color={g.color}>
-            {g.items.map(item => (
-              <FilterPill
-                key={item} label={item}
-                active={(activeFilters[g.label] ?? []).includes(item)}
-                onClick={() => toggle(g.label, item)}
-                color={g.color}
-              />
-            ))}
-          </FilterSection>
-        ))}
-        {totalActive > 0 && (
-          <button onClick={() => setActiveFilters({})} style={{
-            width: "100%", marginTop: 6, padding: "6px", borderRadius: 6, cursor: "pointer",
-            fontSize: 10, fontWeight: 700, color: "var(--color-neutral-400)",
-            background: "var(--color-neutral-700)", border: "1px solid var(--color-neutral-600)",
-          }}>
-            Réinitialiser ({totalActive})
-          </button>
-        )}
+        
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+          {cfg.filterGroups.map(g => (
+            <div key={g.label} style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 100 }}>
+              <span style={{ fontSize: 9, fontWeight: 700, color: g.color, textTransform: "uppercase", letterSpacing: "0.06em" }}>{g.label}</span>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                {g.items.map(item => (
+                  <FilterPill
+                    key={item} label={item}
+                    active={(activeFilters[g.label] ?? []).includes(item)}
+                    onClick={() => toggle(g.label, item)}
+                    color={g.color}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Pitch */}
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 11, color: "var(--color-neutral-500)", marginBottom: 8 }}>{cfg.description} — {opponent}</div>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ width: "100%", fontSize: 11, color: "var(--color-neutral-500)", marginBottom: 8 }}>{cfg.description} — {opponent}</div>
+        <div style={{ width: "100%", display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
           {cfg.legendItems.map(l => <LegendItem key={l.label} color={l.color} label={l.label} />)}
         </div>
-        {renderViz(vizType, 380, 480)}
+        {renderViz(vizType, 360, 460)}
       </div>
     </div>
   );
@@ -815,85 +1222,91 @@ function TabSummary({ opponent }: { opponent: string }) {
 
 // ─── Tab: Team Stats ──────────────────────────────────────────────────────────
 
-function TabTeamStats({ opponent, defaultMode = "grid" }: { opponent: string; defaultMode?: ViewMode }) {
+function TabTeamStats({ opponent }: { opponent: string }) {
   const [activeCat, setActiveCat] = useState(TEAM_STATS_CATEGORIES[0].id);
   const [side, setSide] = useState<StatSide>("FOR");
-  const [viewMode, setViewMode] = useState<ViewMode>(defaultMode);
 
   const cat = TEAM_STATS_CATEGORIES.find(c => c.id === activeCat)!;
-
-  function selectCat(id: string) { setActiveCat(id); setViewMode("grid"); }
+  const TEAM_NAMES = ["Rodez", "Martigues", "Annecy", "Ajaccio", "Clermont", "Dunkerque", "Pau", "Laval", "Red Star", "Troyes", "Grenoble", "Amiens", "Metz", "Caen", "Paris FC", "Lorient", "Bastia", "Auxerre"];
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", gap: 0 }}>
-      <div style={{ borderRight: "1px solid var(--color-neutral-700)", paddingRight: 12, display: "flex", flexDirection: "column", gap: 2 }}>
-        {TEAM_STATS_CATEGORIES.map(c => (
-          <button key={c.id} onClick={() => selectCat(c.id)} style={{
-            padding: "7px 10px", borderRadius: 7, fontSize: 11, fontWeight: activeCat === c.id ? 700 : 500,
-            textAlign: "left", cursor: "pointer",
-            background: activeCat === c.id ? "rgba(196,43,71,0.12)" : "transparent",
-            color: activeCat === c.id ? "#C42B47" : "var(--color-neutral-400)",
-            border: activeCat === c.id ? "1px solid rgba(196,43,71,0.25)" : "1px solid transparent",
-          }}>{c.label}</button>
-        ))}
-      </div>
-
-      <div style={{ paddingLeft: 20 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-          <div style={{ display: "flex", gap: 2, background: "var(--color-neutral-800)", borderRadius: 7, padding: 2, border: "1px solid var(--color-neutral-700)" }}>
-            <button onClick={() => setViewMode("grid")} style={{
-              display: "flex", alignItems: "center", gap: 5, padding: "5px 11px", borderRadius: 5,
-              fontSize: 11, fontWeight: 700, cursor: "pointer",
-              background: viewMode === "grid" ? "rgba(196,43,71,0.15)" : "transparent",
-              color: viewMode === "grid" ? "#C42B47" : "var(--color-neutral-400)",
-              border: viewMode === "grid" ? "1px solid rgba(196,43,71,0.35)" : "1px solid transparent",
-            }}>
-              <LayoutGrid size={12} /> Grille
-            </button>
-            <button onClick={() => setViewMode("lab")} style={{
-              display: "flex", alignItems: "center", gap: 5, padding: "5px 11px", borderRadius: 5,
-              fontSize: 11, fontWeight: 700, cursor: "pointer",
-              background: viewMode === "lab" ? "rgba(59,130,246,0.15)" : "transparent",
-              color: viewMode === "lab" ? "#60A5FA" : "var(--color-neutral-400)",
-              border: viewMode === "lab" ? "1px solid rgba(59,130,246,0.35)" : "1px solid transparent",
-            }}>
-              <FlaskConical size={12} /> Labo Visuel
-            </button>
-          </div>
-          {viewMode === "grid" && (["FOR", "AGAINST"] as StatSide[]).map(s => (
-            <button key={s} onClick={() => setSide(s)} style={{
-              padding: "5px 12px", borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: "pointer",
-              background: side === s ? "rgba(196,43,71,0.15)" : "var(--color-neutral-800)",
-              color: side === s ? "#C42B47" : "var(--color-neutral-400)",
-              border: side === s ? "1px solid rgba(196,43,71,0.35)" : "1px solid var(--color-neutral-700)",
-            }}>
-              {s === "FOR" ? "Pour (Metz attaque)" : "Contre (Metz défend)"}
-            </button>
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* Top Menu (Horizontal) */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 8, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 4, background: "var(--color-neutral-800)", padding: 3, borderRadius: 8, border: "1px solid var(--color-neutral-700)" }}>
+          {TEAM_STATS_CATEGORIES.map(c => (
+            <button key={c.id} onClick={() => setActiveCat(c.id)} style={{
+              padding: "6px 14px", borderRadius: 6, fontSize: 10, fontWeight: 800, cursor: "pointer",
+              background: activeCat === c.id ? "#C42B47" : "transparent",
+              color: activeCat === c.id ? "white" : "var(--color-neutral-400)",
+              border: "none",
+              textTransform: "uppercase", letterSpacing: "0.05em",
+              transition: "all 0.2s"
+            }}>{c.label}</button>
           ))}
         </div>
 
-        {viewMode === "grid" && (
-          <>
-            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 14 }}>
-              <LegendItem color="#C42B47" label="FC Metz" />
-              <LegendItem color="#F59E0B" label={opponent} />
-              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <svg width={20} height={10}><line x1={0} y1={5} x2={20} y2={5} stroke="var(--color-neutral-500)" strokeWidth={1.5} strokeDasharray="3 2" /></svg>
-                <span style={{ fontSize: 10, color: "var(--color-neutral-400)" }}>Moyenne L2</span>
-              </div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-              {cat.metrics.map((m, i) => (
-                <div key={i}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: "var(--color-neutral-300)", marginBottom: 8 }}>{m.label}</div>
-                  <LinearRankingBar allTeams={m.allTeams} advIdx={m.advIdx} metzValue={side === "FOR" ? m.valueFor : m.valueAgainst} unit={m.unit} />
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+        <div style={{ width: 1, height: 20, background: "var(--color-neutral-700)", margin: "0 4px" }} />
 
-        {viewMode === "lab" && <SmartVisualLab vizType={cat.vizType} opponent={opponent} />}
+        <div style={{ display: "flex", gap: 4 }}>
+          {(["FOR", "AGAINST"] as StatSide[]).map(s => (
+            <button key={s} onClick={() => setSide(s)} style={{
+              padding: "4px 10px", borderRadius: 5, fontSize: 9, fontWeight: 700, cursor: "pointer",
+              background: side === s ? "rgba(196,43,71,0.12)" : "transparent",
+              color: side === s ? "#C42B47" : "var(--color-neutral-500)",
+              border: side === s ? "1px solid rgba(196,43,71,0.25)" : "1px solid transparent",
+              transition: "all 0.2s"
+            }}>{s === "FOR" ? "Pour (Metz Attaque)" : "Contre (Metz Défend)"}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: 24 }}>
+        {/* Left: Visualization (SmartVisualLab) */}
+        <div style={{ background: "var(--color-neutral-900)", borderRadius: 12, border: "1px solid var(--color-neutral-800)", padding: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+            <FlaskConical size={18} className="text-[#C42B47]" />
+            <h3 style={{ fontSize: 12, fontWeight: 800, color: "white", textTransform: "uppercase", fontFamily: "var(--font-display)" }}>
+              Analyse Labo : {cat.label}
+            </h3>
+          </div>
+          <SmartVisualLab vizType={cat.vizType} opponent={opponent} />
+        </div>
+
+        {/* Right: League Distribution */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {cat.metrics.map((m, i) => {
+            const mValue = side === "FOR" ? m.valueFor : m.valueAgainst;
+            
+            const teamsData = m.allTeams.map((val, idx) => {
+              // Dans les mocks, on détermine si c'est Metz ou Opponent
+              const isMetz = Math.abs(val - mValue) < 0.01;
+              const isOpp = idx === m.advIdx;
+              
+              let name = TEAM_NAMES[idx] || `T${idx}`;
+              if (isMetz) name = "Metz";
+              if (isOpp) name = opponent;
+
+              return {
+                id: String(idx),
+                name,
+                value: val,
+                isMetz,
+                isOpponent: isOpp
+              };
+            });
+
+            return (
+              <LeagueDistribution 
+                key={i}
+                title={m.label}
+                metricLabel={`${mValue}${m.unit}`}
+                description={`Comparaison de ${m.label} avec le reste de la ligue.`}
+                teams={teamsData}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -1187,7 +1600,7 @@ function ReportView({ match }: { match: typeof UPCOMING_MATCHES[0] }) {
       </div>
       <div style={{ flex: 1 }}>
         {tab === "summary" && <TabSummary opponent={match.opponent} />}
-        {tab === "lab" && <TabTeamStats opponent={match.opponent} defaultMode="lab" />}
+        {tab === "lab" && <TabTeamStats opponent={match.opponent} />}
         {tab === "players" && <TabPlayers />}
         {tab === "cpa" && <TabStrategyCPA opponent={match.opponent} />}
       </div>
