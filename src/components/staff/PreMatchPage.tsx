@@ -1012,14 +1012,24 @@ function TabStrategyCPA({ opponent }: { opponent: string }) {
   };
 
   const MOCK_TEAMS = [
-    { id: "1", name: "Metz", value: 18.4, isMetz: true },
-    { id: "2", name: opponent, value: 12.2, isOpponent: true },
-    { id: "3", name: "Auxerre", value: 21.5 },
-    { id: "4", name: "Rodez", value: 8.4 },
-    { id: "5", name: "Caen", value: 15.6 },
-    { id: "6", name: "Pau", value: 10.1 },
-    { id: "7", name: "Amiens", value: 14.2 },
-    { id: "8", name: "Dunkerque", value: 9.5 },
+    { id: "4", name: "Rodez", value: 5.0 },     // Min (Logo)
+    { id: "14", name: "Martigues", value: 6.5 }, // Point
+    { id: "15", name: "Annecy", value: 7.5 },    // Point
+    { id: "16", name: "Ajaccio", value: 8.5 },   // Point
+    { id: "13", name: "Clermont", value: 9.5 },  // Point
+    { id: "8", name: "Dunkerque", value: 10.5 }, // Point
+    { id: "6", name: "Pau", value: 11.5 },       // Point
+    { id: "2", name: opponent, value: 13.0, isOpponent: true }, // Opponent (Logo)
+    { id: "18", name: "Red Star", value: 14.5 }, // Point
+    { id: "17", name: "Troyes", value: 15.5 },   // Point
+    { id: "10", name: "Grenoble", value: 16.5 }, // Point
+    { id: "7", name: "Amiens", value: 17.5 },    // Point
+    { id: "1", name: "Metz", value: 19.0, isMetz: true }, // Metz (Logo)
+    { id: "5", name: "Caen", value: 20.5 },      // Point
+    { id: "11", name: "Paris FC", value: 21.5 }, // Point
+    { id: "12", name: "Lorient", value: 22.5 },  // Point
+    { id: "19", name: "Bastia", value: 23.5 },   // Point
+    { id: "3", name: "Auxerre", value: 25.0 },   // Max (Logo)
   ];
 
   const getMetricInfo = () => {

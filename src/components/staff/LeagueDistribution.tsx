@@ -28,7 +28,6 @@ export function LeagueDistribution({
   minLabel = "Pire",
   maxLabel = "Meilleur"
 }: LeagueDistributionProps) {
-  // Sorting to find extremes
   const sorted = [...teams].sort((a, b) => a.value - b.value);
   const min = sorted[0];
   const max = sorted[sorted.length - 1];
@@ -61,8 +60,13 @@ export function LeagueDistribution({
         {/* The Line */}
         <div className="absolute w-full h-[1px] bg-white/20" />
         
-        {/* Background Dots */}
-        {teams.map((t, i) => (
+        {/* Background Dots (only for teams without logos) */}
+        {teams.filter(t => 
+          t.id !== min.id && 
+          t.id !== max.id && 
+          !t.isMetz && 
+          !t.isOpponent
+        ).map((t, i) => (
           <div 
             key={i} 
             className="absolute w-1.5 h-1.5 rounded-full bg-neutral-600 transition-all"
