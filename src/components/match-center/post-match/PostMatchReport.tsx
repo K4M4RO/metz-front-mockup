@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart2, Target, Activity, Shield } from "lucide-react";
+import { BarChart2, Target, Activity, Shield, Star } from "lucide-react";
 import { TabMatchSummary } from "./TabMatchSummary";
 import { TabOnBall }      from "./TabOnBall";
 import { TabOffBall }     from "./TabOffBall";
 import { TabDefense }     from "./TabDefense";
 import { TabEndurance }   from "./TabEndurance";
+import { TabPlayerRatings } from "./TabPlayerRatings";
 import { HOME_TEAM, AWAY_TEAM, MATCH_INFO } from "./data";
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
@@ -17,6 +18,7 @@ const TABS = [
   { id: "onball",    label: "On-Ball — Passes & Déséquilibre", icon: Target,   shortLabel: "On-Ball"  },
   { id: "animation", label: "Animation & Espaces",     icon: Activity,  shortLabel: "Animation" },
   { id: "defense",   label: "Pression & Défense",       icon: Shield,   shortLabel: "Pression"  },
+  { id: "ratings",   label: "Performances individuelles", icon: Star,     shortLabel: "Perf. individuelle" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -185,11 +187,12 @@ export function PostMatchReport() {
 
       {/* Tab content */}
       <div style={{ flex: 1, overflow: "hidden" }}>
-        {activeTab === "summary" && <TabMatchSummary />}
+        {activeTab === "summary"   && <TabMatchSummary />}
         {activeTab === "endurance" && <TabEndurance />}
-        {activeTab === "onball"  && <TabOnBall />}
+        {activeTab === "onball"    && <TabOnBall />}
         {activeTab === "animation" && <TabOffBall />}
-        {activeTab === "defense" && <TabDefense />}
+        {activeTab === "defense"   && <TabDefense />}
+        {activeTab === "ratings"   && <TabPlayerRatings />}
       </div>
     </div>
   );
