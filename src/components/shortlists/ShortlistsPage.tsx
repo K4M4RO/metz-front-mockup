@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, ChevronDown } from "lucide-react";
+import { Plus, ChevronDown, Target, ExternalLink } from "lucide-react";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -165,8 +165,8 @@ function ShortlistTable({ players }: { players: ShortlistPlayer[] }) {
       <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 780 }}>
         <thead>
           <tr style={{ backgroundColor: "var(--color-neutral-800)", borderBottom: "1px solid var(--color-neutral-700)" }}>
-            {["#", "Joueur", "Poste", "Club / Championnat", "Valeur", "Contrat", "Note", "Statut"].map((h, i) => (
-              <th key={h} style={{ padding: "10px 12px", fontSize: 11, fontWeight: 600, color: "var(--color-neutral-500)", textAlign: i === 0 || i === 2 || i === 6 || i === 7 ? "center" : "left", whiteSpace: "nowrap", userSelect: "none" }}>
+            {["#", "Joueur", "Poste", "Club / Championnat", "Valeur", "Contrat", "Note", "Statut", ""].map((h, i) => (
+              <th key={h || i} style={{ padding: "10px 12px", fontSize: 11, fontWeight: 600, color: "var(--color-neutral-500)", textAlign: i === 0 || i === 2 || i === 6 || i === 7 ? "center" : "left", whiteSpace: "nowrap", userSelect: "none" }}>
                 {h}
               </th>
             ))}
@@ -214,6 +214,19 @@ function ShortlistTable({ players }: { players: ShortlistPlayer[] }) {
                 </td>
                 <td style={{ padding: "0 12px", textAlign: "center" }}><RatingBadge rating={p.rating} /></td>
                 <td style={{ padding: "0 12px", textAlign: "center" }}><StatusBadge status={p.status} /></td>
+                <td style={{ padding: "0 12px", textAlign: "right" }}>
+                  {isHov && (
+                    <button 
+                      title="Affecter à une campagne"
+                      style={{ background: "transparent", border: "none", color: "var(--color-neutral-500)", cursor: "pointer", padding: "4px" }}
+                      onMouseEnter={(e) => e.currentTarget.style.color = "var(--color-primary-400)"}
+                      onMouseLeave={(e) => e.currentTarget.style.color = "var(--color-neutral-500)"}
+                      onClick={(e) => { e.stopPropagation(); alert(`Affectation de ${p.name} à une campagne...`); }}
+                    >
+                      <Target size={14} />
+                    </button>
+                  )}
+                </td>
               </tr>
             );
           })}
@@ -311,31 +324,70 @@ function normalizePos(pos: string) { return pos.split("/")[0].trim(); }
 
 // ─── Terrain view ──────────────────────────────────────────────────────────────
 
-function TerrainView({ players, formation }: { players: ShortlistPlayer[]; formation: FormationKey }) {
+function TerrainView({ 
+  players, 
+  formation, 
+  onPlayerMove 
+}: { 
+  players: ShortlistPlayer[]; 
+  formation: FormationKey;
+  onPlayerMove: (playerId: number, newPos: string) => void;
+}) {
   const [focusedKey, setFocusedKey] = useState<string | null>(null);
   const coordMap = FORMATION_COORDS[formation];
 
-  // Build groups: merge players that land on the same pitch coordinate
-  const byCoordKey = new Map<string, { key: string; coords: PosCoord; players: ShortlistPlayer[] }>();
+  const byCoordKey = new Map<string, { key: string; coords: PosCoord; players: ShortlistPlayer[]; posKey: string }>();
   const unknown: ShortlistPlayer[] = [];
 
+  // 1. Initialize ALL positions for this formation
+  Object.entries(coordMap).forEach(([posKey, coords]) => {
+    const key = `${coords.x.toFixed(3)},${coords.y.toFixed(3)}`;
+    if (!byCoordKey.has(key)) {
+      byCoordKey.set(key, { key, coords, players: [], posKey });
+    }
+  });
+
+  // 2. Map players to their current positions
   for (const p of players) {
     const coords = coordMap[normalizePos(p.position)];
     if (!coords) { unknown.push(p); continue; }
     const key = `${coords.x.toFixed(3)},${coords.y.toFixed(3)}`;
-    if (!byCoordKey.has(key)) byCoordKey.set(key, { key, coords, players: [] });
-    byCoordKey.get(key)!.players.push(p);
+    const targetGroup = byCoordKey.get(key);
+    if (targetGroup) {
+      targetGroup.players.push(p);
+    } else {
+      unknown.push(p);
+    }
   }
 
   const groups = Array.from(byCoordKey.values());
 
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, playerId: number) => {
+    e.dataTransfer.setData("playerId", playerId.toString());
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = (e: React.DragEvent, newPos: string) => {
+    e.preventDefault();
+    const playerId = parseInt(e.dataTransfer.getData("playerId"));
+    if (!isNaN(playerId)) {
+      onPlayerMove(playerId, newPos);
+    }
+  };
+
   return (
     <div 
-      style={{ position: "relative", width: "100%", height: "1000px", minWidth: "1100px", backgroundColor: "#061506", borderRadius: "16px", overflow: "hidden", border: "1px solid var(--color-neutral-800)", boxShadow: "inset 0 0 100px rgba(0,0,0,0.5)" }}
+      style={{ position: "relative", width: "100%", height: "calc(100vh - 100px)", minHeight: "650px", minWidth: "900px", backgroundColor: "#143314", borderRadius: "16px", overflow: "hidden", border: "1px solid var(--color-neutral-800)", boxShadow: "inset 0 0 100px rgba(0,0,0,0.6)" }}
       onClick={() => setFocusedKey(null)}
     >
       {/* Pitch Lines Decoration */}
-      <div style={{ position: "absolute", inset: 0, opacity: 0.1, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", inset: 0, opacity: 0.2, pointerEvents: "none" }}>
         <svg viewBox={`0 0 ${PW} ${PH}`} width="100%" height="100%" preserveAspectRatio="none">
           <rect x={10} y={10} width={PW-20} height={PH-20} fill="none" stroke="white" strokeWidth={1} />
           <line x1={10} y1={PH/2} x2={PW-10} y2={PH/2} stroke="white" strokeWidth={1} />
@@ -346,67 +398,85 @@ function TerrainView({ players, formation }: { players: ShortlistPlayer[]; forma
       </div>
 
       {/* Layer 1: Player Lists (Z-indexed by focus) */}
-      {groups.map(({ key, coords, players: group }) => {
+      {groups.map(({ key, coords, players: group, posKey }) => {
         const left = `${coords.x * 100}%`;
         let yPos = coords.y;
-        if (yPos > 0.3 && yPos < 0.7) yPos = 0.3 + (yPos - 0.3) * 1.2;
+        if (yPos > 0.3 && yPos < 0.7) yPos = 0.3 + (yPos - 0.3) * 1.1;
         const top = `${yPos * 100}%`;
         const isFocused = focusedKey === key;
+        const isCentered = coords.x > 0.4 && coords.x < 0.6;
+        const offsetX = isCentered ? (coords.label === "DC" || coords.label === "MO" ? "20px" : coords.label === "MDF" || coords.label === "AT" ? "-20px" : "0px") : "0px";
 
         return (
           <div
             key={`list-${key}`}
             style={{
               position: "absolute",
-              left,
+              left: `calc(${left} + ${offsetX})`,
               top,
-              transform: "translate(-50%, -50%)",
-              width: "210px",
-              zIndex: isFocused ? 100 : 10,
+              transform: "translate(-50%, 0)",
+              width: "220px",
+              zIndex: isFocused ? 250 : 10,
               display: "flex",
               flexDirection: "column",
-              paddingTop: "24px", // Offset for the header that sits on top
-              pointerEvents: isFocused ? "auto" : "none", // Only focused list captures clicks if overlapping
-              opacity: isFocused ? 1 : 0.9,
-              transition: "all 0.2s ease"
+              paddingTop: "0", 
+              pointerEvents: isFocused ? "auto" : "none",
+              opacity: isFocused ? 1 : (focusedKey ? 0.3 : 0.9),
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
-            <div style={{
-              backgroundColor: isFocused ? "rgba(10, 15, 25, 0.95)" : "rgba(10, 15, 25, 0.85)",
-              backdropFilter: "blur(12px)",
-              border: isFocused ? "1px solid #C42B47" : "1px solid var(--color-neutral-700)",
-              borderRadius: "10px",
-              overflow: "hidden",
-              display: "flex",
-              flexDirection: "column",
-              boxShadow: isFocused ? "0 20px 40px rgba(0,0,0,0.8)" : "0 8px 16px rgba(0,0,0,0.4)",
-              pointerEvents: "auto"
-            }}>
-              {group.map((p, pIdx) => {
-                const rc = RATING_COLOR[p.rating] ?? "#9CA3AF";
-                const nc = noteColor(p.note);
-                return (
-                  <div
-                    key={p.id}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                      padding: "10px 14px",
-                      borderBottom: pIdx === group.length - 1 ? "none" : "1px solid rgba(255,255,255,0.05)",
-                    }}
-                  >
-                    <div style={{ width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "var(--color-neutral-800)", color: "var(--color-primary-300)", fontSize: "11px", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: `2px solid ${rc}` }}>
-                      {p.initials}
+            <div 
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, posKey)}
+              style={{
+                backgroundColor: isFocused ? "rgba(15, 23, 42, 0.98)" : "rgba(10, 15, 25, 0.75)",
+                backdropFilter: "blur(8px)",
+                border: isFocused ? "2px solid #C42B47" : (group.length === 0 ? "1px dashed rgba(255,255,255,0.15)" : "1px solid rgba(255,255,255,0.1)"),
+                borderRadius: "10px",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                boxShadow: isFocused ? "0 25px 50px rgba(0,0,0,0.9)" : "0 4px 12px rgba(0,0,0,0.2)",
+                pointerEvents: "auto",
+                transition: "all 0.3s ease",
+                minHeight: group.length === 0 ? "50px" : "auto",
+                justifyContent: group.length === 0 ? "center" : "stretch"
+              }}
+            >
+              {group.length === 0 ? (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "12px", color: "rgba(255,255,255,0.2)" }}>
+                  <Plus size={20} strokeWidth={1.5} />
+                </div>
+              ) : (
+                group.map((p, pIdx) => {
+                  const rc = RATING_COLOR[p.rating] ?? "#9CA3AF";
+                  const nc = noteColor(p.note);
+                  return (
+                    <div
+                      key={p.id}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, p.id)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        padding: "10px 14px",
+                        borderBottom: pIdx === group.length - 1 ? "none" : "1px solid rgba(255,255,255,0.05)",
+                        cursor: "grab"
+                      }}
+                    >
+                      <div style={{ width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "var(--color-neutral-800)", color: "var(--color-primary-300)", fontSize: "11px", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: `2px solid ${rc}` }}>
+                        {p.initials}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: "12px", fontWeight: 700, color: "white", lineHeight: "1.2" }}>{p.name}</div>
+                        <div style={{ fontSize: "10px", color: "var(--color-neutral-500)", marginTop: "2px" }}>{p.flag} {p.club}</div>
+                      </div>
+                      <div style={{ fontSize: "12px", fontWeight: 900, color: nc, backgroundColor: `${nc}12`, padding: "3px 8px", borderRadius: "6px", border: `1px solid ${nc}25` }}>{p.note.toFixed(1)}</div>
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: "12px", fontWeight: 700, color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
-                      <div style={{ fontSize: "10px", color: "var(--color-neutral-500)", marginTop: "2px" }}>{p.flag} {p.club}</div>
-                    </div>
-                    <div style={{ fontSize: "12px", fontWeight: 900, color: nc, backgroundColor: `${nc}12`, padding: "3px 8px", borderRadius: "6px", border: `1px solid ${nc}25` }}>{p.note.toFixed(1)}</div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </div>
         );
@@ -419,8 +489,9 @@ function TerrainView({ players, formation }: { players: ShortlistPlayer[]; forma
         if (yPos > 0.3 && yPos < 0.7) yPos = 0.3 + (yPos - 0.3) * 1.2;
         const top = `${yPos * 100}%`;
         const isFocused = focusedKey === key;
+        const isCentered = coords.x > 0.4 && coords.x < 0.6;
+        const offsetX = isCentered ? (coords.label === "DC" || coords.label === "MO" ? "20px" : coords.label === "MDF" || coords.label === "AT" ? "-20px" : "0px") : "0px";
 
-        // Position slightly higher than the list center to act as a tab
         return (
           <div
             key={`header-${key}`}
@@ -431,9 +502,9 @@ function TerrainView({ players, formation }: { players: ShortlistPlayer[]; forma
             style={{
               position: "absolute",
               left,
-              top: `calc(${top} - 15px)`, // Manual adjustment to place it above the list content
+              top: top, 
               transform: "translate(-50%, -100%)",
-              zIndex: 200, // Always above lists
+              zIndex: isFocused ? 300 : 200, // Always above lists, and focused above other labels
               backgroundColor: isFocused ? "#E53E3E" : "#C42B47",
               color: "white",
               fontSize: "11px",
@@ -480,14 +551,27 @@ function TerrainView({ players, formation }: { players: ShortlistPlayer[]; forma
 }
 
 // ─── Main page ─────────────────────────────────────────────────────────────────
-
 export function ShortlistsPage() {
+  const [shortlists,    setShortlists]     = useState<Shortlist[]>(SHORTLISTS);
   const [activeId,       setActiveId]       = useState("md2025");
   const [viewMode,       setViewMode]       = useState<"liste" | "terrain">("liste");
   const [formation,      setFormation]      = useState<FormationKey>("4-3-3");
   const [formationOpen,  setFormationOpen]  = useState(false);
 
-  const active = SHORTLISTS.find((s) => s.id === activeId) ?? SHORTLISTS[0];
+  const active = shortlists.find((s) => s.id === activeId) ?? shortlists[0];
+
+  const handlePlayerMove = (playerId: number, newPos: string) => {
+    setShortlists(prev => prev.map(sl => {
+      if (sl.id !== activeId) return sl;
+      return {
+        ...sl,
+        players: sl.players.map(p => {
+          if (p.id === playerId) return { ...p, position: newPos };
+          return p;
+        })
+      };
+    }));
+  };
 
   return (
     <div style={{ display: "flex", height: "100%", overflow: "hidden", backgroundColor: "var(--color-neutral-950)" }}>
@@ -510,7 +594,21 @@ export function ShortlistsPage() {
               <button
                 key={sl.id}
                 onClick={() => setActiveId(sl.id)}
-                style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", cursor: "pointer", backgroundColor: isActive ? "var(--color-neutral-800)" : "transparent", borderLeft: isActive ? "3px solid #C42B47" : "3px solid transparent", border: "none", textAlign: "left", transition: "background-color 120ms ease" }}
+                style={{ 
+                  width: "100%", 
+                  display: "flex", 
+                  alignItems: "center", 
+                  gap: 12, 
+                  padding: "10px 16px", 
+                  cursor: "pointer", 
+                  backgroundColor: isActive ? "var(--color-neutral-800)" : "transparent", 
+                  borderTop: "none",
+                  borderRight: "none",
+                  borderBottom: "none",
+                  borderLeft: isActive ? "3px solid #C42B47" : "3px solid transparent", 
+                  textAlign: "left", 
+                  transition: "background-color 120ms ease" 
+                }}
                 onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-800)"; }}
                 onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}
               >
@@ -602,6 +700,17 @@ export function ShortlistsPage() {
               ))}
             </div>
 
+            {/* Affect to campaign */}
+            <button
+              onClick={() => alert("Création d'une campagne à partir de cette shortlist...")}
+              style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", fontSize: 12, fontWeight: 600, borderRadius: 6, cursor: "pointer", backgroundColor: "transparent", border: "1px solid var(--color-neutral-700)", color: "var(--color-neutral-300)", transition: "background-color 120ms ease" }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-800)")}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")}
+            >
+              <Target size={13} strokeWidth={2.5} />
+              Lancer Campagne
+            </button>
+
             {/* Add player */}
             <button
               style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", fontSize: 12, fontWeight: 600, borderRadius: 6, cursor: "pointer", backgroundColor: "#C42B47", border: "none", color: "white", transition: "background-color 120ms ease" }}
@@ -618,7 +727,7 @@ export function ShortlistsPage() {
         <div style={{ flex: 1, overflowY: "auto", padding: viewMode === "terrain" ? "20px" : 0 }}>
           {viewMode === "liste"
             ? <ShortlistTable players={active.players} />
-            : <TerrainView players={active.players} formation={formation} />
+            : <TerrainView players={active.players} formation={formation} onPlayerMove={handlePlayerMove} />
           }
         </div>
       </div>

@@ -29,58 +29,49 @@ export function ActionBar({ view, onViewChange, totalCount, activePills, onToggl
   return (
     <div className="flex flex-col border-b" style={{ borderColor: "var(--color-neutral-700)" }}>
       {/* 🌟 NOUVEAU: Barre Modèles IA */}
+      {/* 🌍 NOUVEAU: Barre Championnat (anciennement Contexte) */}
       <div 
         className="flex flex-col sm:flex-row items-start sm:items-center gap-4 px-4 py-3 flex-wrap border-b"
         style={{ backgroundColor: "var(--color-neutral-950)", borderColor: "var(--color-neutral-800)" }}
       >
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold text-[var(--color-neutral-300)] uppercase tracking-wider flex items-center gap-1.5">
-            <Brain size={14} className="text-[var(--color-primary-500)]" /> Modèles IA :
+            <Target size={14} className="text-[var(--color-primary-500)]" /> Championnat :
           </span>
         </div>
 
-        {/* Sélecteur de Similarité */}
-        <div className="flex items-center gap-2 bg-[var(--color-neutral-900)] border border-[var(--color-neutral-700)] rounded-lg px-2 py-1.5 shadow-sm min-w-max">
-          <User size={14} className="text-[var(--color-neutral-400)]" />
-          <span className="text-[10px] text-[var(--color-neutral-500)] uppercase">Sim.</span>
-          <input 
-            type="text" 
-            placeholder="N. Kanté"
-            className="bg-transparent border-none text-xs text-[var(--color-neutral-100)] placeholder-[var(--color-neutral-500)] outline-none w-20 sm:w-28 font-medium"
-            defaultValue="N. Kanté"
-          />
-          <div className="h-4 w-px bg-[var(--color-neutral-700)] mx-1"></div>
-          <input type="range" min="0" max="100" defaultValue="85" className="w-16 accent-[var(--color-primary-500)]" />
-          <span className="text-xs text-[var(--color-primary-500)] font-bold w-8 text-right">85%</span>
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+          {["Ligue 1", "Premier League", "Serie A", "La Liga", "Bundesliga"].map(league => (
+            <button
+              key={league}
+              className="px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all whitespace-nowrap"
+              style={{
+                backgroundColor: "var(--color-neutral-900)",
+                border: "1px solid var(--color-neutral-700)",
+                color: "var(--color-neutral-400)"
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--color-primary-500)";
+                (e.currentTarget as HTMLElement).style.color = "var(--color-neutral-200)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--color-neutral-700)";
+                (e.currentTarget as HTMLElement).style.color = "var(--color-neutral-400)";
+              }}
+            >
+              {league}
+            </button>
+          ))}
+          <button className="text-[11px] font-bold text-[var(--color-primary-500)] px-2">
+            + Voir tout
+          </button>
         </div>
 
-        {/* Sélecteur de Fit Score */}
-        <div className="flex items-center gap-2 bg-[var(--color-neutral-900)] border border-[var(--color-neutral-700)] rounded-lg px-2 py-1.5 shadow-sm min-w-max">
-          <Target size={14} className="text-[var(--color-neutral-400)]" />
-          <span className="text-[10px] text-[var(--color-neutral-500)] uppercase">Fit</span>
-          <select className="bg-transparent border-none text-xs text-[var(--color-neutral-100)] outline-none cursor-pointer font-medium max-w-[120px] truncate">
-             <option>Double Pivot 4-2-3-1</option>
-             <option>Sentinelle 4-3-3</option>
-             <option>Relayeur Box-to-Box</option>
-          </select>
-          <div className="h-4 w-px bg-[var(--color-neutral-700)] mx-1"></div>
-          <input type="range" min="0" max="100" defaultValue="80" className="w-16 accent-[var(--color-primary-500)]" />
-          <span className="text-xs text-[var(--color-primary-500)] font-bold w-8 text-right">80</span>
-        </div>
-
-        {/* Bouton Ajouter */}
+        {/* Bouton Ajouter aux shortlists (Global) */}
         <button 
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-[var(--color-neutral-800)] text-[var(--color-neutral-300)] border border-[var(--color-neutral-700)] rounded-lg transition-all ml-auto sm:ml-0 shadow-sm whitespace-nowrap"
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(139, 26, 43, 0.1)";
-            (e.currentTarget as HTMLElement).style.color = "var(--color-primary-500)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.backgroundColor = "var(--color-neutral-800)";
-            (e.currentTarget as HTMLElement).style.color = "var(--color-neutral-300)";
-          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[var(--color-primary-600)] text-white rounded-lg transition-all ml-auto shadow-lg hover:bg-[var(--color-primary-500)]"
         >
-          <Plus size={14} /> Autres
+          <Download size={14} /> Exporter la sélection
         </button>
       </div>
 

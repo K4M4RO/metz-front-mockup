@@ -4,20 +4,23 @@ import { useState, useMemo, useCallback } from "react";
 import {
   EM_SHOTS, EM_PASSES, EM_PRESSIONS, EM_DUELS, EM_CARRIES, EM_DEFS,
 } from "@/data/enzo-millot-events";
+import { SEASON_HOTSPOTS, MATCH_HEATMAP_PATTERNS, MATCHES } from "@/data/enzo-millot-extended";
 import type { ShotEv, PassEv, PressionEv, DuelEv, CarryEv, DefEv } from "@/data/enzo-millot-events";
+import { HeatmapPitch } from "@/components/profile/HeatmapPitch";
 
 // ── Pitch constants ───────────────────────────────────────────────────────────
-const VW = 560, VH = 364;
-const PA_D = 88, PA_W = 216, PA_Y = (VH - PA_W) / 2;
-const GB_D = 29, GB_W = 98,  GB_Y = (VH - GB_W) / 2;
-const CCX = VW / 2, CCY = VH / 2, CCR = 49;
-const PSX_L = 59, PSX_R = VW - PSX_L;
+const VW = 680, VH = 442;
+const PA_D = 107, PA_W = 262, PA_Y = (VH - PA_W) / 2;
+const GB_D = 35,  GB_W = 119,  GB_Y = (VH - GB_W) / 2;
+const CCX = VW / 2, CCY = VH / 2, CCR = 60;
+const PSX_L = 72, PSX_R = VW - PSX_L;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-type EventType = "tirs" | "passes" | "pressions" | "duels" | "conduites" | "defensives";
+type EventType = "tout" | "tirs" | "passes" | "pressions" | "duels" | "conduites" | "defensives";
 
 // ── Categories (sidebar) ──────────────────────────────────────────────────────
 const CATEGORIES: { id: EventType; label: string; icon: string }[] = [
+  { id: "tout",        label: "Tout (Positionnement)", icon: "◈" },
   { id: "tirs",        label: "Tirs",               icon: "◎" },
   { id: "passes",      label: "Passes",              icon: "→" },
   { id: "pressions",   label: "Pressions",           icon: "★" },
@@ -73,10 +76,12 @@ const GROUPED_SF: Record<EventType, SFGroup[]> = {
     { label: "Récupération",items: [{ id:"interception",label:"Interception" },{ id:"recuperation",label:"Récupération" }] },
     { label: "Autre",       items: [{ id:"degagement",label:"Dégagement" },{ id:"faute",label:"Faute provoquée" }] },
   ],
+  tout: [],
 };
 
 // ── Event counts (for sidebar badges) ────────────────────────────────────────
 const EVENT_COUNTS: Record<EventType, number> = {
+  tout: 100, // Score de présence global
   tirs: EM_SHOTS.length,
   passes: EM_PASSES.length,
   pressions: EM_PRESSIONS.length,
@@ -339,6 +344,10 @@ const LEGENDS: Record<EventType, { color:string; label:string; shape?:"circle"|"
     color: c,
     label: { tacle_reussi:"Tacle réussi",tacle_rate:"Tacle raté",interception:"Interception",degagement:"Dégagement",recuperation:"Récupération",faute:"Faute" }[k] ?? k,
   })),
+  tout: [
+    { color: "#C42B47", label: "Haute intensité" },
+    { color: "#1E3A5F", label: "Zone de couverture" },
+  ],
 };
 
 // ── Pill component ────────────────────────────────────────────────────────────
@@ -352,11 +361,12 @@ function Pill({ label, active, onClick }: { label:string; active:boolean; onClic
         fontSize: 10,
         cursor: "pointer",
         whiteSpace: "nowrap",
-        backgroundColor: active ? "rgba(196,43,71,0.18)" : "rgba(255,255,255,0.04)",
-        border: `1px solid ${active ? "rgba(196,43,71,0.55)" : "rgba(255,255,255,0.1)"}`,
-        color: active ? "#F4A0AF" : "var(--color-neutral-400)",
+        backgroundColor: active ? "rgba(var(--primary-rgb), 0.2)" : "var(--color-neutral-700)",
+        border: `1px solid ${active ? "rgba(var(--primary-rgb), 0.5)" : "var(--color-neutral-600)"}`,
+        color: active ? "var(--color-primary-400)" : "var(--color-neutral-300)",
         transition: "all 0.15s",
         fontFamily: "var(--font-sans)",
+        fontWeight: active ? 600 : 400,
       }}
     >
       {label}
@@ -366,7 +376,7 @@ function Pill({ label, active, onClick }: { label:string; active:boolean; onClic
 
 // ── Main component ────────────────────────────────────────────────────────────
 export function EventMap() {
-  const [eventType,    setEventType]    = useState<EventType>("tirs");
+  const [eventType,    setEventType]    = useState<EventType>("tout");
   const [matchFilter,  setMatchFilter]  = useState("all");
   const [showAdvanced, setShowAdvanced] = useState(true);
   const [activeSF,     setActiveSF]     = useState<Set<string>>(new Set());
@@ -392,6 +402,7 @@ export function EventMap() {
 
   const filteredCount = useMemo(() => {
     switch (eventType) {
+      case "tout":       return 100;
       case "tirs":       return applyFilters(EM_SHOTS).length;
       case "passes":     return applyFilters(EM_PASSES).length;
       case "pressions":  return applyFilters(EM_PRESSIONS).length;
@@ -412,12 +423,12 @@ export function EventMap() {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "210px 1fr",
+        gridTemplateColumns: "180px 220px 1fr",
         backgroundColor: "var(--color-neutral-800)",
         border: "1px solid var(--color-neutral-700)",
-        borderRadius: 10,
+        borderRadius: 12,
         overflow: "hidden",
-        minHeight: 460,
+        minHeight: 520,
       }}
     >
       {/* ── Left Sidebar ── */}
@@ -447,8 +458,8 @@ export function EventMap() {
                   borderRight: "none",
                   borderBottom: "none",
                   borderLeft: active ? "2px solid #C42B47" : "2px solid transparent",
-                  backgroundColor: active ? "rgba(196,43,71,0.10)" : "transparent",
-                  color: active ? "#F4A0AF" : "var(--color-neutral-400)",
+                  backgroundColor: active ? "rgba(var(--primary-rgb), 0.12)" : "transparent",
+                  color: active ? "var(--color-primary-400)" : "var(--color-neutral-400)",
                   cursor: "pointer",
                   textAlign: "left",
                   transition: "background-color 0.15s, color 0.15s",
@@ -463,8 +474,8 @@ export function EventMap() {
                 <span style={{
                   fontSize:10, fontWeight:600,
                   padding:"1px 6px", borderRadius:999,
-                  backgroundColor: active ? "rgba(196,43,71,0.25)" : "rgba(255,255,255,0.05)",
-                  color: active ? "#F4A0AF" : "var(--color-neutral-600)",
+                  backgroundColor: active ? "rgba(var(--primary-rgb), 0.25)" : "var(--bg-surface-raised)",
+                  color: active ? "var(--color-primary-400)" : "var(--color-neutral-600)",
                 }}>
                   {EVENT_COUNTS[cat.id]}
                 </span>
@@ -472,13 +483,13 @@ export function EventMap() {
             );
           })}
         </nav>
-        
-        {/* Sidebar Legend (Moved from bottom right) */}
-        <div style={{ padding:"14px 16px", borderTop:"1px solid var(--color-neutral-700)", flexShrink: 0 }}>
-          <div style={{ fontSize:10, fontWeight:600, textTransform:"uppercase", letterSpacing:"0.08em", color:"var(--color-neutral-500)", marginBottom: 8 }}>
+
+        {/* Sidebar Legend (Moved back) */}
+        <div style={{ padding:"14px 16px", borderTop:"1px solid var(--color-neutral-700)", flexShrink: 0, backgroundColor: "rgba(0,0,0,0.02)" }}>
+          <div style={{ fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em", color:"var(--color-neutral-500)", marginBottom: 10 }}>
             Légende
           </div>
-          <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+          <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
             {LEGENDS[eventType].map((item) => (
               <div key={item.label} style={{ display:"flex", alignItems:"center", gap:8 }}>
                 {item.shape === "diamond" ? (
@@ -497,165 +508,111 @@ export function EventMap() {
                 ) : (
                   <span style={{ width:8, height:8, borderRadius:"50%", backgroundColor:item.color, display:"inline-block" }} />
                 )}
-                <span style={{ fontSize:10, color:"var(--color-neutral-400)" }}>{item.label}</span>
+                <span style={{ fontSize:10, color:"var(--color-neutral-300)", fontWeight: 500 }}>{item.label}</span>
               </div>
             ))}
             {eventType === "tirs" && (
-              <span style={{ fontSize:9, color:"var(--color-neutral-600)", fontStyle: "italic" }}>Taille = xG</span>
+              <span style={{ fontSize:9, color:"var(--color-neutral-500)", fontStyle: "italic", marginTop: 2 }}>Taille = xG</span>
             )}
           </div>
         </div>
       </div>
 
-      {/* ── Main area ── */}
-      <div style={{ display:"flex", flexDirection:"column" }}>
 
-        {/* Level 1 topbar */}
-        <div style={{
-          padding:"12px 16px",
-          borderBottom: "1px solid var(--color-neutral-700)",
-          display:"flex", alignItems:"center", gap:10,
-        }}>
-          {/* Match selector */}
-          <div style={{ position:"relative", flex:1 }}>
+
+      {/* ── Column 2: Match & Advanced Filters ── */}
+      <div style={{ display:"flex", flexDirection:"column", borderRight:"1px solid var(--color-neutral-700)", backgroundColor: "rgba(0,0,0,0.05)" }}>
+        <div style={{ padding:"12px 16px", borderBottom:"1px solid var(--color-neutral-700)" }}>
+          <div style={{ fontSize:9, color:"var(--color-neutral-500)", textTransform:"uppercase", fontWeight:700, marginBottom:8 }}>Match / Période</div>
+          <div style={{ position:"relative" }}>
             <select
               value={matchFilter}
               onChange={(e) => setMatchFilter(e.target.value)}
               style={{
-                width:"100%",
-                appearance:"none",
-                padding:"7px 32px 7px 12px",
-                borderRadius:6,
-                backgroundColor:"var(--color-neutral-700)",
-                border:"1px solid var(--color-neutral-600)",
-                color:"var(--color-neutral-200)",
-                fontSize:12,
-                cursor:"pointer",
-                fontFamily:"var(--font-sans)",
+                width:"100%", appearance:"none", padding:"6px 28px 6px 10px", borderRadius:6,
+                backgroundColor:"var(--color-neutral-700)", border:"1px solid var(--color-neutral-600)",
+                color:"var(--color-neutral-200)", fontSize:11, cursor:"pointer",
               }}
             >
-              {MATCH_OPTIONS.map(m => (
-                <option key={m.id} value={m.id}>{m.label}</option>
-              ))}
+              {MATCH_OPTIONS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
             </select>
-            <span style={{
-              position:"absolute", right:10, top:"50%", transform:"translateY(-50%)",
-              pointerEvents:"none", color:"var(--color-neutral-500)", fontSize:10,
-            }}>▼</span>
+            <span style={{ position:"absolute", right:8, top:"50%", transform:"translateY(-50%)", pointerEvents:"none", color:"var(--color-neutral-500)", fontSize:9 }}>▼</span>
           </div>
-
-          {/* Filtered Count (Moved from sidebar) */}
-          <div style={{ padding: "0 10px", borderRight: "1px solid var(--color-neutral-700)", marginRight: 5 }}>
-            <div style={{ fontSize: 9, color: "var(--color-neutral-500)", textTransform: "uppercase" }}>Filtrés</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: "#C42B47", fontFamily: "var(--font-dm-sans)" }}>
-              {filteredCount}
-              <span style={{ fontSize: 10, color: "var(--color-neutral-600)", fontWeight: 400, marginLeft: 2 }}>
-                / {EVENT_COUNTS[eventType]}
-              </span>
-            </div>
-          </div>
-
-          {/* Zone toggle */}
-          <button
-            onClick={() => setZoneOverlay(v => !v)}
-            style={{
-              display:"flex", alignItems:"center", gap:5,
-              padding:"7px 11px", borderRadius:6,
-              backgroundColor: zoneOverlay ? "rgba(63,63,70,0.7)" : "var(--color-neutral-700)",
-              border:`1px solid ${zoneOverlay ? "#52525B" : "var(--color-neutral-600)"}`,
-              color: zoneOverlay ? "#A1A1AA" : "var(--color-neutral-500)",
-              fontSize:11, cursor:"pointer", whiteSpace:"nowrap",
-            }}
-          >
-            <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-              <rect x="1" y="1" width="9" height="9" stroke="currentColor" strokeWidth="1" fill="none"/>
-              <line x1="4.5" y1="1" x2="4.5" y2="10" stroke="currentColor" strokeWidth="1" strokeDasharray="2 1"/>
-              <line x1="7.5" y1="1" x2="7.5" y2="10" stroke="currentColor" strokeWidth="1" strokeDasharray="2 1"/>
-            </svg>
-            Zones
-          </button>
-
-          {/* Advanced filters toggle */}
-          <button
-            onClick={() => setShowAdvanced(v => !v)}
-            style={{
-              display:"flex", alignItems:"center", gap:5,
-              padding:"7px 12px", borderRadius:6,
-              backgroundColor: showAdvanced ? "rgba(196,43,71,0.12)" : "var(--color-neutral-700)",
-              border:`1px solid ${showAdvanced ? "rgba(196,43,71,0.40)" : "var(--color-neutral-600)"}`,
-              color: showAdvanced ? "#F4A0AF" : "var(--color-neutral-400)",
-              fontSize:11, cursor:"pointer", whiteSpace:"nowrap",
-            }}
-          >
-            ⚙ Filtres Avancés
-            {activeSF.size > 0 && (
-              <span style={{
-                display:"inline-flex", alignItems:"center", justifyContent:"center",
-                width:16, height:16, borderRadius:999,
-                backgroundColor:"#C42B47", color:"white", fontSize:9, fontWeight:700,
-              }}>
-                {activeSF.size}
-              </span>
-            )}
-          </button>
         </div>
 
-        {/* Level 2 — grouped sub-filters (conditionally shown) */}
-        {showAdvanced && (
-          <div style={{
-            padding:"10px 16px",
-            borderBottom:"1px solid var(--color-neutral-700)",
-            display:"flex", alignItems:"flex-start", gap:0, flexWrap:"wrap",
-            backgroundColor:"rgba(0,0,0,0.12)",
-          }}>
-            {GROUPED_SF[eventType].map((group, gi) => (
-              <div key={group.label} style={{ display:"flex", alignItems:"flex-start", gap:0 }}>
-                {gi > 0 && (
-                  <div style={{
-                    width:1, alignSelf:"stretch",
-                    backgroundColor:"var(--color-neutral-700)",
-                    margin:"0 14px",
-                    flexShrink:0,
-                  }} />
-                )}
-                <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
-                  <span style={{
-                    fontSize:9, textTransform:"uppercase", letterSpacing:"0.08em",
-                    color:"var(--color-neutral-600)", fontWeight:600,
-                  }}>
-                    {group.label}
-                  </span>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
-                    {group.items.map(item => (
-                      <Pill key={item.id} label={item.label} active={activeSF.has(item.id)} onClick={() => toggleSF(item.id)} />
-                    ))}
+        <div style={{ flex:1, overflowY:"auto", padding:"12px 16px" }}>
+          {eventType !== "tout" ? (
+            <>
+              <div style={{ fontSize:9, color:"var(--color-neutral-500)", textTransform:"uppercase", fontWeight:700, marginBottom:12 }}>Filtres Avancés</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+                {GROUPED_SF[eventType].map((group) => (
+                  <div key={group.label} style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                    <span style={{ fontSize:9, color:"var(--color-neutral-600)", fontWeight:700 }}>{group.label}</span>
+                    <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
+                      {group.items.map(item => (
+                        <Pill key={item.id} label={item.label} active={activeSF.has(item.id)} onClick={() => toggleSF(item.id)} />
+                      ))}
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-            {activeSF.size > 0 && (
-              <button
-                onClick={() => setActiveSF(new Set())}
-                style={{
-                  marginLeft:"auto", alignSelf:"center",
-                  padding:"3px 10px", borderRadius:999, fontSize:10,
-                  backgroundColor:"transparent",
-                  border:"1px solid var(--color-neutral-700)",
-                  color:"var(--color-neutral-500)",
-                  cursor:"pointer",
-                }}
-              >
-                Réinitialiser
-              </button>
-            )}
-          </div>
-        )}
+              {activeSF.size > 0 && (
+                <button
+                  onClick={() => setActiveSF(new Set())}
+                  style={{
+                    marginTop:16, width:"100%", padding:"5px", borderRadius:4, fontSize:10,
+                    backgroundColor:"transparent", border:"1px solid var(--color-neutral-700)",
+                    color:"var(--color-neutral-500)", cursor:"pointer"
+                  }}
+                >
+                  Réinitialiser
+                </button>
+              )}
+            </>
+          ) : (
+            <div style={{ textAlign:"center", padding:"20px 0" }}>
+              <div style={{ fontSize:42, fontWeight:900, color:"#C42B47", fontFamily:"var(--font-dm-sans)" }}>8.4</div>
+              <div style={{ fontSize:10, color:"var(--color-neutral-500)", textTransform:"uppercase" }}>Indice de présence</div>
+            </div>
+          )}
+        </div>
+      </div>
 
-        {/* Pitch */}
+      {/* ── Main area: Pitch ── */}
+      <div style={{ display:"flex", flexDirection:"column", flex: 1 }}>
+        <div style={{
+          padding:"10px 16px", borderBottom: "1px solid var(--color-neutral-700)",
+          display:"flex", alignItems:"center", justifyContent:"space-between",
+        }}>
+          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+            <div style={{ fontSize:9, color:"var(--color-neutral-500)", textTransform:"uppercase" }}>Rendu tactique</div>
+            <button
+              onClick={() => setZoneOverlay(v => !v)}
+              style={{
+                display:"flex", alignItems:"center", gap:4, padding:"4px 8px", borderRadius:4,
+                backgroundColor: zoneOverlay ? "rgba(var(--primary-rgb), 0.1)" : "var(--color-neutral-700)",
+                border:`1px solid ${zoneOverlay ? "rgba(var(--primary-rgb), 0.3)" : "var(--color-neutral-600)"}`,
+                color: zoneOverlay ? "var(--color-primary-400)" : "var(--color-neutral-500)",
+                fontSize:10, cursor:"pointer",
+              }}
+            >
+              Afficher Zones
+            </button>
+          </div>
+
+          <div style={{ fontSize:12, fontWeight:700, color:"#C42B47", fontFamily:"var(--font-dm-sans)" }}>
+            {eventType === "tout" ? "8.4 / 10" : `${filteredCount} / ${EVENT_COUNTS[eventType]}`}
+            <span style={{ fontSize:9, color:"var(--color-neutral-500)", fontWeight:400, marginLeft:6, textTransform:"uppercase" }}>Événements</span>
+          </div>
+        </div>
+
+
+
+        {/* Pitch area */}
         <div style={{ position:"relative", flex:1 }}>
           <svg
             viewBox={`0 0 ${VW} ${VH}`}
-            style={{ width:"100%", display:"block", maxHeight: 420 }}
+            style={{ width:"100%", display:"block", maxHeight: 480 }}
             preserveAspectRatio="xMidYMid meet"
             onMouseMove={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
@@ -663,7 +620,21 @@ export function EventMap() {
             }}
             onMouseLeave={onLeave}
           >
-            <PitchBase zones={zoneOverlay} />
+            {eventType === "tout" && (
+               <foreignObject x="0" y="0" width={VW} height={VH}>
+                  <div style={{ width: "100%", height: "100%", padding: 0 }}>
+                    <HeatmapPitch 
+                      hotspots={matchFilter === 'all' 
+                        ? SEASON_HOTSPOTS 
+                        : MATCH_HEATMAP_PATTERNS[Math.abs(matchFilter.split('').reduce((a,b)=>a+b.charCodeAt(0),0)) % MATCH_HEATMAP_PATTERNS.length] || SEASON_HOTSPOTS
+                      } 
+                      width={VW} 
+                      idPrefix="event-tout" 
+                    />
+                  </div>
+               </foreignObject>
+            )}
+            {eventType !== "tout" && <PitchBase zones={zoneOverlay} />}
             {eventType === "tirs"       && <ShotLayer      shots={applyFilters(EM_SHOTS)}       onHover={onHover} onLeave={onLeave} />}
             {eventType === "passes"     && <PassLayer      passes={applyFilters(EM_PASSES)}     onHover={onHover} onLeave={onLeave} />}
             {eventType === "pressions"  && <PressionLayer  pressions={applyFilters(EM_PRESSIONS)} onHover={onHover} onLeave={onLeave} />}

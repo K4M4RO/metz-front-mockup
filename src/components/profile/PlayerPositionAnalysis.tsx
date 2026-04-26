@@ -53,7 +53,7 @@ export function PlayerPositionAnalysis() {
             
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <span className="text-lg font-bold font-dm-sans text-white">{t.count}</span>
+                <span className="text-lg font-bold font-dm-sans" style={{ color: "var(--color-neutral-100)" }}>{t.count}</span>
                 <span className="text-[10px] text-neutral-500 ml-1">occ.</span>
               </div>
               <div className="w-6 h-6 rounded-full flex items-center justify-center bg-neutral-800 border border-neutral-700 text-neutral-500 group-hover:border-primary-500 group-hover:text-primary-500 transition-colors">

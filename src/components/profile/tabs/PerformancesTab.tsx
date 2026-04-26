@@ -2,7 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { MATCHES, MATCH_STATS, BARS_IN_POSSESSION, BARS_OUT_POSSESSION } from "@/data/enzo-millot-extended";
+import { SectoredRadar } from "@/components/profile/SectoredRadar";
 import type { MatchResult } from "@/data/enzo-millot-extended";
+import { Info } from "lucide-react";
 
 type Filter = "Tous" | "Titulaire" | "Remplaçant" | "Victoires" | "Défaites";
 
@@ -83,56 +85,146 @@ function pctBarColor(pct: number): string {
 }
 
 
-import { Brain } from "lucide-react";
 import { FinitionSection } from "./FinitionSection";
 
-type Category = "global" | "finition" | "possession" | "out_possession" | "intelligence";
+type Category = "global" | "finition" | "possession" | "out_possession";
 
 const CATEGORIES: { id: Category; label: string }[] = [
   { id: "global",         label: "Vue Globale" },
   { id: "finition",       label: "Finition" },
   { id: "possession",     label: "In Possession" },
   { id: "out_possession", label: "Out of Possession" },
-  { id: "intelligence",   label: "Intelligence de jeu" },
 ];
 
-function PercentileBarsSection({ bars, title }: { bars: typeof BARS_IN_POSSESSION; title: string }) {
+
+
+function MatchStatsModal({ matchId, onClose }: { matchId: number, onClose: () => void }) {
+  const stats = MATCH_STATS.find(s => s.matchId === matchId);
+  const match = MATCHES.find(m => m.id === matchId);
+  
+  if (!stats || !match) return null;
+
+  // Simple mapping to percentiles for the radar (simulated for the match profile)
+  const distSectors = [
+    { label: "Passes", v: stats.passes, p: Math.min(100, stats.passes * 1.5) },
+    { label: "% Passes", v: stats.pass_pct, p: stats.pass_pct },
+    { label: "P. Press.", v: stats.press_passes, p: stats.press_passes * 10 },
+    { label: "1-Touch", v: stats.one_touch, p: stats.one_touch * 15 },
+  ];
+
+  const progSectors = [
+    { label: "LB ATT", v: stats.lb_att, p: stats.lb_att * 25 },
+    { label: "LB MIL", v: stats.lb_mid, p: stats.lb_mid * 20 },
+    { label: "xThreat", v: stats.xThreat.toFixed(2), p: stats.xThreat * 500 },
+    { label: "Carries", v: stats.prog_carries, p: stats.prog_carries * 12 },
+  ];
+
+  const defSectors = [
+    { label: "Pressions", v: stats.pressures, p: stats.pressures * 6 },
+    { label: "% Duel", v: stats.def_duel_pct, p: stats.def_duel_pct },
+    { label: "Contrep.", v: stats.counter_press, p: stats.counter_press * 12 },
+    { l: "2e balles", v: stats.second_balls, p: stats.second_balls * 10 },
+  ];
+
   return (
-    <div
-      className="rounded-lg p-5"
-      style={{ backgroundColor: "var(--color-neutral-800)", border: "1px solid var(--color-neutral-700)" }}
-    >
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-sm font-bold text-white uppercase tracking-wider" style={{ fontFamily: "var(--font-dm-sans)" }}>
-          {title}
-        </h3>
-        <span className="text-[10px] text-neutral-500 font-medium">Percentile vs Benchmark Poste</span>
-      </div>
-      <div className="space-y-4">
-        {bars.map((bar) => (
-          <div key={bar.label} className="flex flex-col gap-1.5">
-            <div className="flex justify-between items-end">
-              <span className="text-[11px] text-neutral-400 font-medium">{bar.label}</span>
-              <span className="text-[11px] text-white font-bold" style={{ fontFamily: "var(--font-dm-sans)" }}>{bar.raw}</span>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div 
+        className="w-full max-w-5xl bg-neutral-900 border border-neutral-700 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="p-8 border-bottom border-neutral-800 flex justify-between items-start bg-neutral-800/40">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+               <span className="px-2 py-0.5 rounded bg-[#C42B47]/20 text-[#C42B47] text-[10px] font-black uppercase tracking-widest border border-[#C42B47]/30">Match Report</span>
+               <h3 className="text-2xl font-black text-white" style={{ fontFamily: "var(--font-dm-sans)" }}>vs {match.opponent}</h3>
             </div>
-            <div className="h-2 w-full bg-neutral-700 rounded-full overflow-hidden relative">
-              <div
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: `${bar.pct}%`,
-                  backgroundColor: pctBarColor(bar.pct),
-                  borderRadius: 99,
-                }}
-              />
-            </div>
-            <div className="flex justify-end">
-              <span className="text-[9px] text-neutral-500">P{bar.pct}</span>
-            </div>
+            <p className="text-sm text-neutral-400 font-medium">{match.date} · Score final : {match.score} ({match.result})</p>
           </div>
-        ))}
+          <button onClick={onClose} className="w-10 h-10 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-neutral-400 hover:text-white transition-all hover:rotate-90">
+            ✕
+          </button>
+        </div>
+        
+        <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8 bg-black/20">
+          <SectoredRadar 
+            title="Distribution" 
+            size={240} 
+            sectors={distSectors.map(s => ({ label: s.label, value: s.p, displayText: String(s.v), category: "offensive" }))} 
+          />
+          <SectoredRadar 
+            title="Progression" 
+            size={240} 
+            sectors={progSectors.map(s => ({ label: s.label, value: s.p, displayText: String(s.v), category: "offensive" }))} 
+          />
+          <SectoredRadar 
+            title="Défensif" 
+            size={240} 
+            sectors={defSectors.map(s => ({ label: s.label, value: s.p, displayText: String(s.v), category: "defensive" }))} 
+          />
+        </div>
+        
+        <div className="p-6 bg-neutral-800/40 border-t border-neutral-800 flex justify-between items-center px-10">
+           <div className="flex gap-8">
+              <div className="flex flex-col">
+                 <span className="text-[10px] text-neutral-500 font-bold uppercase">Temps de jeu</span>
+                 <span className="text-sm font-bold text-white">{match.minutes}'</span>
+              </div>
+              <div className="flex flex-col">
+                 <span className="text-[10px] text-neutral-500 font-bold uppercase">Impact Score</span>
+                 <span className="text-sm font-bold text-[#C42B47]">Excellent</span>
+              </div>
+           </div>
+           <button 
+             onClick={onClose}
+             className="px-10 py-3 rounded-xl bg-neutral-100 text-neutral-900 text-xs font-black uppercase tracking-widest hover:bg-white transition-all transform hover:scale-105"
+           >
+             Fermer le rapport
+           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MatchCard({ m, type, onShowStats }: { m: any, type: "top" | "worst" | "typical", onShowStats: (id: number) => void }) {
+  const ratingColor = type === "top" ? "#22C55E" : type === "worst" ? "#EF4444" : "#3B82F6";
+  return (
+    <div 
+      className="p-4 rounded-xl transition-all hover:scale-[1.02] cursor-default"
+      style={{ 
+        backgroundColor: "var(--color-neutral-800)", 
+        border: "1px solid var(--color-neutral-700)",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.2)"
+      }}
+    >
+      <div className="flex justify-between items-start mb-3">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">{m.date}</span>
+            <span className="w-1 h-1 rounded-full bg-neutral-600"></span>
+            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">{m.score}</span>
+          </div>
+          <h4 className="text-sm font-bold text-white leading-tight">vs {m.opponent}</h4>
+        </div>
+        <div 
+          className="px-2 py-1 rounded-lg flex flex-col items-center justify-center min-w-[36px]"
+          style={{ backgroundColor: "rgba(0,0,0,0.3)", border: `1px solid ${ratingColor}44` }}
+        >
+          <span className="text-[10px] text-neutral-500 font-bold leading-none">NOTE</span>
+          <span className="text-xs font-black mt-1" style={{ color: ratingColor }}>{m.rating}</span>
+        </div>
+      </div>
+      <p className="text-[11px] text-neutral-400 leading-relaxed italic">
+        "{m.note}"
+      </p>
+      
+      <div className="mt-4">
+         <button 
+           onClick={() => onShowStats(m.id)}
+           className="w-full py-2 rounded-md bg-neutral-700/50 hover:bg-neutral-700 text-[10px] font-bold text-neutral-300 transition-colors uppercase tracking-wider"
+         >
+           Voir les Statistiques
+         </button>
       </div>
     </div>
   );
@@ -140,27 +232,28 @@ function PercentileBarsSection({ bars, title }: { bars: typeof BARS_IN_POSSESSIO
 
 export function PerformancesTab() {
   const [activeCat, setActiveCat] = useState<Category>("global");
-  const [filter, setFilter] = useState<Filter>("Tous");
+  const [selectedMatchStats, setSelectedMatchStats] = useState<number | null>(null);
 
-  const filteredIds = useMemo(() => {
-    return MATCHES.filter((m) => {
-      if (filter === "Titulaire")  return m.minutes >= 60;
-      if (filter === "Remplaçant") return m.minutes < 60;
-      if (filter === "Victoires")  return m.result === "V";
-      if (filter === "Défaites")   return m.result === "D";
-      return true;
-    }).map((m) => m.id);
-  }, [filter]);
 
-  const visibleStats = MATCH_STATS.filter((s) => filteredIds.includes(s.matchId));
-  const visibleMatches = MATCHES.filter((m) => filteredIds.includes(m.id));
 
-  // Compute personal percentiles
-  const allCols: StatKey[] = COL_GROUPS.flatMap(g => g.cols.map(c => c.key));
-  const colValues: Record<string, number[]> = {};
-  allCols.forEach(col => {
-    colValues[col] = MATCH_STATS.map(s => s[col] as number);
-  });
+
+const RECOMMENDED_MATCHES = {
+  tops: [
+    { id: 10, opponent: "Brest", date: "23/11", score: "3-0", rating: 9.2, note: "Masterclass technique. Domination totale du milieu, créateur des 3 buts." },
+    { id: 14, opponent: "Montpellier", date: "21/12", score: "4-1", rating: 8.8, note: "Volume de jeu exceptionnel. 12km parcourus et une efficacité redoutable." },
+    { id: 22, opponent: "Monaco", date: "15/03", score: "2-1", rating: 8.7, note: "Décisif dans un grand match. A porté l'équipe sous pression." },
+  ],
+  worst: [
+    { id: 1, opponent: "PSG", date: "03/08", score: "1-3", rating: 5.4, note: "Difficulté face au pressing intense. Beaucoup de pertes de balles évitables." },
+    { id: 11, opponent: "Reims", date: "30/11", score: "0-1", rating: 5.8, note: "Manque d'influence. Trop de jeu latéral sans casser les lignes." },
+    { id: 23, opponent: "Lyon", date: "22/03", score: "1-3", rating: 5.6, note: "Frustration visible. Manque de discipline tactique en phase défensive." },
+  ],
+  typical: [
+    { id: 2, opponent: "Marseille", date: "10/08", score: "2-1", rating: 7.4, note: "Propre et efficace. Travail de l'ombre essentiel à la transition." },
+    { id: 12, opponent: "Toulouse", date: "07/12", score: "2-1", rating: 7.2, note: "Régulateur du tempo. Ce qu'il apporte 80% du temps à l'équipe." },
+    { id: 21, opponent: "Marseille", date: "08/03", score: "0-0", rating: 7.5, note: "Solidité et justesse. Match référence pour son équilibre ATT/DEF." },
+  ]
+};
 
   return (
     <div className="flex min-h-[600px]">
@@ -199,184 +292,111 @@ export function PerformancesTab() {
       {/* Main Content Area */}
       <div className="flex-1 p-6">
         {activeCat === "global" && (
-          <div className="space-y-4">
-            {/* Filter bar */}
-            <div className="flex items-center gap-2 mb-4">
-              {(["Tous","Titulaire","Remplaçant","Victoires","Défaites"] as Filter[]).map((f) => {
-                const active = filter === f;
-                return (
-                  <button
-                    key={f}
-                    onClick={() => setFilter(f)}
-                    className="px-3 py-1 rounded-full text-xs transition-colors"
-                    style={{
-                      backgroundColor: active ? "rgba(196,43,71,0.18)" : "var(--color-neutral-800)",
-                      border: `1px solid ${active ? "rgba(196,43,71,0.50)" : "var(--color-neutral-600)"}`,
-                      color: active ? "var(--color-primary-300)" : "var(--color-neutral-400)",
-                    }}
-                  >
-                    {f}
-                  </button>
-                );
-              })}
+          <div className="space-y-8">
+            <div className="flex flex-col gap-2">
+              <h2 className="text-xl font-bold text-white" style={{ fontFamily: "var(--font-dm-sans)" }}>Recommandations de Visionnage</h2>
+              <p className="text-sm text-neutral-400">Sélection curatée par l'IA pour comprendre le profil de Millot en 9 matchs clés.</p>
             </div>
 
-            {/* Match heatmap matrix */}
-            <div
-              className="rounded-lg overflow-hidden"
-              style={{ backgroundColor: "var(--color-neutral-800)", border: "1px solid var(--color-neutral-700)" }}
-            >
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ borderCollapse: "collapse", width: "max-content", minWidth: "100%" }}>
-                  <thead>
-                    {/* Group headers */}
-                    <tr style={{ borderBottom: "1px solid var(--color-neutral-700)" }}>
-                      <th style={{ minWidth: 200, padding: "8px 12px", textAlign: "left", backgroundColor: "var(--color-neutral-800)", position: "sticky", left: 0, zIndex: 2, borderRight: "1px solid var(--color-neutral-700)" }} />
-                      {COL_GROUPS.map((grp) => (
-                        <th
-                          key={grp.label}
-                          colSpan={grp.cols.length}
-                          style={{
-                            padding: "6px 8px",
-                            textAlign: "center",
-                            color: "var(--color-neutral-300)",
-                            fontSize: 10,
-                            fontWeight: 600,
-                            backgroundColor: "var(--color-neutral-900)",
-                            borderRight: "1px solid var(--color-neutral-700)",
-                          }}
-                        >
-                          {grp.label}
-                        </th>
-                      ))}
-                    </tr>
-                    {/* Column headers */}
-                    <tr style={{ borderBottom: "1px solid var(--color-neutral-600)" }}>
-                      <th
-                        style={{
-                          minWidth: 200, padding: "6px 12px", textAlign: "left",
-                          backgroundColor: "var(--color-neutral-800)",
-                          position: "sticky", left: 0, zIndex: 2,
-                          borderRight: "1px solid var(--color-neutral-700)",
-                          color: "var(--color-neutral-500)", fontSize: 10,
-                        }}
-                      >
-                        Match
-                      </th>
-                      {COL_GROUPS.flatMap((grp, gi) =>
-                        grp.cols.map((col, ci) => (
-                          <th
-                            key={`${gi}-${ci}`}
-                            style={{
-                              padding: "6px 8px",
-                              color: "var(--color-neutral-400)",
-                              fontSize: 9,
-                              fontWeight: 500,
-                              textAlign: "center",
-                              whiteSpace: "nowrap",
-                              backgroundColor: "var(--color-neutral-800)",
-                              borderRight: ci === grp.cols.length - 1 ? "1px solid var(--color-neutral-700)" : undefined,
-                            }}
-                          >
-                            {col.label}
-                          </th>
-                        ))
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {visibleStats.map((stats, ri) => {
-                      const match = visibleMatches[ri];
-                      if (!match) return null;
-                      return (
-                        <tr
-                          key={stats.matchId}
-                          style={{ borderBottom: "1px solid var(--color-neutral-700)" }}
-                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.03)")}
-                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
-                        >
-                          {/* Identity cell */}
-                          <td
-                            style={{
-                              padding: "0 12px",
-                              height: 44,
-                              backgroundColor: "var(--color-neutral-800)",
-                              position: "sticky", left: 0, zIndex: 1,
-                              borderRight: "1px solid var(--color-neutral-700)",
-                            }}
-                          >
-                            <div className="flex items-center gap-2">
-                              <div
-                                className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold flex-shrink-0"
-                                style={{ backgroundColor: "var(--color-neutral-700)", color: "var(--color-neutral-300)", fontSize: 8 }}
-                              >
-                                {match.abbr.slice(0, 3)}
-                              </div>
-                              <div>
-                                <p className="text-xs font-medium" style={{ color: "var(--color-neutral-200)", fontSize: 11 }}>
-                                  {match.opponent}
-                                </p>
-                                <p style={{ color: "var(--color-neutral-500)", fontSize: 9 }}>
-                                  {match.home ? "D" : "E"} · {match.date}
-                                </p>
-                              </div>
-                              <span
-                                className="ml-auto text-xs font-bold"
-                                style={{ color: RESULT_COLORS[match.result], fontSize: 10 }}
-                              >
-                                {match.result}
-                              </span>
-                            </div>
-                          </td>
-                          {/* Stat cells */}
-                          {COL_GROUPS.flatMap((grp, gi) =>
-                            grp.cols.map((col, ci) => {
-                              const val = stats[col.key] as number;
-                              const pct = computePersonalPct(val, colValues[col.key]);
-                              const bg = cellColor(pct);
-                              const fg = cellTextColor(pct);
-                              const display = col.key === "xThreat"
-                                ? val.toFixed(2)
-                                : col.key === "pass_pct" || col.key === "def_duel_pct"
-                                  ? `${val}%`
-                                  : col.key === "total_dist" ? `${val}` : String(val);
-                              return (
-                                <td
-                                  key={`${gi}-${ci}`}
-                                  style={{
-                                    padding: "0 8px",
-                                    height: 44,
-                                    backgroundColor: bg,
-                                    textAlign: "center",
-                                    fontSize: 11,
-                                    color: fg,
-                                    borderRight: ci === grp.cols.length - 1 ? "1px solid var(--color-neutral-700)" : undefined,
-                                  }}
-                                >
-                                  {display}
-                                </td>
-                              );
-                            })
-                          )}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* TOPS */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 px-1 group relative">
+                  <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                  <h3 className="text-xs font-bold text-neutral-300 uppercase tracking-widest">Sommets & Prime</h3>
+                  <div className="cursor-help text-neutral-600 hover:text-neutral-400 transition-colors">
+                    <Info size={12} />
+                  </div>
+                  {/* Tooltip */}
+                  <div className="absolute bottom-full left-0 mb-2 w-48 p-2 bg-neutral-800 border border-neutral-700 rounded-lg text-[10px] text-neutral-300 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 shadow-xl">
+                    Les 3 matchs où le joueur a atteint son plus haut niveau de performance cette saison.
+                  </div>
+                </div>
+                {RECOMMENDED_MATCHES.tops.map(m => (
+                  <MatchCard key={m.id} m={m} type="top" onShowStats={setSelectedMatchStats} />
+                ))}
               </div>
+
+              {/* TYPICAL */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 px-1 group relative">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div>
+                  <h3 className="text-xs font-bold text-neutral-300 uppercase tracking-widest">Le Standard Millot</h3>
+                  <div className="cursor-help text-neutral-600 hover:text-neutral-400 transition-colors">
+                    <Info size={12} />
+                  </div>
+                  {/* Tooltip */}
+                  <div className="absolute bottom-full left-0 mb-2 w-48 p-2 bg-neutral-800 border border-neutral-700 rounded-lg text-[10px] text-neutral-300 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 shadow-xl">
+                    Les 3 matchs qui illustrent son niveau moyen et les prestations qu'il produit le plus fréquemment.
+                  </div>
+                </div>
+                {RECOMMENDED_MATCHES.typical.map(m => (
+                  <MatchCard key={m.id} m={m} type="typical" onShowStats={setSelectedMatchStats} />
+                ))}
+              </div>
+
+              {/* WORST */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 px-1 group relative">
+                  <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></div>
+                  <h3 className="text-xs font-bold text-neutral-300 uppercase tracking-widest">Leçons & Difficultés</h3>
+                  <div className="cursor-help text-neutral-600 hover:text-neutral-400 transition-colors">
+                    <Info size={12} />
+                  </div>
+                  {/* Tooltip */}
+                  <div className="absolute bottom-full left-0 mb-2 w-48 p-2 bg-neutral-800 border border-neutral-700 rounded-lg text-[10px] text-neutral-300 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 shadow-xl">
+                    Les 3 matchs où le joueur a le plus souffert, utiles pour identifier ses limites tactiques ou physiques.
+                  </div>
+                </div>
+                {RECOMMENDED_MATCHES.worst.map(m => (
+                  <MatchCard key={m.id} m={m} type="worst" onShowStats={setSelectedMatchStats} />
+                ))}
+              </div>
+            </div>
+
+            {/* Insight Note */}
+            <div className="p-4 rounded-xl bg-neutral-800/30 border border-neutral-700/50 flex gap-4 items-center">
+               <div className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center flex-shrink-0 border border-neutral-700">
+                 <span className="text-lg">💡</span>
+               </div>
+               <div>
+                 <p className="text-xs font-semibold text-neutral-300">Conseil de Recrutement</p>
+                 <p className="text-[11px] text-neutral-500 mt-0.5 leading-relaxed">
+                   Millot performe au maximum de son potentiel dans des systèmes à haute possession où il est le pivot des transitions. 
+                   Évitez les matchs contre des blocs très bas et physiques pour juger sa créativité pure.
+                 </p>
+               </div>
             </div>
           </div>
         )}
 
         {activeCat === "possession" && (
-          <div className="max-w-2xl">
-            <PercentileBarsSection bars={BARS_IN_POSSESSION} title="Avec le ballon — In Possession" />
+          <div className="max-w-3xl mx-auto">
+            <SectoredRadar 
+              title="Avec le ballon — In Possession"
+              size={340}
+              sectors={BARS_IN_POSSESSION.map(b => ({
+                label: b.label,
+                value: b.pct,
+                displayText: b.raw,
+                category: "offensive"
+              }))}
+            />
           </div>
         )}
 
         {activeCat === "out_possession" && (
-          <div className="max-w-2xl">
-            <PercentileBarsSection bars={BARS_OUT_POSSESSION} title="Sans le ballon — Out of Possession" />
+          <div className="max-w-3xl mx-auto">
+            <SectoredRadar 
+              title="Sans le ballon — Out of Possession"
+              size={340}
+              sectors={BARS_OUT_POSSESSION.map(b => ({
+                label: b.label,
+                value: b.pct,
+                displayText: b.raw,
+                category: "defensive"
+              }))}
+            />
           </div>
         )}
 
@@ -384,30 +404,11 @@ export function PerformancesTab() {
           <FinitionSection />
         )}
 
-        {activeCat === "intelligence" && (
-          <div className="space-y-6">
-            <div 
-              className="rounded-xl border border-dashed border-neutral-700 p-8 flex flex-col items-center justify-center text-neutral-500 gap-4"
-              style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
-            >
-              <div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center border border-neutral-700">
-                <Brain size={24} className="text-neutral-600" />
-              </div>
-              <div className="text-center">
-                <p className="text-sm font-semibold text-neutral-300">Intelligence de jeu & Off-ball runs</p>
-                <p className="text-xs mt-1">Données SkillCorner prochainement disponibles</p>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-neutral-800/50 border border-neutral-700 h-32 flex items-center justify-center text-[10px] uppercase tracking-widest text-neutral-600">
-                Phase of Play Analysis
-              </div>
-              <div className="p-4 rounded-lg bg-neutral-800/50 border border-neutral-700 h-32 flex items-center justify-center text-[10px] uppercase tracking-widest text-neutral-600">
-                Decision Making Metrics
-              </div>
-            </div>
-          </div>
+        {selectedMatchStats && (
+          <MatchStatsModal 
+            matchId={selectedMatchStats} 
+            onClose={() => setSelectedMatchStats(null)} 
+          />
         )}
       </div>
     </div>

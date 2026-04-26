@@ -1,8 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Info } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Info, User, Target, Brain } from "lucide-react";
 import { POSITIONS, LEAGUES, POSITION_LABELS, type Position } from "@/data/players";
+
+export type AIModelType = "similarity" | "fit";
+
+export interface AIModel {
+  id: string;
+  type: AIModelType;
+  name: string;
+  score: number;
+}
 
 export interface FilterState {
   positions: Position[];
@@ -14,6 +23,7 @@ export interface FilterState {
   xAMin: number;
   xThreatMin: number;
   leagues: string[];
+  aiModels: AIModel[];
 }
 
 export const DEFAULT_FILTERS: FilterState = {
@@ -26,12 +36,17 @@ export const DEFAULT_FILTERS: FilterState = {
   xAMin: 0,
   xThreatMin: 0,
   leagues: [],
+  aiModels: [
+    { id: "sim-1", type: "similarity", name: "N. Kanté", score: 85 },
+    { id: "fit-1", type: "fit", name: "Double Pivot 4-2-3-1", score: 80 },
+  ],
 };
 
 interface Props {
   filters: FilterState;
   onChange: (f: FilterState) => void;
   filteredCount: number;
+  onApply: () => void;
 }
 
 // ─── Tooltip ──────────────────────────────────────────────────────────────────
@@ -233,7 +248,7 @@ function DualSlider({
 }
 
 // ─── Main component ────────────────────────────────────────────────────────────
-export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
+export function FiltersPanel({ filters, onChange, filteredCount, onApply }: Props) {
   const [collapsed, setCollapsed] = useState(false);
 
   function set<K extends keyof FilterState>(key: K, value: FilterState[K]) {
@@ -252,6 +267,24 @@ export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
       ? filters.leagues.filter((l) => l !== league)
       : [...filters.leagues, league];
     set("leagues", next);
+  }
+
+  function addAIModel() {
+    const newModel: AIModel = {
+      id: `sim-${Date.now()}`,
+      type: "similarity",
+      name: "Nouveau Profil",
+      score: 75,
+    };
+    set("aiModels", [...filters.aiModels, newModel]);
+  }
+
+  function updateAIModel(id: string, updates: Partial<AIModel>) {
+    set("aiModels", filters.aiModels.map(m => m.id === id ? { ...m, ...updates } : m));
+  }
+
+  function removeAIModel(id: string) {
+    set("aiModels", filters.aiModels.filter(m => m.id !== id));
   }
 
   function reset() {
@@ -424,7 +457,69 @@ export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
           />
         </Section>
 
-        {/* Performance */}
+        {/* Modèles IA */}
+        <Section title="Modèles IA" defaultOpen={true}>
+          <div className="flex flex-col gap-4">
+             {filters.aiModels.map((model) => (
+               <div key={model.id} className="relative group">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold text-[var(--color-neutral-500)] uppercase tracking-wider">
+                      {model.type === "similarity" ? "Similarité" : "Fit Score"}
+                    </span>
+                    <button 
+                      onClick={() => removeAIModel(model.id)}
+                      className="text-[var(--color-neutral-600)] hover:text-[var(--color-primary-500)] transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                  </div>
+                  <div className="flex flex-col gap-2 bg-[var(--color-neutral-950)] border border-[var(--color-neutral-800)] rounded-lg p-2.5">
+                     <div className="flex items-center gap-2">
+                        {model.type === "similarity" ? (
+                          <User size={12} className="text-[var(--color-neutral-400)]" />
+                        ) : (
+                          <Target size={12} className="text-[var(--color-neutral-400)]" />
+                        )}
+                        {model.type === "similarity" ? (
+                          <input 
+                            type="text" 
+                            value={model.name}
+                            onChange={(e) => updateAIModel(model.id, { name: e.target.value })}
+                            className="bg-transparent border-none text-[11px] text-[var(--color-neutral-100)] outline-none flex-1 font-medium w-full"
+                          />
+                        ) : (
+                          <select 
+                            value={model.name}
+                            onChange={(e) => updateAIModel(model.id, { name: e.target.value })}
+                            className="bg-transparent border-none text-[11px] text-[var(--color-neutral-100)] outline-none flex-1 font-medium cursor-pointer w-full"
+                          >
+                             <option>Double Pivot 4-2-3-1</option>
+                             <option>Sentinelle 4-3-3</option>
+                             <option>Relayeur Box-to-Box</option>
+                          </select>
+                        )}
+                     </div>
+                     <div className="flex items-center gap-3 mt-1">
+                        <input 
+                          type="range" min="0" max="100" 
+                          value={model.score}
+                          onChange={(e) => updateAIModel(model.id, { score: parseInt(e.target.value) })}
+                          className="flex-1 h-1 bg-[var(--color-neutral-800)] rounded-full accent-[var(--color-primary-500)] appearance-none cursor-pointer" 
+                        />
+                        <span className="text-[11px] text-[var(--color-primary-500)] font-bold w-8 text-right">{model.score}{model.type === "similarity" ? "%" : ""}</span>
+                     </div>
+                  </div>
+               </div>
+             ))}
+
+             <button 
+               onClick={addAIModel}
+               className="w-full py-2 flex items-center justify-center gap-1.5 text-[10px] uppercase font-bold text-[var(--color-primary-500)] border border-dashed border-[var(--color-primary-500)]/30 rounded-lg hover:bg-[var(--color-primary-500)]/10 transition-colors"
+             >
+               + Ajouter un modèle
+             </button>
+          </div>
+        </Section>
         <Section title="Performance" defaultOpen={false}>
           <Slider
             label="xG min / 90min"
@@ -448,44 +543,6 @@ export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
             tip="Expected Threat par 90 minutes. Quantifie la menace totale générée sur le porteur du ballon."
           />
         </Section>
-
-        {/* Contexte */}
-        <Section title="Contexte" defaultOpen={false}>
-          <div>
-            <span className="text-xs mb-2 block" style={{ color: "var(--color-neutral-500)" }}>Championnat</span>
-            <div className="flex flex-col gap-1">
-              {LEAGUES.map((league) => {
-                const active = filters.leagues.includes(league);
-                return (
-                  <label
-                    key={league}
-                    className="flex items-center gap-2.5 cursor-pointer py-1 px-1 rounded transition-colors"
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "rgba(139, 26, 43, 0.1)")}
-                    onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")}
-                  >
-                    <div
-                      className="w-3.5 h-3.5 rounded flex items-center justify-center flex-shrink-0"
-                      style={{
-                        border: `1px solid ${active ? "var(--color-primary-500)" : "var(--color-neutral-600)"}`,
-                        backgroundColor: active ? "var(--color-primary-500)" : "transparent",
-                      }}
-                    >
-                      {active && (
-                        <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-                          <path d="M1.5 4L3 5.5L6.5 2" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      )}
-                    </div>
-                    <span className="text-xs truncate" style={{ color: active ? "var(--color-neutral-200)" : "var(--color-neutral-400)" }}>
-                      {league}
-                    </span>
-                    <input type="checkbox" className="sr-only" checked={active} onChange={() => toggleLeague(league)} />
-                  </label>
-                );
-              })}
-            </div>
-          </div>
-        </Section>
       </div>
 
       {/* Footer */}
@@ -503,6 +560,7 @@ export function FiltersPanel({ filters, onChange, filteredCount }: Props) {
           Réinitialiser
         </button>
         <button
+          onClick={onApply}
           className="flex-1 text-[10px] uppercase py-2 rounded font-bold transition-colors btn-grenat"
           style={{
             backgroundColor: "var(--color-primary-500)",

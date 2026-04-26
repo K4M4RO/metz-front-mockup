@@ -13,7 +13,6 @@ type SubTab = "style" | "withwithout" | "classement";
 const SUB_TABS: { id: SubTab; label: string }[] = [
   { id: "style",       label: "Style de jeu" },
   { id: "withwithout", label: "With · Without" },
-  { id: "classement",  label: "Classement" },
 ];
 
 // ── Fit Score + Similarity ────────────────────────────────────────────────────
@@ -71,62 +70,53 @@ const RESULT_COLORS: Record<string, string> = {
   V: "#22C55E", N: "#EAB308", D: "#EF4444",
 };
 
-function StandingsTable({ standings }: { standings: Standing[] }) {
+function MiniStandings() {
+  const metzRank = 9;
+  const filteredStandings = STANDINGS.filter(s => s.rank >= metzRank - 2 && s.rank <= metzRank + 2);
+  
   return (
-    <div className="p-6">
-      <div
-        className="rounded-lg p-4"
-        style={{ backgroundColor: "var(--color-neutral-800)", border: "1px solid var(--color-neutral-700)" }}
-      >
-        <span className="text-xs font-semibold uppercase tracking-wider block mb-3" style={{ color: "var(--color-neutral-400)", letterSpacing: "0.06em" }}>
-          Classement Ligue 1
-        </span>
-        <div style={{ maxHeight: 420, overflowY: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid var(--color-neutral-700)" }}>
-                {["#", "Club", "J", "V", "N", "D", "Pts", "Forme"].map((h) => (
-                  <th key={h} style={{ color: "var(--color-neutral-500)", fontSize: 10, fontWeight: 500, padding: "4px 6px", textAlign: "left" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {standings.map((row) => {
-                const isMetz = row.abbr === "FCM";
-                return (
-                  <tr
-                    key={row.rank}
-                    style={{
-                      backgroundColor: isMetz ? "rgba(196,43,71,0.12)" : "transparent",
-                      borderBottom: "1px solid var(--color-neutral-700)",
-                    }}
-                  >
-                    <td style={{ padding: "6px", fontSize: 11, color: isMetz ? "var(--color-primary-300)" : "var(--color-neutral-400)", fontWeight: isMetz ? 700 : 400 }}>{row.rank}</td>
-                    <td style={{ padding: "6px", fontSize: 11, color: isMetz ? "var(--color-primary-200)" : "var(--color-neutral-200)", fontWeight: isMetz ? 700 : 400, whiteSpace: "nowrap" }}>{row.club}</td>
-                    <td style={{ padding: "6px", fontSize: 11, color: "var(--color-neutral-400)" }}>{row.j}</td>
-                    <td style={{ padding: "6px", fontSize: 11, color: "#22C55E" }}>{row.v}</td>
-                    <td style={{ padding: "6px", fontSize: 11, color: "#EAB308" }}>{row.n}</td>
-                    <td style={{ padding: "6px", fontSize: 11, color: "#EF4444" }}>{row.d}</td>
-                    <td style={{ padding: "6px", fontSize: 11, color: isMetz ? "var(--color-primary-300)" : "var(--color-neutral-200)", fontWeight: 700 }}>{row.pts}</td>
-                    <td style={{ padding: "6px" }}>
-                      <div className="flex gap-0.5">
-                        {row.form.split("").map((r, fi) => (
-                          <span
-                            key={fi}
-                            className="w-3.5 h-3.5 rounded-full flex items-center justify-center"
-                            style={{ backgroundColor: RESULT_COLORS[r] ?? "#555", fontSize: 7, color: "white", fontWeight: 700 }}
-                          >
-                            {r}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+    <div 
+      className="rounded-xl p-4 mt-4" 
+      style={{ backgroundColor: "var(--color-neutral-800)", border: "1px solid var(--color-neutral-700)" }}
+    >
+      <div className="flex items-center justify-between mb-4">
+         <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Situation au Classement — Ligue 1</span>
+         <span className="text-[10px] text-neutral-400">J28</span>
+      </div>
+      
+      <div className="grid grid-cols-5 gap-2">
+        {filteredStandings.map((team) => {
+          const isMetz = team.rank === metzRank;
+          return (
+            <div 
+              key={team.rank}
+              className="flex flex-col items-center p-3 rounded-lg transition-all"
+              style={{ 
+                backgroundColor: isMetz ? "rgba(196,43,71,0.15)" : "rgba(255,255,255,0.02)",
+                border: isMetz ? "1px solid rgba(196,43,71,0.4)" : "1px solid var(--color-neutral-700/30)",
+                transform: isMetz ? "scale(1.05)" : "scale(1)"
+              }}
+            >
+              <span className="text-[10px] font-black text-neutral-500 mb-1">
+                {team.rank}{team.rank === 1 ? "er" : "ème"}
+              </span>
+              <div 
+                className="w-10 h-10 rounded-full bg-neutral-900 flex items-center justify-center mb-2 border border-neutral-700 shadow-lg"
+                style={{ color: isMetz ? "var(--color-primary-300)" : "var(--color-neutral-300)", fontWeight: 800, fontSize: 12 }}
+              >
+                {team.abbr}
+              </div>
+              <span className="text-[11px] font-bold text-neutral-200 text-center truncate w-full">{team.club}</span>
+              <span className="text-[10px] font-black text-neutral-400 mt-1">{team.pts} pts</span>
+              
+              {isMetz && (
+                <div className="mt-2 w-full h-1 bg-neutral-800 rounded-full overflow-hidden">
+                   <div className="h-full bg-[#C42B47] w-full shadow-[0_0_8px_#C42B47]"></div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -156,6 +146,9 @@ function StyleDeJeuSubTab() {
         <SectoredRadar sectors={RADAR_OUT_POSSESSION} title="Out of Possession" size={220} />
         <FitScoreWidget />
       </div>
+
+      {/* Mini Standings below radars */}
+      <MiniStandings />
     </div>
   );
 }
@@ -198,7 +191,6 @@ export function EquipeTab() {
       <div style={{ backgroundColor: "var(--color-neutral-900)" }}>
         {activeSub === "style"       && <StyleDeJeuSubTab />}
         {activeSub === "withwithout" && <WithWithoutTab />}
-        {activeSub === "classement"  && <StandingsTable standings={STANDINGS} />}
       </div>
     </div>
   );

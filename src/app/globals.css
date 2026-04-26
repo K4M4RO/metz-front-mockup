@@ -197,7 +197,7 @@ html,
 body {
   height: 100%;
   background-color: var(--color-neutral-950);
-  color: var(--color-neutral-400);
+  color: var(--color-neutral-200);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

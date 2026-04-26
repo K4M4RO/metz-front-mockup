@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { HeroSearch } from "@/components/exploration/HeroSearch";
 import { FiltersPanel, DEFAULT_FILTERS, type FilterState } from "@/components/exploration/FiltersPanel";
 import { ActionBar, type ViewMode } from "@/components/exploration/ActionBar";
 import { PlayerTable } from "@/components/exploration/PlayerTable";
 import { PlayerDrawer } from "@/components/exploration/PlayerDrawer";
 import { ScatterView } from "@/components/exploration/ScatterView";
 import { PLAYERS, type Player } from "@/data/players";
+import { Target } from "lucide-react";
 
 function filterPlayers(players: Player[], f: FilterState, pills: string[]): Player[] {
   return players.filter((p) => {
@@ -31,6 +33,7 @@ export default function ExplorationPage() {
   const [view, setView] = useState<ViewMode>("liste");
   const [activePills, setActivePills] = useState<string[]>([]);
   const [drawerPlayer, setDrawerPlayer] = useState<Player | null>(null);
+  const [isApplied, setIsApplied] = useState(false);
 
   function togglePill(id: string) {
     setActivePills((prev) =>
@@ -40,6 +43,21 @@ export default function ExplorationPage() {
 
   const filtered = useMemo(() => filterPlayers(PLAYERS, filters, activePills), [filters, activePills]);
 
+  if (!isApplied) {
+    return (
+      <div className="h-full w-full overflow-y-auto bg-[var(--color-neutral-950)] flex items-center justify-center p-8">
+        <HeroSearch
+          filters={filters}
+          onChange={setFilters}
+          activePills={activePills}
+          onTogglePill={togglePill}
+          onApply={() => setIsApplied(true)}
+          filteredCount={filtered.length}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full overflow-hidden">
       {/* Filters panel */}
@@ -47,6 +65,7 @@ export default function ExplorationPage() {
         filters={filters}
         onChange={setFilters}
         filteredCount={filtered.length}
+        onApply={() => setIsApplied(true)}
       />
 
       {/* Main content */}
