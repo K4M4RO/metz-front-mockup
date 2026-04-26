@@ -54,6 +54,14 @@ export interface PassLine {
   lineBreaking: "none" | "first" | "mid" | "last";
 }
 
+export interface CarryLine {
+  x1: number; y1: number;
+  x2: number; y2: number;
+  playerId: number;
+  distance: number;
+  xThreat: number;
+}
+
 export interface RunVector {
   x1: number; y1: number;
   x2: number; y2: number;
@@ -349,6 +357,21 @@ export const PASSES: PassLine[] = [
   { x1: 0.63, y1: 0.81, x2: 0.62, y2: 0.65, playerId: 3, phase: "Build Up", xpv: 0.04, lineBreaking: "first" },
   { x1: 0.82, y1: 0.77, x2: 0.62, y2: 0.65, playerId: 2, phase: "Build Up", xpv: 0.03, lineBreaking: "none" },
 ];
+
+export const CARRIES: CarryLine[] = [
+  { x1: 0.35, y1: 0.84, x2: 0.38, y2: 0.72, playerId: 2, distance: 12, xThreat: 0.02 },
+  { x1: 0.62, y1: 0.72, x2: 0.50, y2: 0.62, playerId: 7, distance: 15, xThreat: 0.08 },
+  { x1: 0.50, y1: 0.62, x2: 0.50, y2: 0.40, playerId: 9, distance: 22, xThreat: 0.15 },
+  { x1: 0.85, y1: 0.82, x2: 0.85, y2: 0.60, playerId: 5, distance: 18, xThreat: 0.05 },
+];
+
+export const SEASON_STATS = {
+  possession: { match: 52, season: 48, unit: "%" },
+  passAccuracy: { match: 84, season: 81, unit: "%" },
+  progressivePasses: { match: 42, season: 38, unit: "" },
+  carriesInFinalThird: { match: 15, season: 12, unit: "" },
+  expectedGoals: { match: 1.8, season: 1.4, unit: "xG" },
+};
 
 // Lines broken table
 export interface LineBreakRow {
