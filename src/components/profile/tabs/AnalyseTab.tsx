@@ -1,18 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
-import { HeatmapPitch } from "@/components/profile/HeatmapPitch";
 import { EventMap } from "@/components/profile/EventMap";
 import { PerformancesTab } from "@/components/profile/tabs/PerformancesTab";
 import { PhysicalTab } from "@/components/profile/tabs/PhysicalTab";
 import { EnduranceTab } from "@/components/profile/tabs/EnduranceTab";
-import { MATCHES, SEASON_HOTSPOTS, MATCH_HEATMAP_PATTERNS } from "@/data/enzo-millot-extended";
-import type { MatchResult } from "@/data/enzo-millot-extended";
 
 type SubTab = "couverture" | "performances" | "physique" | "endurance";
-type CoverageMode = "saison" | "match";
-type MatchFilter = "Tous" | "Domicile" | "Extérieur" | "Victoires" | "Défaites";
 
 const SUB_TABS: { id: SubTab; label: string }[] = [
   { id: "couverture",   label: "Couverture" },
@@ -21,13 +15,7 @@ const SUB_TABS: { id: SubTab; label: string }[] = [
   { id: "endurance",    label: "Endurance" },
 ];
 
-const RESULT_COLORS: Record<MatchResult, string> = {
-  V: "#22C55E", N: "#EAB308", D: "#EF4444",
-};
 
-const MATCH_FILTERS: MatchFilter[] = ["Tous", "Domicile", "Extérieur", "Victoires", "Défaites"];
-
-interface ModalMatch { id: number; opponent: string; score: string; result: MatchResult; date: string; minutes: number; }
 
 function CoverageSubTab() {
 
@@ -52,8 +40,8 @@ function SubPills({ tabs, active, onChange }: { tabs: { id: string; label: strin
             onClick={() => onChange(tab.id)}
             className="px-4 py-1.5 rounded-full text-xs font-medium transition-colors"
             style={{
-              backgroundColor: isActive ? "rgba(var(--primary-rgb), 0.18)" : "var(--color-neutral-800)",
-              border: `1px solid ${isActive ? "rgba(var(--primary-rgb), 0.45)" : "var(--color-neutral-700)"}`,
+              backgroundColor: isActive ? "rgba(196,43,71, 0.18)" : "var(--color-neutral-800)",
+              border: `1px solid ${isActive ? "rgba(196,43,71, 0.45)" : "var(--color-neutral-700)"}`,
               color: isActive ? "var(--color-primary-300)" : "var(--color-neutral-400)",
             }}
           >

@@ -6,83 +6,7 @@ import { SectoredRadar } from "@/components/profile/SectoredRadar";
 import type { MatchResult } from "@/data/enzo-millot-extended";
 import { Info } from "lucide-react";
 
-type Filter = "Tous" | "Titulaire" | "Remplaçant" | "Victoires" | "Défaites";
 
-const RESULT_COLORS: Record<MatchResult, string> = {
-  V: "#22C55E", N: "#EAB308", D: "#EF4444",
-};
-
-function cellColor(percentile: number): string {
-  if (percentile >= 85) return "#145A32";
-  if (percentile >= 70) return "#1E8449";
-  if (percentile >= 55) return "#ABEBC6";
-  if (percentile >= 45) return "var(--color-neutral-800)";
-  if (percentile >= 30) return "#FADBD8";
-  if (percentile >= 15) return "#E74C3C";
-  return "#7B241C";
-}
-
-function cellTextColor(percentile: number): string {
-  if (percentile >= 55 && percentile < 85) return "#1C1C1F";
-  if (percentile >= 30 && percentile < 45) return "#1C1C1F";
-  return "white";
-}
-
-function computePersonalPct(value: number, allValues: number[]): number {
-  const sorted = [...allValues].sort((a, b) => a - b);
-  const rank = sorted.filter(v => v < value).length;
-  return Math.round((rank / allValues.length) * 100);
-}
-
-const COL_GROUPS = [
-  {
-    label: "Distribution",
-    cols: [
-      { key: "passes" as const, label: "Passes" },
-      { key: "pass_pct" as const, label: "% passes" },
-      { key: "press_passes" as const, label: "Passes press." },
-      { key: "one_touch" as const, label: "1-touch" },
-    ],
-  },
-  {
-    label: "Progression",
-    cols: [
-      { key: "lb_att" as const, label: "LB ATT" },
-      { key: "lb_mid" as const, label: "LB MIL" },
-      { key: "xThreat" as const, label: "xThreat" },
-      { key: "prog_carries" as const, label: "Carries prog." },
-    ],
-  },
-  {
-    label: "Défensif",
-    cols: [
-      { key: "pressures" as const, label: "Pressions" },
-      { key: "def_duel_pct" as const, label: "% duel déf." },
-      { key: "counter_press" as const, label: "Contrep." },
-      { key: "second_balls" as const, label: "2e balles" },
-    ],
-  },
-  {
-    label: "Physique",
-    cols: [
-      { key: "peak_sprint" as const, label: "Sprint max" },
-      { key: "hi_runs" as const, label: "HI runs" },
-      { key: "total_dist" as const, label: "Distance" },
-    ],
-  },
-];
-
-type StatKey = keyof (typeof MATCH_STATS)[number];
-
-function pctBarColor(pct: number): string {
-  if (pct >= 91) return "#7B1E2E";
-  if (pct >= 75) return "#C0392B";
-  if (pct >= 58) return "#E67E22";
-  if (pct >= 41) return "#F1C40F";
-  if (pct >= 25) return "#27AE60";
-  if (pct >= 8)  return "#2980B9";
-  return "#16A085";
-}
 
 
 import { FinitionSection } from "./FinitionSection";
@@ -105,25 +29,25 @@ function MatchStatsModal({ matchId, onClose }: { matchId: number, onClose: () =>
   if (!stats || !match) return null;
 
   // Simple mapping to percentiles for the radar (simulated for the match profile)
-  const distSectors = [
+  const distSectors: { label: string, v: any, p: number }[] = [
     { label: "Passes", v: stats.passes, p: Math.min(100, stats.passes * 1.5) },
     { label: "% Passes", v: stats.pass_pct, p: stats.pass_pct },
     { label: "P. Press.", v: stats.press_passes, p: stats.press_passes * 10 },
     { label: "1-Touch", v: stats.one_touch, p: stats.one_touch * 15 },
   ];
 
-  const progSectors = [
+  const progSectors: { label: string, v: any, p: number }[] = [
     { label: "LB ATT", v: stats.lb_att, p: stats.lb_att * 25 },
     { label: "LB MIL", v: stats.lb_mid, p: stats.lb_mid * 20 },
     { label: "xThreat", v: stats.xThreat.toFixed(2), p: stats.xThreat * 500 },
     { label: "Carries", v: stats.prog_carries, p: stats.prog_carries * 12 },
   ];
 
-  const defSectors = [
+  const defSectors: { label: string, v: any, p: number }[] = [
     { label: "Pressions", v: stats.pressures, p: stats.pressures * 6 },
     { label: "% Duel", v: stats.def_duel_pct, p: stats.def_duel_pct },
     { label: "Contrep.", v: stats.counter_press, p: stats.counter_press * 12 },
-    { l: "2e balles", v: stats.second_balls, p: stats.second_balls * 10 },
+    { label: "2e balles", v: stats.second_balls, p: stats.second_balls * 10 },
   ];
 
   return (
@@ -149,17 +73,17 @@ function MatchStatsModal({ matchId, onClose }: { matchId: number, onClose: () =>
           <SectoredRadar 
             title="Distribution" 
             size={240} 
-            sectors={distSectors.map(s => ({ label: s.label, value: s.p, displayText: String(s.v), category: "offensive" }))} 
+            sectors={distSectors.map(s => ({ label: s.label || "N/A", value: s.p, displayText: String(s.v), category: "offensive" }))} 
           />
           <SectoredRadar 
             title="Progression" 
             size={240} 
-            sectors={progSectors.map(s => ({ label: s.label, value: s.p, displayText: String(s.v), category: "offensive" }))} 
+            sectors={progSectors.map(s => ({ label: s.label || "N/A", value: s.p, displayText: String(s.v), category: "offensive" }))} 
           />
           <SectoredRadar 
             title="Défensif" 
             size={240} 
-            sectors={defSectors.map(s => ({ label: s.label, value: s.p, displayText: String(s.v), category: "defensive" }))} 
+            sectors={defSectors.map(s => ({ label: s.label || "N/A", value: s.p, displayText: String(s.v), category: "defensive" }))} 
           />
         </div>
         
